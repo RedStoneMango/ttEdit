@@ -14,9 +14,20 @@ A third-party graphical frontend for [**TTTool**](https://github.com/entropia/ti
 - Manage sounds, scripts, and other assets visually
 - Cross-platform support (depending on your environment)
 
+## Installation
+### Installing The App
+
+_[Coming soon]_
+
+## Installing The tttool
+
+This app needs **TTTool** to be installed and available in your **PATH**, so it can run the `tttool` command.
+
+Look at [this file](InstallingTttool.md) to learn how to do this on your system.
+
 ## Requirements
 
-- A working installation of [TTTool](https://github.com/entropia/tip-toi-reveng/)
+- A working installation of [TTTool](https://github.com/entropia/tip-toi-reveng/) (see [here](InstallingTttool.md))
 - (Optional) Tiptoi® pen and files for testing
 
 ## License
