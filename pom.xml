@@ -64,7 +64,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>io.github.redstonemango.ttedit/io.github.redstonemango.ttedit.HelloApplication
+                            <mainClass>io.github.redstonemango.ttedit/io.github.redstonemango.ttedit.ttEdit
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

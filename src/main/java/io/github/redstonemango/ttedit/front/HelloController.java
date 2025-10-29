@@ -1,4 +1,4 @@
-package io.github.redstonemango.ttedit;
+package io.github.redstonemango.ttedit.front;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
