@@ -43,5 +43,7 @@ in your **PATH**:
 
 Once `tttool` runs in your terminal, this frontend will automatically detect and use it as.
 
+<br>
+
 > [!IMPORTANT]
-> The executable file has to be named `tttool` (or `tttool.exe` on windows) in order for ttEdit to detect it
+> The executable file has to be named `tttool` (or `tttool.exe` on windows) in order for ttEdit to detect it.
