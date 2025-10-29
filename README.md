@@ -7,30 +7,31 @@ A third-party graphical frontend for [**TTTool**](https://github.com/entropia/ti
 > Ravensburger isn’t involved with or responsible for this app.  
 > Use it at your own risk — I can’t take any responsibility if something goes wrong with your Tiptoi® pen, files, or other stuff while using it.
 
-## Features
+## ✨ Features
 
-- User-friendly interface for TTTool commands
-- Load, inspect, and edit `.gme` files
-- Manage sounds, scripts, and other assets visually
-- Cross-platform support (depending on your environment)
+- User-friendly interface for TTTool
+- Write scripts using a block-based drag-and-drop interface
+- Define interactive parts on images using a visual editor
+- Automatic rendering of images with OID codes and `.gme` files
+- Cross-platform support
 
-## Installation
-### Installing The App
+## 📦 Installation
+###  Installing The App
 
 _[Coming soon]_
 
-## Installing The tttool
+### Installing The TTTool
 
 This app needs **TTTool** to be installed and available in your **PATH**, so it can run the `tttool` command.
 
 Look at [this file](InstallingTttool.md) to learn how to do this on your system.
 
-## Requirements
+## 💻 Requirements
 
 - A working installation of [TTTool](https://github.com/entropia/tip-toi-reveng/) (see [here](InstallingTttool.md))
 - (Optional) Tiptoi® pen and files for testing
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License.
 See the [LICENSE](LICENSE) file for details.
