@@ -45,6 +45,17 @@ public class UXUtilities {
         });
     }
 
+    public static void warningAlert(String heading, String content) {
+        runOnApplicationThread(() -> {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Warning");
+            alert.setHeaderText(heading);
+            alert.setContentText(content);
+            applyStylesheet(alert);
+            alert.show();
+        });
+    }
+
     public static void runOnApplicationThread(Runnable action) {
         if (Platform.isFxApplicationThread()) {
             action.run();
