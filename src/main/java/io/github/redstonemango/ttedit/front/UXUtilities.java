@@ -1,8 +1,18 @@
 package io.github.redstonemango.ttedit.front;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.util.Callback;
+import javafx.util.Duration;
+
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class UXUtilities {
 
@@ -63,6 +73,58 @@ public class UXUtilities {
         else {
             Platform.runLater(action);
         }
+    }
+
+    public static <T> void applyCustomCellFactory(ListView<T> listView, Function<T, Node> nodeFunction) {
+        applyCustomCellFactory(listView, nodeFunction, _ -> {}, new Insets(0));
+    }
+
+    public static <T> void applyCustomCellFactory(ListView<T> listView, Function<T, Node> nodeFunction,
+                                                      Consumer<T> onDoubleClick, Insets padding) {
+        listView.setCellFactory(new Callback<>() {
+            @Override
+            public ListCell<T> call(ListView<T> lv) {
+                return new ListCell<>() {
+
+                    private long lastClick = -1;
+
+                    @Override
+                    protected void updateItem(T item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            setGraphic(nodeFunction.apply(item));
+                            setPadding(padding);
+                            setOnMouseClicked(_ -> {
+                                if (System.currentTimeMillis() - lastClick <= 250) onDoubleClick.accept(getItem());
+                                lastClick = System.currentTimeMillis();
+                            });
+                        }
+                    }
+                };
+            }
+        });
+    }
+
+    public static void registerHoverAnimation(Node node) {
+        registerHoverAnimation(node, false);
+    }
+
+    public static void registerHoverAnimation(Node node, boolean inverted) {
+        node.getParent().setOnMouseEntered(_ -> {
+            FadeTransition transition = new FadeTransition(Duration.millis(250), node);
+            transition.setFromValue(inverted ? 0.45 : 1);
+            transition.setToValue(inverted ? 1 : 0.45);
+            transition.play();
+        });
+        node.getParent().setOnMouseExited(_ -> {
+            FadeTransition transition = new FadeTransition(Duration.millis(250), node);
+            transition.setFromValue(inverted ? 1 : 0.45);
+            transition.setToValue(inverted ? 0.45 : 1);
+            transition.play();
+        });
     }
 
 }
