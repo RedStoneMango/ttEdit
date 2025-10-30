@@ -14,7 +14,7 @@ public class Launcher {
 
     public static void main(String[] args) {
         setupLogManagement();
-        Application.launch(ttEdit.class, args);
+        Application.launch(TtEdit.class, args);
     }
 
     private static void setupLogManagement() {
