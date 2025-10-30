@@ -1,6 +1,5 @@
 .root {
     -fx-accent: #1e74c6;
-    -fx-focus-color: -fx-accent;
     -fx-base: #373e43;
     -fx-control-inner-background: derive(-fx-base, 35%);
     -fx-control-inner-background-alt: -fx-control-inner-background ;
@@ -15,8 +14,12 @@
     -fx-prompt-text-fill: gray;
 }
 
-.button:hover{
-    -fx-text-fill: white;
+.button {
+    -fx-focus-traversable: false;
+}
+
+.button:pressed {
+    -fx-background-color: derive(-fx-base, 15%);
 }
 
 .separator *.line {
@@ -27,10 +30,6 @@
 
 .scroll-bar{
     -fx-background-color: derive(-fx-base,45%)
-}
-
-.button:default {
-    -fx-base: -fx-accent ;
 }
 
 .table-view{
