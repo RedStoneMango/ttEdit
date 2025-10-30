@@ -2,6 +2,7 @@ package io.github.redstonemango.ttedit;
 
 import io.github.redstonemango.mangoutils.OperatingSystem;
 import io.github.redstonemango.ttedit.back.TttoolSubprocess;
+import io.github.redstonemango.ttedit.front.UXUtilities;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -19,6 +20,7 @@ public class ttEdit extends Application {
         if (checkTttool()) {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/io/github/redstonemango/ttedit/fxml/project-list.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
+            UXUtilities.applyStylesheet(scene);
             stage.setTitle("ttEdit");
             stage.setScene(scene);
             stage.show();
@@ -41,6 +43,7 @@ public class ttEdit extends Application {
             alert.setTitle("No TTTool found");
             alert.setHeaderText("Could not find an installation of TTTool in the PATH. This is required to start");
             alert.setContentText("Please make sure you have a valid TTTool installation named 'tttool' in your system PATH");
+            UXUtilities.applyStylesheet(alert);
             alert.showAndWait();
             if (alert.getResult() == infoButton) {
                 OperatingSystem.loadCurrentOS().open(
