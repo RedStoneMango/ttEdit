@@ -36,7 +36,7 @@ public class ttEdit extends Application {
         if (TttoolSubprocess.findTttool() == null) {
             System.err.println("Unable to find an installation of tttool in the PATH! Application cannot start correctly.");
 
-            ButtonType infoButton = new ButtonType("More Information");
+            ButtonType infoButton = new ButtonType("Installation Guide");
             ButtonType closeButton = new ButtonType("Close", ButtonBar.ButtonData.CANCEL_CLOSE);
 
             Alert alert = new Alert(Alert.AlertType.ERROR, "", infoButton, closeButton);
