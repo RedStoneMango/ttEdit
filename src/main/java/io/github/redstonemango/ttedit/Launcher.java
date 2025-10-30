@@ -4,12 +4,13 @@ import io.github.redstonemango.mangoutils.LogManager;
 import io.github.redstonemango.mangoutils.OperatingSystem;
 import javafx.application.Application;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 
 public class Launcher {
 
-    public static final String APP_HOME = OperatingSystem.loadCurrentOS().createAppConfigDir("ttEdit").getAbsolutePath();
+    public static final File APP_HOME = OperatingSystem.loadCurrentOS().createAppConfigDir("ttEdit");
 
     public static void main(String[] args) {
         setupLogManagement();
@@ -17,7 +18,7 @@ public class Launcher {
     }
 
     private static void setupLogManagement() {
-        LogManager.logDir(Paths.get(APP_HOME, "logs"));
+        LogManager.logDir(Paths.get(APP_HOME.getAbsolutePath(), "logs"));
         LogManager.logFileHeaderFunction(date -> """
                 This is a log file for the ttEdit application.
                 Inside this log file, all outputs the app logged at $DATE$ are logged.
