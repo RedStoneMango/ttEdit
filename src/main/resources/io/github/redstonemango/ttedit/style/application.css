@@ -18,6 +18,11 @@
     -fx-focus-traversable: false;
 }
 
+.button:default {
+    -fx-base: derive(-fx-accent, 10%);
+    -fx-text-fill: white;
+}
+
 .button:pressed {
     -fx-background-color: derive(-fx-base, 15%);
 }
