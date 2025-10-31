@@ -40,16 +40,14 @@ public class ProjectListController {
         );
         projectView.setItems(filteredProjects);
 
-        projectView.sceneProperty().addListener((_, _, sc) -> {
-            if (sc != null) {
-                sc.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-                    boolean controlDown = OperatingSystem.isMac() ? e.isMetaDown() : e.isControlDown();
-                    if (e.getCode() == KeyCode.R && controlDown) {
-                        updateProjects();
-                    }
-                });
-            }
-        });
+        UXUtilities.doOnceSceneLoads(projectView, sc ->
+            sc.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+                boolean controlDown = OperatingSystem.isMac() ? e.isMetaDown() : e.isControlDown();
+                if (e.getCode() == KeyCode.R && controlDown) {
+                    updateProjects();
+                }
+            })
+        );
 
         UXUtilities.applyCustomCellFactory(projectView, file ->
                 ProjectListEntry.build(file, () -> deleteProject(file), projectView)
