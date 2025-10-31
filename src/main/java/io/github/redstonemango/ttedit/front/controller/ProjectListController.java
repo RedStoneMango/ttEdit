@@ -79,14 +79,11 @@ public class ProjectListController {
             throw new RuntimeException(e);
         }
         UXUtilities.applyStylesheet(scene);
+        UXUtilities.defineMinSize(stage);
 
         stage.setScene(scene);
         stage.show();
 
-        Platform.runLater(() -> {
-            stage.setMinWidth(scene.getWidth());
-            stage.setMinHeight(scene.getHeight());
-        });
     }
 
     private void deleteProject(File file) {
