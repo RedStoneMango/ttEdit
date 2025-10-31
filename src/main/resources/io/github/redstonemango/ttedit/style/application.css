@@ -2,11 +2,11 @@
     -fx-accent: #1e74c6;
     -fx-base: #373e43;
     -fx-control-inner-background: derive(-fx-base, 35%);
-    -fx-control-inner-background-alt: -fx-control-inner-background ;
+    -fx-control-inner-background-alt: -fx-control-inner-background;
     -fx-focus-color: orange;
 }
 
-.label{
+.label {
     -fx-text-fill: lightgray;
 }
 
@@ -34,7 +34,7 @@
 }
 
 .scroll-bar{
-    -fx-background-color: derive(-fx-base,45%)
+    -fx-background-color: derive(-fx-base,45%);
 }
 
 .list-cell:filled:selected,
@@ -43,15 +43,12 @@
 }
 
 .list-cell:even,
-.list-cell,
-.table-row-cell:even,
-.table-row-cell{
+.table-row-cell:even {
     -fx-control-inner-background: derive(-fx-base, 15%);
 }
-.list-cell,
+
 .list-cell:odd,
-.table-row-cell,
-.table-row-cell:odd{
+.table-row-cell {
     -fx-control-inner-background: derive(-fx-base, 20%);
 }
 
@@ -61,7 +58,7 @@
 }
 
 .list-cell,
-.table-row-cell{
+.table-row-cell {
     -fx-border-color: transparent;
     -fx-table-cell-border-color:transparent;
 }
