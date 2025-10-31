@@ -5,14 +5,19 @@ import io.github.redstonemango.mangoutils.OperatingSystem;
 import io.github.redstonemango.ttedit.Launcher;
 import io.github.redstonemango.ttedit.front.UXUtilities;
 import io.github.redstonemango.ttedit.front.listEntries.ProjectListEntry;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,7 +65,28 @@ public class ProjectListController {
 
     @FXML
     private void onAddProject() {
+        Stage stage = new Stage();
+        stage.setTitle("Create New Project");
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(projectView.getScene().getWindow());
+        Scene scene;
 
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                "/io/github/redstonemango/ttedit/fxml/project-creation.fxml"));
+        try {
+            scene = new Scene(loader.load());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        UXUtilities.applyStylesheet(scene);
+
+        stage.setScene(scene);
+        stage.show();
+
+        Platform.runLater(() -> {
+            stage.setMinWidth(scene.getWidth());
+            stage.setMinHeight(scene.getHeight());
+        });
     }
 
     private void deleteProject(File file) {
