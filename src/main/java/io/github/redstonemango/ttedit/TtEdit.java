@@ -25,10 +25,7 @@ public class TtEdit extends Application {
             stage.setScene(scene);
             stage.show();
 
-            Platform.runLater(() -> {
-                stage.setMinWidth(scene.getWidth());
-                stage.setMinHeight(scene.getHeight());
-            });
+            UXUtilities.defineMinSize(stage);
         }
     }
 

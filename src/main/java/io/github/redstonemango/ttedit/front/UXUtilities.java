@@ -9,6 +9,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
@@ -37,6 +38,13 @@ public class UXUtilities {
 
     public static void applyStylesheet(Alert alert) {
         alert.getDialogPane().getStylesheets().add(styleSheet);
+    }
+
+    public static void defineMinSize(Stage stage) {
+        Platform.runLater(() -> {
+            stage.setMinWidth(stage.getScene().getWidth());
+            stage.setMinHeight(stage.getScene().getHeight());
+        });
     }
 
     public static void errorAlert(String heading, String content) {
