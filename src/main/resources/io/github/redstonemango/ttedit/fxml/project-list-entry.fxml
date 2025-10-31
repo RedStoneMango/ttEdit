@@ -10,7 +10,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="60.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.redstonemango.ttedit.front.projectEntry.ProjectEntry">
+<HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="60.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.redstonemango.ttedit.front.listEntries.ProjectListEntry">
    <children>
       <ImageView fitHeight="45.0" fitWidth="51.0" pickOnBounds="true" preserveRatio="true">
          <HBox.margin>

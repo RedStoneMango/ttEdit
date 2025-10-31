@@ -1,4 +1,4 @@
-package io.github.redstonemango.ttedit.front.projectEntry;
+package io.github.redstonemango.ttedit.front.listEntries;
 
 import io.github.redstonemango.ttedit.front.UXUtilities;
 import javafx.fxml.FXML;
@@ -11,7 +11,7 @@ import javafx.scene.shape.Circle;
 import java.io.File;
 import java.io.IOException;
 
-public class ProjectEntry {
+public class ProjectListEntry {
 
     @FXML private Label nameLabel;
     @FXML private Circle deleteBgCircle;
@@ -24,8 +24,8 @@ public class ProjectEntry {
     }
 
     public static HBox build(File file, Runnable onDelete, ListView<?> view) {
-        FXMLLoader loader = new FXMLLoader(ProjectEntry.class.getResource(
-                "/io/github/redstonemango/ttedit/fxml/project-entry.fxml"));
+        FXMLLoader loader = new FXMLLoader(ProjectListEntry.class.getResource(
+                "/io/github/redstonemango/ttedit/fxml/project-list-entry.fxml"));
 
         HBox element;
         try {
@@ -34,7 +34,7 @@ public class ProjectEntry {
             throw new RuntimeException(e);
         }
 
-        ProjectEntry controller = loader.getController();
+        ProjectListEntry controller = loader.getController();
         controller.init(file, onDelete);
 
         element.prefWidthProperty().bind(view.widthProperty().subtract(20));

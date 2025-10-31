@@ -4,7 +4,7 @@ import io.github.redstonemango.mangoutils.MangoIO;
 import io.github.redstonemango.mangoutils.OperatingSystem;
 import io.github.redstonemango.ttedit.Launcher;
 import io.github.redstonemango.ttedit.front.UXUtilities;
-import io.github.redstonemango.ttedit.front.projectEntry.ProjectEntry;
+import io.github.redstonemango.ttedit.front.listEntries.ProjectListEntry;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -47,7 +47,7 @@ public class ProjectListController {
         });
 
         UXUtilities.applyCustomCellFactory(projectView, file ->
-                ProjectEntry.build(file, () -> deleteProject(file), projectView)
+                ProjectListEntry.build(file, () -> deleteProject(file), projectView)
         );
 
         updateProjects();
