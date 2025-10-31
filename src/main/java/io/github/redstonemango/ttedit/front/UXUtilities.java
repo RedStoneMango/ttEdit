@@ -2,6 +2,7 @@ package io.github.redstonemango.ttedit.front;
 
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -13,6 +14,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -45,6 +47,19 @@ public class UXUtilities {
             stage.setMinWidth(stage.getScene().getWidth());
             stage.setMinHeight(stage.getScene().getHeight());
         });
+    }
+
+    public static void doOnceSceneLoads(Node node, Consumer<Scene> action) {
+        AtomicReference<ChangeListener<? super Scene>> l = new AtomicReference<>();
+
+        l.set((_, _, scene) -> {
+            if (scene != null) {
+                action.accept(scene);
+                node.sceneProperty().removeListener(l.get());
+            }
+        });
+
+        node.sceneProperty().addListener(l.get());
     }
 
     public static void errorAlert(String heading, String content) {
