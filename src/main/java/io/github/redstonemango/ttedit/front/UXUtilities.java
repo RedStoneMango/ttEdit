@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
@@ -63,6 +64,19 @@ public class UXUtilities {
             alert.setContentText(content);
             applyStylesheet(alert);
             alert.show();
+        });
+    }
+
+    public static void confirmationAlert(String heading, String content, Runnable onAction) {
+        runOnApplicationThread(() -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Please confirm");
+            alert.setHeaderText(heading);
+            alert.setContentText(content);
+            applyStylesheet(alert);
+            alert.showAndWait();
+
+            if (alert.getResult() == ButtonType.OK) onAction.run();
         });
     }
 
