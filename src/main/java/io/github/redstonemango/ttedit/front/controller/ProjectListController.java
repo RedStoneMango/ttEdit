@@ -1,5 +1,6 @@
 package io.github.redstonemango.ttedit.front.controller;
 
+import io.github.redstonemango.mangoutils.MangoIO;
 import io.github.redstonemango.mangoutils.OperatingSystem;
 import io.github.redstonemango.ttedit.Launcher;
 import io.github.redstonemango.ttedit.front.UXUtilities;
@@ -14,6 +15,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -62,7 +64,21 @@ public class ProjectListController {
     }
 
     private void deleteProject(File file) {
-
+        UXUtilities.confirmationAlert(
+                "Delete '" + file.getName() + "'",
+                "Do you really want to delete this project? All data will be lost forever.",
+                () -> {
+                    try {
+                        MangoIO.deleteDirectoryRecursively(file);
+                    } catch (IOException e) {
+                        UXUtilities.errorAlert(
+                                "Error deleting project '" + file.getName() + "'",
+                                String.valueOf(e)
+                        );
+                    }
+                    updateProjects();
+                }
+        );
     }
 
     private void updateProjects() {
