@@ -1,5 +1,9 @@
 package io.github.redstonemango.ttedit.front;
 
+import io.github.redstonemango.ttedit.front.propertySheetHelpers.CompletableFieldPropertyEditor;
+import io.github.redstonemango.ttedit.front.propertySheetHelpers.SimpleNumberPropertyItem;
+import io.github.redstonemango.ttedit.front.propertySheetHelpers.SimpleStringPropertyItemCompletable;
+import io.github.redstonemango.ttedit.front.propertySheetHelpers.SliderPropertyEditor;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -159,6 +163,10 @@ public class UXUtilities {
                     return new SliderPropertyEditor(item, ranged.getMin(), ranged.getMax(),
                             !Integer.class.isAssignableFrom(type) && !int.class.isAssignableFrom(type));
                 }
+            }
+
+            else if (item instanceof SimpleStringPropertyItemCompletable completable) {
+                return new CompletableFieldPropertyEditor(item, completable.getCompletions());
             }
 
             return defaultFactory.call(item);
