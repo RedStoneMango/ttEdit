@@ -6,18 +6,28 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 
 public class ProjectListEntry {
 
     @FXML private Label nameLabel;
     @FXML private Circle deleteBgCircle;
+    @FXML private Rectangle iconBackground;
+    @FXML private Label iconText;
 
     void init(File file, Runnable onDelete) {
-        nameLabel.setText(file.getName());
+        String name = file.getName();
+        nameLabel.setText(name);
+        iconText.setText(UXUtilities.determineAbbreviation(name));
+        iconBackground.setFill(UXUtilities.determineColor(name));
+
 
         UXUtilities.registerHoverAnimation(deleteBgCircle, true);
         deleteBgCircle.setOnMousePressed(_ -> onDelete.run());

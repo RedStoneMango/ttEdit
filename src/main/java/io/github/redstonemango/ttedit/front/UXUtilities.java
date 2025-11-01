@@ -11,6 +11,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
@@ -18,6 +20,7 @@ import org.controlsfx.control.PropertySheet;
 import org.controlsfx.property.editor.DefaultPropertyEditorFactory;
 import org.controlsfx.property.editor.PropertyEditor;
 
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -201,6 +204,42 @@ public class UXUtilities {
             transition.setToValue(inverted ? 0.45 : 1);
             transition.play();
         });
+    }
+
+
+    public static String determineAbbreviation(String name) {
+        Set<Character> separators = Set.of(' ', '-', '_');
+        boolean afterSeparator = false;
+        StringBuilder abbreviation = new StringBuilder();
+        for (char c : name.toCharArray()) {
+            if (abbreviation.isEmpty()) {
+                if (Character.isLetter(c)) abbreviation.append(c);
+            }
+            else {
+                if (afterSeparator && Character.isLetter(c)) {
+                    abbreviation.append(c);
+                    break;
+                }
+
+                if (separators.contains(c)) afterSeparator = true;
+            }
+        }
+        return abbreviation.toString().toUpperCase();
+    }
+
+    public static Paint determineColor(String str) {
+        final Paint[] COLORS = {
+                Color.LIGHTGRAY, Color.BROWN, Color.DARKCYAN, Color.MEDIUMORCHID,
+                Color.TOMATO, Color.MEDIUMPURPLE, Color.MAGENTA, Color.FORESTGREEN,
+                Color.SPRINGGREEN, Color.OLIVE, Color.GOLD, Color.STEELBLUE,
+                Color.ROYALBLUE, Color.LIGHTSLATEGRAY, Color.TURQUOISE, Color.PERU
+        };
+
+        int hash = 0;
+        for (int i = 0; i < str.length(); i++) {
+            hash = (hash * 31 + str.charAt(i));
+        }
+        return COLORS[hash & 0x0F]; // lowest 4 bits → 0..15
     }
 
 }
