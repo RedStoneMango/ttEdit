@@ -1,4 +1,4 @@
-package io.github.redstonemango.ttedit.front;
+package io.github.redstonemango.ttedit.front.propertySheetHelpers;
 
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
