@@ -2,15 +2,15 @@ package io.github.redstonemango.ttedit.front.controller;
 
 import io.github.redstonemango.mangoutils.MangoIO;
 import io.github.redstonemango.ttedit.Launcher;
+import io.github.redstonemango.ttedit.back.Project;
+import io.github.redstonemango.ttedit.back.ProjectIO;
 import io.github.redstonemango.ttedit.front.propertySheetHelpers.SimplePropertyItem;
 import io.github.redstonemango.ttedit.front.propertySheetHelpers.SimpleNumberPropertyItem;
 import io.github.redstonemango.ttedit.front.UXUtilities;
 import io.github.redstonemango.ttedit.front.propertySheetHelpers.SimpleStringPropertyItemCompletable;
 import io.github.redstonemango.ttedit.front.propertySheetHelpers.SimpleStringPropertyItemLinked;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,6 +21,7 @@ import javafx.scene.input.KeyEvent;
 import org.controlsfx.control.PropertySheet;
 
 import java.io.File;
+import java.io.IOException;
 
 public class ProjectCreationController {
 
@@ -53,6 +54,25 @@ public class ProjectCreationController {
                                 return file.exists();
                             }, locationName))
         );
+    }
+
+    @FXML
+    private void onCreate() {
+        Project project = new Project(
+                new File(Launcher.PROJECTS_HOME, locationName.getValue()),
+                projectName.getValue(),
+                productID.getValue(),
+                comment.getValue(),
+                language.getValue()
+        );
+
+        try {
+            ProjectIO.saveProjectGeneralConfig(project);
+        } catch (IOException e) {
+            UXUtilities.errorAlert("Unable to save general project config", e.getMessage());
+        }
+
+        onClose(); // TODO: Implement actual loading of project view
     }
 
     @FXML

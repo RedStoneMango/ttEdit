@@ -22,7 +22,7 @@
       <HBox alignment="CENTER_RIGHT" prefHeight="57.0" prefWidth="600.0" spacing="20.0">
          <children>
             <Button mnemonicParsing="false" onAction="#onClose" text="Cancel" />
-            <Button fx:id="createButton" defaultButton="true" disable="true" layoutX="281.0" layoutY="26.0" mnemonicParsing="false" text="Create">
+            <Button fx:id="createButton" disable="true" layoutX="281.0" layoutY="26.0" mnemonicParsing="false" onAction="#onCreate" text="Create">
                <HBox.margin>
                   <Insets right="20.0" />
                </HBox.margin>
