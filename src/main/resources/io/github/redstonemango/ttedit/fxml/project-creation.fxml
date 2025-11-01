@@ -18,11 +18,11 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <PropertySheet modeSwitcherVisible="false" searchBoxVisible="false" VBox.vgrow="ALWAYS" />
+      <PropertySheet fx:id="propertySheet" focusTraversable="false" modeSwitcherVisible="false" searchBoxVisible="false" VBox.vgrow="ALWAYS" />
       <HBox alignment="CENTER_RIGHT" prefHeight="57.0" prefWidth="600.0" spacing="20.0">
          <children>
-            <Button mnemonicParsing="false" text="Cancel" />
-            <Button defaultButton="true" disable="true" layoutX="281.0" layoutY="26.0" mnemonicParsing="false" text="Create">
+            <Button mnemonicParsing="false" onAction="#onClose" text="Cancel" />
+            <Button fx:id="createButton" defaultButton="true" disable="true" layoutX="281.0" layoutY="26.0" mnemonicParsing="false" text="Create">
                <HBox.margin>
                   <Insets right="20.0" />
                </HBox.margin>
