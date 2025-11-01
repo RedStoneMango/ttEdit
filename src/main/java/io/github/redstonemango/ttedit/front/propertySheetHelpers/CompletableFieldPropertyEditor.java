@@ -12,7 +12,7 @@ public class CompletableFieldPropertyEditor implements PropertyEditor<String> {
 
     public CompletableFieldPropertyEditor(PropertySheet.Item item, String[] completions) {
         field = new TextField(String.valueOf(item.getValue()));
-        field.textFormatterProperty().addListener((_, _, newV) ->
+        field.textProperty().addListener((_, _, newV) ->
             item.setValue(newV)
         );
         TextFields.bindAutoCompletion(field, completions);
