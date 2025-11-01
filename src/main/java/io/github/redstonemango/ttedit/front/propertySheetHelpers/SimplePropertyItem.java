@@ -12,12 +12,18 @@ public class SimplePropertyItem implements PropertySheet.Item {
     private final String category;
     private final String description;
     private final Property<?> property;
+    private final boolean disabled;
 
     public SimplePropertyItem(String name, String category, String description, Property<?> property) {
+        this(name, category, description, property, false);
+    }
+
+    public SimplePropertyItem(String name, String category, String description, Property<?> property, boolean disabled) {
         this.name = name;
         this.category = category;
         this.description = description;
         this.property = property;
+        this.disabled = disabled;
     }
 
     @Override public Class<?> getType() {
@@ -30,10 +36,11 @@ public class SimplePropertyItem implements PropertySheet.Item {
     @Override public String getDescription() { return description; }
     @Override public Object getValue() { return property.getValue(); }
     @Override public Optional<ObservableValue<?>> getObservableValue() { return Optional.of(property); }
-
     @Override
     @SuppressWarnings("unchecked")
     public void setValue(Object value) {
         ((Property<Object>) property).setValue(value);
     }
+
+    public boolean isDisabled() { return disabled; }
 }

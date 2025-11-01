@@ -1,9 +1,6 @@
 package io.github.redstonemango.ttedit.front;
 
-import io.github.redstonemango.ttedit.front.propertySheetHelpers.CompletableFieldPropertyEditor;
-import io.github.redstonemango.ttedit.front.propertySheetHelpers.SimpleNumberPropertyItem;
-import io.github.redstonemango.ttedit.front.propertySheetHelpers.SimpleStringPropertyItemCompletable;
-import io.github.redstonemango.ttedit.front.propertySheetHelpers.SliderPropertyEditor;
+import io.github.redstonemango.ttedit.front.propertySheetHelpers.*;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -19,6 +16,7 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import org.controlsfx.control.PropertySheet;
 import org.controlsfx.property.editor.DefaultPropertyEditorFactory;
+import org.controlsfx.property.editor.PropertyEditor;
 
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -154,19 +152,32 @@ public class UXUtilities {
     public static void applyPropertyEditorFactory(PropertySheet propertySheet) {
         DefaultPropertyEditorFactory defaultFactory = new DefaultPropertyEditorFactory();
         propertySheet.setPropertyEditorFactory(item -> {
+            PropertyEditor<?> editor = null;
+
             if (item instanceof SimpleNumberPropertyItem<?> ranged) {
                 Class<?> type = item.getType();
                 if (Number.class.isAssignableFrom(type) ||
                         int.class.isAssignableFrom(type) ||
                         double.class.isAssignableFrom(type)) {
 
-                    return new SliderPropertyEditor(item, ranged.getMin(), ranged.getMax(),
+                    editor = new SliderPropertyEditor(item, ranged.getMin(), ranged.getMax(),
                             !Integer.class.isAssignableFrom(type) && !int.class.isAssignableFrom(type));
                 }
             }
-
             else if (item instanceof SimpleStringPropertyItemCompletable completable) {
-                return new CompletableFieldPropertyEditor(item, completable.getCompletions());
+                editor = new CompletableFieldPropertyEditor(item, completable.getCompletions());
+            }
+            else if (item instanceof SimpleStringPropertyItemLinked linked) {
+                editor = new LinkedFieldPropertyEditor(item, linked.getSource(), linked.getConversionCallback());
+            }
+            else if (item instanceof SimplePropertyItem) {
+                editor = defaultFactory.call(item);
+            }
+
+            if (editor != null) {
+                SimplePropertyItem simpleItem = (SimplePropertyItem) item;
+                editor.getEditor().setDisable(simpleItem.isDisabled());
+                return editor;
             }
 
             return defaultFactory.call(item);
