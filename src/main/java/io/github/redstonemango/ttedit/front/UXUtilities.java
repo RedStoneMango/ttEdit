@@ -13,6 +13,8 @@ import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import org.controlsfx.control.PropertySheet;
+import org.controlsfx.property.editor.DefaultPropertyEditorFactory;
 
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -142,6 +144,24 @@ public class UXUtilities {
                     }
                 };
             }
+        });
+    }
+
+    public static void applyPropertyEditorFactory(PropertySheet propertySheet) {
+        DefaultPropertyEditorFactory defaultFactory = new DefaultPropertyEditorFactory();
+        propertySheet.setPropertyEditorFactory(item -> {
+            if (item instanceof SimpleNumberPropertyItem<?> ranged) {
+                Class<?> type = item.getType();
+                if (Number.class.isAssignableFrom(type) ||
+                        int.class.isAssignableFrom(type) ||
+                        double.class.isAssignableFrom(type)) {
+
+                    return new SliderPropertyEditor(item, ranged.getMin(), ranged.getMax(),
+                            !Integer.class.isAssignableFrom(type) && !int.class.isAssignableFrom(type));
+                }
+            }
+
+            return defaultFactory.call(item);
         });
     }
 
