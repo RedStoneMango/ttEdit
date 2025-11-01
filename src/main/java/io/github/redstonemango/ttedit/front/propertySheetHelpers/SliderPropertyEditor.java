@@ -1,4 +1,4 @@
-package io.github.redstonemango.ttedit.front;
+package io.github.redstonemango.ttedit.front.propertySheetHelpers;
 
 import javafx.geometry.Insets;
 import javafx.scene.Node;
