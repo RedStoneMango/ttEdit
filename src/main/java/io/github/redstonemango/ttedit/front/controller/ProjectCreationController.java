@@ -28,7 +28,6 @@ public class ProjectCreationController {
     @FXML private PropertySheet propertySheet;
     @FXML private Button createButton;
 
-    private SimpleStringProperty projectName;
     private SimpleStringProperty locationName;
     private SimpleIntegerProperty productID;
     private SimpleStringProperty comment;
@@ -60,12 +59,10 @@ public class ProjectCreationController {
     private void onCreate() {
         Project project = new Project(
                 new File(Launcher.PROJECTS_HOME, locationName.getValue()),
-                projectName.getValue(),
                 productID.getValue(),
                 comment.getValue(),
                 language.getValue()
         );
-        project.ensureFields();
 
         try {
             ProjectIO.saveProjectGeneralConfig(project);
@@ -84,31 +81,16 @@ public class ProjectCreationController {
     private ObservableList<PropertySheet.Item> buildConfigList() {
         ObservableList<PropertySheet.Item> items = FXCollections.observableArrayList();
 
-        projectName = new SimpleStringProperty("");
         locationName = new SimpleStringProperty("");
         productID = new SimpleIntegerProperty(900);
         comment = new SimpleStringProperty("");
         language = new SimpleStringProperty("");
 
         items.add(new SimplePropertyItem(
-                "Project Name",
-                "Mandatory",
-                "A name for your project. This is internally used by ttEdit but is not stored in the GME file",
-                projectName));
-
-        items.add(new SimpleStringPropertyItemLinked(
                 "Location Name",
                 "Mandatory",
                 "The name of the directory containing your project data. Usually this will be equal to your project's name",
-                locationName,
-                projectName,
-                s -> {
-                    if (s.isBlank()) return s;
-
-                    File file = new File(Launcher.PROJECTS_HOME, asFriendlyText(s));
-                    file = MangoIO.getNextAvailableFile(file);
-                    return asFriendlyText(file.getName());
-                }));
+                locationName));
 
         items.add(new SimpleNumberPropertyItem<>(
                 "Product ID",
