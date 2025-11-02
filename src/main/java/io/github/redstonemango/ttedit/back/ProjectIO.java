@@ -29,7 +29,7 @@ public class ProjectIO {
 
     public static Project loadProject(File projectDir) throws IOException {
         Project project = loadProjectFromGeneralConfig(projectDir);
-        project.ensureFields();
+        project.initializeFields(projectDir.getName());
         // Later, we will add more method calls here to also load scripts etc
         return project;
     }

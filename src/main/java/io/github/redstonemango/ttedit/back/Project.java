@@ -1,39 +1,33 @@
 package io.github.redstonemango.ttedit.back;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.github.redstonemango.ttedit.Launcher;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Project {
 
     private static Project currentProject;
 
     @JsonIgnore private File dir;
-    private String name;
     private int productID;
     private @Nullable String comment;
     private @Nullable String language;
 
     public Project() {}
 
-    public Project(File dir, String name, int productID, @Nullable String comment, @Nullable String language) {
+    public Project(File dir, int productID, @Nullable String comment, @Nullable String language) {
         this.dir = dir;
-        this.name = name;
         this.productID = productID;
         this.comment = comment;
         this.language = language;
     }
 
-    public void ensureFields() {
-        if (dir == null) {
-            dir = Launcher.PROJECTS_HOME; // Doesn't solve problem but at least we get a "General Config not found" instead of NullPointer
-        }
-        if (name == null || name.isBlank()) {
-            if (dir == Launcher.PROJECTS_HOME) name = "UNNAMED PROJECT";
-            else name = dir.getName();
-        }
+    public void initializeFields(String filename) {
+        dir = new File(Launcher.PROJECTS_HOME, filename);
         productID = Math.clamp(productID, 0, 999);
     }
 
@@ -41,12 +35,8 @@ public class Project {
         return dir;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public String name() {
+        return dir.getName();
     }
 
     public int getProductID() {
