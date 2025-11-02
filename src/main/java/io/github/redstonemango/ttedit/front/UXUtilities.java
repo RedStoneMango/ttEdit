@@ -201,13 +201,13 @@ public class UXUtilities {
     }
 
     public static void registerHoverAnimation(Node node, boolean inverted) {
-        node.getParent().setOnMouseEntered(_ -> {
+        node.setOnMouseEntered(_ -> {
             FadeTransition transition = new FadeTransition(Duration.millis(250), node);
             transition.setFromValue(inverted ? 0.45 : 1);
             transition.setToValue(inverted ? 1 : 0.45);
             transition.play();
         });
-        node.getParent().setOnMouseExited(_ -> {
+        node.setOnMouseExited(_ -> {
             FadeTransition transition = new FadeTransition(Duration.millis(250), node);
             transition.setFromValue(inverted ? 1 : 0.45);
             transition.setToValue(inverted ? 0.45 : 1);
