@@ -15,6 +15,9 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class TtEdit extends Application {
+
+    private static Stage primaryStage;
+
     @Override
     public void start(Stage stage) throws IOException {
         if (checkTttool()) {
@@ -24,9 +27,14 @@ public class TtEdit extends Application {
             stage.setTitle("ttEdit");
             stage.setScene(scene);
             stage.show();
+            primaryStage = stage;
 
             UXUtilities.defineMinSize(stage);
         }
+    }
+
+    public static Stage getPrimaryStage() {
+        return primaryStage;
     }
 
     private boolean checkTttool() {
