@@ -65,6 +65,7 @@ public class ProjectCreationController {
                 comment.getValue(),
                 language.getValue()
         );
+        project.ensureFields();
 
         try {
             ProjectIO.saveProjectGeneralConfig(project);
