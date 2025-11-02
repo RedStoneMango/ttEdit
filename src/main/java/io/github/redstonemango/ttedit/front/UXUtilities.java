@@ -1,9 +1,14 @@
 package io.github.redstonemango.ttedit.front;
 
+import io.github.redstonemango.mangoutils.OperatingSystem;
 import io.github.redstonemango.ttedit.front.propertySheetHelpers.*;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -11,11 +16,15 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import org.controlsfx.control.GridCell;
+import org.controlsfx.control.GridView;
 import org.controlsfx.control.PropertySheet;
 import org.controlsfx.property.editor.DefaultPropertyEditorFactory;
 import org.controlsfx.property.editor.PropertyEditor;
@@ -240,6 +249,70 @@ public class UXUtilities {
             hash = (hash * 31 + str.charAt(i));
         }
         return COLORS[hash & 0x0F]; // lowest 4 bits → 0..15
+    }
+
+    public static <T> ObservableList<T> applyCellFactoryAndSelection(GridView<T> gridView, Function<T, Node> nodeFunction) {
+        ObservableList<T> selectedItems = FXCollections.observableArrayList();
+
+        final int[] lastSelectedIndex = {-1};
+
+        gridView.setCellFactory(_ -> {
+            GridCell<T> cell = new GridCell<>() {
+                @Override
+                protected void updateItem(T item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+
+                        pseudoClassStateChanged(PseudoClass.getPseudoClass("selected"), false);
+                    } else {
+                        setText(null);
+                        setGraphic(nodeFunction.apply(item));
+
+                        pseudoClassStateChanged(PseudoClass.getPseudoClass("selected"), selectedItems.contains(getItem()));
+                    }
+                }
+            };
+
+            cell.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+                if (cell.getItem() == null || event.getButton() != MouseButton.PRIMARY) {
+                    return;
+                }
+
+                int index = cell.getIndex();
+
+                boolean controlDown = OperatingSystem.isMac() ? event.isMetaDown() : event.isControlDown();
+                if (controlDown) {
+                    if (selectedItems.contains(cell.getItem())) {
+                        selectedItems.remove(cell.getItem());
+                    } else {
+                        selectedItems.add(cell.getItem());
+                    }
+                    lastSelectedIndex[0] = index;
+
+                } else if (event.isShiftDown() && lastSelectedIndex[0] >= 0) {
+                    int start = Math.min(lastSelectedIndex[0], index);
+                    int end = Math.max(lastSelectedIndex[0], index);
+                    selectedItems.clear();
+                    selectedItems.addAll(gridView.getItems().subList(start, end + 1));
+
+                } else {
+                    selectedItems.clear();
+                    selectedItems.add(cell.getItem());
+                    lastSelectedIndex[0] = index;
+                }
+            });
+
+            return cell;
+        });
+        selectedItems.addListener((ListChangeListener<? super T>) _ -> {
+            ObservableList<T> items = gridView.getItems();
+            gridView.setItems(FXCollections.observableArrayList());
+            gridView.setItems(items);
+        });
+
+        return selectedItems;
     }
 
 }
