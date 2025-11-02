@@ -3,14 +3,17 @@ package io.github.redstonemango.ttedit.front.controller;
 import io.github.redstonemango.mangoutils.MangoIO;
 import io.github.redstonemango.mangoutils.OperatingSystem;
 import io.github.redstonemango.ttedit.Launcher;
+import io.github.redstonemango.ttedit.TtEdit;
+import io.github.redstonemango.ttedit.back.Project;
+import io.github.redstonemango.ttedit.back.ProjectIO;
 import io.github.redstonemango.ttedit.front.UXUtilities;
 import io.github.redstonemango.ttedit.front.listEntries.ProjectListEntry;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -50,8 +53,8 @@ public class ProjectListController {
         );
 
         UXUtilities.applyCustomCellFactory(projectView, file ->
-                ProjectListEntry.build(file, () -> deleteProject(file), projectView)
-        );
+                ProjectListEntry.build(file, () -> deleteProject(file), projectView),
+        this::openProject, new Insets(0));
 
         updateProjects();
     }
@@ -82,6 +85,34 @@ public class ProjectListController {
         stage.setScene(scene);
         stage.show();
 
+    }
+
+    private void openProject(File file) {
+        Project project;
+        try {
+            project = ProjectIO.loadProject(file);
+        } catch (IOException e) {
+            UXUtilities.errorAlert("Unable to load project", e.getMessage());
+            return;
+        }
+
+        Project.defineAsCurrentProject(project);
+
+        Scene scene;
+        Stage primaryStage = TtEdit.getPrimaryStage();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                "/io/github/redstonemango/ttedit/fxml/project-content.fxml"));
+        try {
+            scene = new Scene(loader.load());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        UXUtilities.applyStylesheet(scene);
+        UXUtilities.defineMinSize(primaryStage);
+
+        primaryStage.setTitle(project.name());
+        primaryStage.setScene(scene);
+        primaryStage.setMaximized(true);
     }
 
     private void deleteProject(File file) {

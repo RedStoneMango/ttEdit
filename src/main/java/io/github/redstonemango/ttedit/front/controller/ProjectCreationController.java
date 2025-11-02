@@ -1,6 +1,5 @@
 package io.github.redstonemango.ttedit.front.controller;
 
-import io.github.redstonemango.mangoutils.MangoIO;
 import io.github.redstonemango.ttedit.Launcher;
 import io.github.redstonemango.ttedit.back.Project;
 import io.github.redstonemango.ttedit.back.ProjectIO;
@@ -8,7 +7,6 @@ import io.github.redstonemango.ttedit.front.propertySheetHelpers.SimplePropertyI
 import io.github.redstonemango.ttedit.front.propertySheetHelpers.SimpleNumberPropertyItem;
 import io.github.redstonemango.ttedit.front.UXUtilities;
 import io.github.redstonemango.ttedit.front.propertySheetHelpers.SimpleStringPropertyItemCompletable;
-import io.github.redstonemango.ttedit.front.propertySheetHelpers.SimpleStringPropertyItemLinked;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -45,13 +43,11 @@ public class ProjectCreationController {
         UXUtilities.applyPropertyEditorFactory(propertySheet);
         propertySheet.getItems().addAll(buildConfigList());
 
-        createButton.disableProperty().bind(
-                    Bindings.createBooleanBinding(() -> projectName.getValue().isBlank(), projectName)
-                            .or(Bindings.createBooleanBinding(() -> {
-                                if (locationName.getValue().isBlank()) return true;
-                                File file = new File(Launcher.PROJECTS_HOME, locationName.getValue());
-                                return file.exists();
-                            }, locationName))
+        createButton.disableProperty().bind(Bindings.createBooleanBinding(() -> {
+                    if (locationName.getValue().isBlank()) return true;
+                    File file = new File(Launcher.PROJECTS_HOME, locationName.getValue());
+                    return file.exists();
+                })
         );
     }
 
