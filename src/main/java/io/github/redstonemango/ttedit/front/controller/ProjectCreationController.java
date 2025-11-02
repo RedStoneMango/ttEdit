@@ -26,7 +26,7 @@ public class ProjectCreationController {
     @FXML private PropertySheet propertySheet;
     @FXML private Button createButton;
 
-    private SimpleStringProperty locationName;
+    private SimpleStringProperty projectName;
     private SimpleIntegerProperty productID;
     private SimpleStringProperty comment;
     private SimpleStringProperty language;
@@ -44,17 +44,19 @@ public class ProjectCreationController {
         propertySheet.getItems().addAll(buildConfigList());
 
         createButton.disableProperty().bind(Bindings.createBooleanBinding(() -> {
-                    if (locationName.getValue().isBlank()) return true;
-                    File file = new File(Launcher.PROJECTS_HOME, locationName.getValue());
-                    return file.exists();
-                })
-        );
+            String name = projectName.getValue();
+            name = asFriendlyText(name);
+
+            if (name.isBlank()) return true;
+            File file = new File(Launcher.PROJECTS_HOME, name);
+            return file.exists();
+        }, projectName));
     }
 
     @FXML
     private void onCreate() {
         Project project = new Project(
-                new File(Launcher.PROJECTS_HOME, locationName.getValue()),
+                new File(Launcher.PROJECTS_HOME, asFriendlyText(projectName.getValue())),
                 productID.getValue(),
                 comment.getValue(),
                 language.getValue()
@@ -77,16 +79,16 @@ public class ProjectCreationController {
     private ObservableList<PropertySheet.Item> buildConfigList() {
         ObservableList<PropertySheet.Item> items = FXCollections.observableArrayList();
 
-        locationName = new SimpleStringProperty("");
+        projectName = new SimpleStringProperty("");
         productID = new SimpleIntegerProperty(900);
         comment = new SimpleStringProperty("");
         language = new SimpleStringProperty("");
 
         items.add(new SimplePropertyItem(
-                "Location Name",
+                "Project Name",
                 "Mandatory",
-                "The name of the directory containing your project data. Usually this will be equal to your project's name",
-                locationName));
+                "The name of your project directory. There cannot be two projects with the same project directory.",
+                projectName));
 
         items.add(new SimpleNumberPropertyItem<>(
                 "Product ID",
@@ -114,10 +116,9 @@ public class ProjectCreationController {
 
     private static String asFriendlyText(String s) {
         return s.trim()
-                .replace(" ", "_")
                 .replace("/", "-")
                 .replace("\\", "-")
-                .replaceAll("[^a-zA-Z0-9_-]", "")
+                .replaceAll("[^a-zA-Z0-9_ -]", "")
                 .trim(); // Trim here too
     }
 }
