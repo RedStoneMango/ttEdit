@@ -31,6 +31,6 @@ public class Launcher {
         LogManager.logFileNameFunction(date -> "ttedit_" + DateTimeFormatter.ofPattern("yyyy-MM-dd").format(date));
         LogManager.disableLogFiles(true);
         LogManager.start();
-        System.out.println("Initialized log manager using the default configurations");
+        System.out.println("Initialized log manager using the default configuration");
     }
 }
