@@ -108,7 +108,6 @@ public class ProjectListController {
             throw new RuntimeException(e);
         }
         UXUtilities.applyStylesheet(scene);
-        UXUtilities.defineMinSize(primaryStage);
 
         primaryStage.setTitle(project.name());
         primaryStage.setScene(scene);
