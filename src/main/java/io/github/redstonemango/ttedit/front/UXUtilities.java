@@ -12,10 +12,7 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -56,6 +53,10 @@ public class UXUtilities {
 
     public static void applyStylesheet(Alert alert) {
         alert.getDialogPane().getStylesheets().add(styleSheet);
+    }
+
+    public static void applyStylesheet(TextInputDialog dialog) {
+        dialog.getDialogPane().getStylesheets().add(styleSheet);
     }
 
     public static void defineMinSize(Stage stage) {
