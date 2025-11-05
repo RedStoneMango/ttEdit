@@ -59,10 +59,17 @@ public class UXUtilities {
     }
 
     public static void defineMinSize(Stage stage) {
-        Platform.runLater(() -> {
+        defineMinSize(stage, true);
+    }
+
+    public static void defineMinSize(Stage stage, boolean runLater) {
+        Runnable r = () -> {
+            double decoration = stage.getHeight() - stage.getScene().getHeight();
             stage.setMinWidth(stage.getScene().getWidth());
-            stage.setMinHeight(stage.getScene().getHeight());
-        });
+            stage.setMinHeight(stage.getScene().getHeight() + decoration);
+        };
+        if (runLater) Platform.runLater(r);
+        else r.run();
     }
 
     public static void doOnceSceneLoads(Node node, Consumer<Scene> action) {

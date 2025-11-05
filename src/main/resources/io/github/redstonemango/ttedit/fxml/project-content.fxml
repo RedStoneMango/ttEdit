@@ -20,9 +20,9 @@
    <top>
       <HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="44.0" prefWidth="603.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox fx:id="projectTitle" alignment="CENTER">
+            <HBox fx:id="projectTitle" alignment="CENTER" onMouseClicked="#onProjectTitle">
                <children>
-                  <StackPane prefHeight="43.0" prefWidth="52.0">
+                  <StackPane mouseTransparent="true" prefHeight="43.0" prefWidth="52.0">
                      <children>
                         <Rectangle fx:id="iconBackground" arcHeight="15.0" arcWidth="15.0" fill="DODGERBLUE" height="41.0" stroke="TRANSPARENT" strokeType="INSIDE" width="41.0">
                            <StackPane.margin>
@@ -39,7 +39,7 @@
                         </Label>
                      </children>
                   </StackPane>
-                  <Label fx:id="nameLabel" text="Project Name">
+                  <Label fx:id="nameLabel" mouseTransparent="true" text="Project Name">
                      <font>
                         <Font size="15.0" />
                      </font>
@@ -154,7 +154,7 @@
                                        </VBox.margin>
                                     </HBox>
                                     <Separator layoutX="10.0" layoutY="184.0" prefWidth="200.0" />
-                                    <HBox fx:id="configureProjectControl" alignment="CENTER_LEFT" layoutX="20.0" layoutY="217.0" spacing="10.0">
+                                    <HBox fx:id="configureProjectControl" alignment="CENTER_LEFT" layoutX="20.0" layoutY="217.0" onMouseClicked="#onConfigure" spacing="10.0">
                                        <children>
                                           <Label contentDisplay="GRAPHIC_ONLY">
                                              <graphic>
@@ -171,7 +171,7 @@
                                           <Insets left="10.0" right="10.0" />
                                        </VBox.margin>
                                     </HBox>
-                                    <HBox fx:id="saveProjectControl" alignment="CENTER_LEFT" layoutX="20.0" layoutY="294.0" spacing="10.0">
+                                    <HBox fx:id="saveProjectControl" alignment="CENTER_LEFT" layoutX="20.0" layoutY="294.0" onMouseClicked="#onSave" spacing="10.0">
                                        <children>
                                           <Label contentDisplay="GRAPHIC_ONLY">
                                              <graphic>
