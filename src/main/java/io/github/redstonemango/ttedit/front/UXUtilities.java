@@ -310,6 +310,11 @@ public class UXUtilities {
                     selectedItems.add(cell.getItem());
                     lastSelectedIndex[0] = index;
                 }
+
+                cell.pseudoClassStateChanged(
+                        PseudoClass.getPseudoClass("selected"),
+                        selectedItems.contains(cell.getItem())
+                );
             });
 
             return cell;

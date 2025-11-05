@@ -2,22 +2,30 @@ package io.github.redstonemango.ttedit.front.controller;
 
 import io.github.redstonemango.ttedit.TtEdit;
 import io.github.redstonemango.ttedit.back.Project;
+import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import io.github.redstonemango.ttedit.front.UXUtilities;
+import io.github.redstonemango.ttedit.front.listEntries.ProjectElementListEntry;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import org.controlsfx.control.GridView;
 
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class ProjectContentController {
 
@@ -32,8 +40,16 @@ public class ProjectContentController {
     @FXML private HBox deleteItemControl;
     @FXML private HBox configureProjectControl;
     @FXML private HBox saveProjectControl;
+    @FXML private TextField filterField;
+    @FXML private GridView<ProjectElement> contentView;
 
     private ContextMenu cxtMenu;
+
+    private ObservableList<ProjectElement> selectedElements;
+    private final ObservableList<ProjectElement> elements = FXCollections.observableArrayList();
+    private final FilteredList<ProjectElement> filteredElements = new FilteredList<>(
+            new SortedList<>(elements, Comparator.comparing(ProjectElement::getName)),
+            _ -> true);
 
     @FXML
     private void initialize() {
@@ -51,6 +67,15 @@ public class ProjectContentController {
         iconText.setText(UXUtilities.determineAbbreviation(project.name()));
         iconBackground.setFill(UXUtilities.determineColor(project.name()));
 
+        filterField.textProperty().addListener((_, _, filter) ->
+                filteredElements.setPredicate(element ->
+                        element.getName().toLowerCase().contains(filter.toLowerCase()))
+        );
+        contentView.setItems(filteredElements);
+        contentView.setHorizontalCellSpacing(1.5);
+        contentView.setVerticalCellSpacing(1.5);
+        selectedElements = UXUtilities.applyCellFactoryAndSelection(contentView, ProjectElementListEntry::build);
+
         MenuItem configureItem = new MenuItem("Configure Project");
         configureItem.setOnAction(_ -> onConfigure());
         MenuItem saveItem = new MenuItem("Save Whole Project");
@@ -65,6 +90,22 @@ public class ProjectContentController {
                 new SeparatorMenuItem(),
                 closeItem
         );
+
+        editItemControl.disableProperty().bind(
+                Bindings.createBooleanBinding(
+                        () -> selectedElements.size() != 1,
+                        selectedElements
+                ));
+        cloneItemControl.disableProperty().bind(
+                Bindings.createBooleanBinding(
+                        () -> selectedElements.isEmpty(),
+                        selectedElements
+                ));
+        deleteItemControl.disableProperty().bind(
+                Bindings.createBooleanBinding(
+                        () -> selectedElements.isEmpty(),
+                        selectedElements
+                ));
     }
 
     @FXML
@@ -83,6 +124,22 @@ public class ProjectContentController {
     }
 
     @FXML
+    private void onAddScript() {
+        askName(name -> {
+            ProjectElement element = new ProjectElement(name, ProjectElement.Type.SCRIPT);
+            elements.add(element);
+        });
+    }
+
+    @FXML
+    private void onAddPage() {
+        askName(name -> {
+            ProjectElement element = new ProjectElement(name, ProjectElement.Type.PAGE);
+            elements.add(element);
+        });
+    }
+
+    @FXML
     private void onConfigure() {
 
     }
@@ -90,6 +147,31 @@ public class ProjectContentController {
     @FXML
     private void onSave() {
 
+    }
+
+    private void askName(Consumer<String> nameAction) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Create New Element");
+        dialog.setHeaderText("Please set a name for the new element");
+        dialog.setContentText("Name: ");
+        UXUtilities.applyStylesheet(dialog);
+        dialog.showAndWait();
+        if (dialog.getResult() != null) {
+            String basename = dialog.getResult();
+            String name = dialog.getResult();
+            int i = 1;
+            Set<String> existingNames = elements
+                    .stream()
+                    .map(ProjectElement::getName)
+                    .collect(Collectors.toSet());
+
+            while (existingNames.contains(name)) {
+                name = basename + "_" + i;
+                i++;
+            }
+
+            nameAction.accept(name);
+        }
     }
 
     private void close() {
