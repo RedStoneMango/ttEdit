@@ -82,6 +82,7 @@ public class ProjectIO {
                 File elementFile = new File(project.getElementDir(), elementName);
                 try {
                     ProjectElement element = mapper.readValue(elementFile, ProjectElement.class);
+                    element.initializeFields(elementName);
                     project.getElements().add(element);
                 } catch (IOException e) {
                     onException.accept(e);
