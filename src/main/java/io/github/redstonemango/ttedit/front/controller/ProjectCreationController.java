@@ -62,11 +62,8 @@ public class ProjectCreationController {
                 language.getValue()
         );
 
-        try {
-            ProjectIO.saveProjectGeneralConfig(project);
-        } catch (IOException e) {
-            UXUtilities.errorAlert("Unable to save general project config", e.getMessage());
-        }
+        ProjectIO.saveProject(project, e ->
+                UXUtilities.errorAlert("Unable to save general project config", e.getMessage()));
 
         onClose(); // TODO: Implement actual loading of project view
     }

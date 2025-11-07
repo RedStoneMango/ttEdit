@@ -89,12 +89,9 @@ public class ProjectListController {
 
     private void openProject(File file) {
         Project project;
-        try {
-            project = ProjectIO.loadProject(file);
-        } catch (IOException e) {
-            UXUtilities.errorAlert("Unable to load project", e.getMessage());
-            return;
-        }
+        project = ProjectIO.loadProject(file, e ->
+                UXUtilities.errorAlert("Unable to load project", e.getMessage()));
+        if (project == null) return; // Cancel if load fails
 
         Project.defineAsCurrentProject(project);
 
