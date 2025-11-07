@@ -11,11 +11,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -125,6 +128,7 @@ public class ProjectContentController {
 
     @FXML
     private void onAddScript() {
+        mouseExit(addScriptControl);
         askName(name -> {
             ProjectElement element = new ProjectElement(name, ProjectElement.Type.SCRIPT);
             elements.add(element);
@@ -133,6 +137,7 @@ public class ProjectContentController {
 
     @FXML
     private void onAddPage() {
+        mouseExit(addPageControl);
         askName(name -> {
             ProjectElement element = new ProjectElement(name, ProjectElement.Type.PAGE);
             elements.add(element);
@@ -147,6 +152,11 @@ public class ProjectContentController {
     @FXML
     private void onSave() {
 
+    }
+
+    private void mouseExit(Node node) {
+        if (node.getOnMouseExited() != null)
+            node.getOnMouseExited().handle(null); // Just call the handle function. Event is unused in this context
     }
 
     private void askName(Consumer<String> nameAction) {

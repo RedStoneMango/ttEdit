@@ -3,9 +3,14 @@ package io.github.redstonemango.ttedit.back;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.github.redstonemango.ttedit.Launcher;
+import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Project {
@@ -13,6 +18,8 @@ public class Project {
     private static Project currentProject;
 
     @JsonIgnore private File dir;
+    @JsonIgnore private Set<ProjectElement> elements;
+
     private int productID;
     private @Nullable String comment;
     private @Nullable String language;
@@ -29,10 +36,15 @@ public class Project {
     public void initializeFields(String filename) {
         dir = new File(Launcher.PROJECTS_HOME, filename);
         productID = Math.clamp(productID, 0, 999);
+        elements = new HashSet<>();
     }
 
     public File getDir() {
         return dir;
+    }
+
+    public File getElementDir() {
+        return new File(dir, "content");
     }
 
     public String name() {
@@ -61,6 +73,10 @@ public class Project {
 
     public void setLanguage(@Nullable String language) {
         this.language = language;
+    }
+
+    public Set<ProjectElement> getElements() {
+        return elements;
     }
 
     public static Project getCurrentProject() {
