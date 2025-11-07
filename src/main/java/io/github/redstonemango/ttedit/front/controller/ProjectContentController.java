@@ -85,9 +85,7 @@ public class ProjectContentController {
         MenuItem saveItem = new MenuItem("Save Whole Project");
         saveItem.setOnAction(_ -> onSave());
         MenuItem closeItem = new MenuItem("Close Project");
-        closeItem.setOnAction(_ -> {
-            Platform.runLater(this::close);
-        });
+        closeItem.setOnAction(_ -> close());
 
         cxtMenu = new ContextMenu(
                 configureItem, saveItem,
