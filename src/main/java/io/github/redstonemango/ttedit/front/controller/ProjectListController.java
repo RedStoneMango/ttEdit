@@ -73,9 +73,11 @@ public class ProjectListController {
         Scene scene;
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                "/io/github/redstonemango/ttedit/fxml/project-creation.fxml"));
+                "/io/github/redstonemango/ttedit/fxml/project-configuration.fxml"));
         try {
             scene = new Scene(loader.load());
+            ProjectConfigurationController controller = loader.getController();
+            controller.init(null); // Create new project
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -84,7 +86,6 @@ public class ProjectListController {
 
         stage.setScene(scene);
         stage.show();
-
     }
 
     private void openProject(File file) {
