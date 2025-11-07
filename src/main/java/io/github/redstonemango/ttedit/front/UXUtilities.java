@@ -216,6 +216,7 @@ public class UXUtilities {
             transition.play();
         });
         node.setOnMouseExited(_ -> {
+            if (node.getOpacity() == (inverted ? 0.45 : 1)) return; // Prevent re-play if unnecessary
             FadeTransition transition = new FadeTransition(Duration.millis(250), node);
             transition.setFromValue(inverted ? 1 : 0.45);
             transition.setToValue(inverted ? 0.45 : 1);
