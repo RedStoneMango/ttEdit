@@ -2,6 +2,7 @@ package io.github.redstonemango.ttedit.front.controller;
 
 import io.github.redstonemango.ttedit.TtEdit;
 import io.github.redstonemango.ttedit.back.Project;
+import io.github.redstonemango.ttedit.back.ProjectIO;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import io.github.redstonemango.ttedit.front.UXUtilities;
 import io.github.redstonemango.ttedit.front.listEntries.ProjectElementListEntry;
@@ -11,14 +12,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -27,6 +26,7 @@ import org.controlsfx.control.GridView;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -78,6 +78,7 @@ public class ProjectContentController {
         contentView.setHorizontalCellSpacing(1.5);
         contentView.setVerticalCellSpacing(1.5);
         selectedElements = UXUtilities.applyCellFactoryAndSelection(contentView, ProjectElementListEntry::build);
+        elements.addAll(Project.getCurrentProject().getElements());
 
         MenuItem configureItem = new MenuItem("Configure Project");
         configureItem.setOnAction(_ -> onConfigure());
@@ -132,6 +133,12 @@ public class ProjectContentController {
         askName(name -> {
             ProjectElement element = new ProjectElement(name, ProjectElement.Type.SCRIPT);
             elements.add(element);
+
+            try {
+                ProjectIO.saveProjectElement(element, Project.getCurrentProject());
+            } catch (IOException e) {
+                UXUtilities.errorAlert("Unable to save '" + element.getName() + "'", e.getMessage());
+            }
         });
     }
 
@@ -141,6 +148,12 @@ public class ProjectContentController {
         askName(name -> {
             ProjectElement element = new ProjectElement(name, ProjectElement.Type.PAGE);
             elements.add(element);
+
+            try {
+                ProjectIO.saveProjectElement(element, Project.getCurrentProject());
+            } catch (IOException e) {
+                UXUtilities.errorAlert("Unable to save '" + element.getName() + "'", e.getMessage());
+            }
         });
     }
 
@@ -151,7 +164,17 @@ public class ProjectContentController {
 
     @FXML
     private void onSave() {
+        mouseExit(saveProjectControl);
 
+        AtomicBoolean success = new AtomicBoolean(true);
+        ProjectIO.saveProject(Project.getCurrentProject(), e -> {
+            success.set(false);
+            UXUtilities.errorAlert("Error saving project", e.getMessage());
+        });
+
+        if (success.get()) {
+            UXUtilities.informationAlert("Save successful", "Your whole project has been successfully saved!");
+        }
     }
 
     private void mouseExit(Node node) {
