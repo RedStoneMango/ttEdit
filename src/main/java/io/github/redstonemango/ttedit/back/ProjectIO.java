@@ -3,6 +3,7 @@ package io.github.redstonemango.ttedit.back;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.redstonemango.mangoutils.MangoIO;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 
 import java.io.File;
@@ -52,6 +53,10 @@ public class ProjectIO {
         if (file.exists()) {
             Files.delete(file.toPath()); // Better error handling using NIO
         }
+    }
+
+    public static void deleteProject(Project project) throws IOException {
+        MangoIO.deleteDirectoryRecursively(project.getDir());
     }
 
     public static void saveProject(Project project, Consumer<Exception> onException) {
