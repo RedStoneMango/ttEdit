@@ -19,7 +19,7 @@ public class ProjectIO {
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
     }
 
-    private static void saveProjectGeneralConfig(Project project) throws IOException {
+    public static void saveProjectGeneralConfig(Project project) throws IOException {
         File generalConfigFile = new File(project.getDir(), "general.json");
         if (!generalConfigFile.exists()) {
             generalConfigFile.getParentFile().mkdir(); // No need for complex mkdirs: All parent dirs already exist
