@@ -8,7 +8,7 @@
 <?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.PropertySheet?>
 
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="392.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.redstonemango.ttedit.front.controller.ProjectCreationController">
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="392.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.redstonemango.ttedit.front.controller.ProjectConfigurationController">
    <children>
       <Label text="Create New Project">
          <VBox.margin>
@@ -22,7 +22,7 @@
       <HBox alignment="CENTER_RIGHT" prefHeight="57.0" prefWidth="600.0" spacing="20.0">
          <children>
             <Button mnemonicParsing="false" onAction="#onClose" text="Cancel" />
-            <Button fx:id="createButton" disable="true" layoutX="281.0" layoutY="26.0" mnemonicParsing="false" onAction="#onCreate" text="Create">
+            <Button fx:id="actionButton" disable="true" layoutX="281.0" layoutY="26.0" mnemonicParsing="false" onAction="#onAction" text="Create">
                <HBox.margin>
                   <Insets right="20.0" />
                </HBox.margin>

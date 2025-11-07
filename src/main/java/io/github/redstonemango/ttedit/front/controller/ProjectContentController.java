@@ -20,6 +20,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.GridView;
 
@@ -157,7 +158,29 @@ public class ProjectContentController {
 
     @FXML
     private void onConfigure() {
+        mouseExit(configureProjectControl);
 
+        Project project = Project.getCurrentProject();
+        Stage stage = new Stage();
+        stage.setTitle("Configure '" + project.name() + "'");
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(contentView.getScene().getWindow());
+        Scene scene;
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                "/io/github/redstonemango/ttedit/fxml/project-configuration.fxml"));
+        try {
+            scene = new Scene(loader.load());
+            ProjectConfigurationController controller = loader.getController();
+            controller.init(project);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        UXUtilities.applyStylesheet(scene);
+        UXUtilities.defineMinSize(stage);
+
+        stage.setScene(scene);
+        stage.show();
     }
 
     @FXML

@@ -17,33 +17,42 @@ import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import org.controlsfx.control.PropertySheet;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
 
-public class ProjectCreationController {
+public class ProjectConfigurationController {
 
     @FXML private PropertySheet propertySheet;
-    @FXML private Button createButton;
+    @FXML private Button actionButton;
 
     private SimpleStringProperty projectName;
     private SimpleIntegerProperty productID;
     private SimpleStringProperty comment;
     private SimpleStringProperty language;
+    
+    private Project project;
+    private boolean createNew;
 
-    @FXML
-    private void initialize() {
-        UXUtilities.doOnceSceneLoads(propertySheet, scene ->
-            scene.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-                if (e.getCode() == KeyCode.ESCAPE)
-                    onClose();
-            })
-        );
+    /**
+     * @param project The project to configure or {@code null} to show the 'project creation' dialog
+     */
+    protected void init(@Nullable Project project) {
+        this.project = project;
+        createNew = project == null;
+
+        propertySheet.getScene().addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.ESCAPE)
+                onClose();
+        });
 
         UXUtilities.applyPropertyEditorFactory(propertySheet);
         propertySheet.getItems().addAll(buildConfigList());
 
-        createButton.disableProperty().bind(Bindings.createBooleanBinding(() -> {
+        actionButton.disableProperty().bind(Bindings.createBooleanBinding(() -> {
+            if (!createNew) return false;
+
             String name = projectName.getValue();
             name = asFriendlyText(name);
 
@@ -51,21 +60,37 @@ public class ProjectCreationController {
             File file = new File(Launcher.PROJECTS_HOME, name);
             return file.exists();
         }, projectName));
+        actionButton.setText(createNew ? "Create" : "Done");
     }
 
     @FXML
-    private void onCreate() {
-        Project project = new Project(
-                new File(Launcher.PROJECTS_HOME, asFriendlyText(projectName.getValue())),
-                productID.getValue(),
-                comment.getValue(),
-                language.getValue()
-        );
+    private void onAction() {
+        String friendlyName = asFriendlyText(projectName.getValue());
+        if (createNew) {
+            Project project = new Project(
+                    new File(Launcher.PROJECTS_HOME, friendlyName),
+                    productID.getValue(),
+                    comment.getValue(),
+                    language.getValue()
+            );
+            project.initializeFields(friendlyName);
 
-        ProjectIO.saveProject(project, e ->
-                UXUtilities.errorAlert("Unable to save general project config", e.getMessage()));
+            ProjectIO.saveProject(project, e ->
+                    UXUtilities.errorAlert("Unable to save general project config", e.getMessage()));
 
-        onClose(); // TODO: Implement actual loading of project view
+            onClose(); // TODO: Implement actual loading of project view
+            return;
+        }
+
+        project.setProductID(productID.getValue());
+        project.setComment(comment.getValue());
+        project.setLanguage(language.getValue());
+        try {
+            ProjectIO.saveProjectGeneralConfig(project);
+            onClose();
+        } catch (IOException e) {
+            UXUtilities.errorAlert("Error saving project configuration", e.getMessage());
+        }
     }
 
     @FXML
@@ -76,16 +101,17 @@ public class ProjectCreationController {
     private ObservableList<PropertySheet.Item> buildConfigList() {
         ObservableList<PropertySheet.Item> items = FXCollections.observableArrayList();
 
-        projectName = new SimpleStringProperty("");
-        productID = new SimpleIntegerProperty(900);
-        comment = new SimpleStringProperty("");
-        language = new SimpleStringProperty("");
+        projectName = new SimpleStringProperty(project != null ? project.name() : "");
+        productID = new SimpleIntegerProperty(project != null ? project.getProductID() : 900);
+        comment = new SimpleStringProperty(project != null ? project.getComment() : "");
+        language = new SimpleStringProperty(project != null ? project.getLanguage() : "");
 
         items.add(new SimplePropertyItem(
                 "Project Name",
                 "Mandatory",
                 "The name of your project directory. There cannot be two projects with the same project directory.",
-                projectName));
+                projectName,
+                !createNew));
 
         items.add(new SimpleNumberPropertyItem<>(
                 "Product ID",

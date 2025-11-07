@@ -24,6 +24,7 @@ import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
 import org.controlsfx.control.PropertySheet;
 import org.controlsfx.property.editor.DefaultPropertyEditorFactory;
+import org.controlsfx.property.editor.Editors;
 import org.controlsfx.property.editor.PropertyEditor;
 
 import java.util.Set;
@@ -191,7 +192,7 @@ public class UXUtilities {
                 editor = new LinkedFieldPropertyEditor(item, linked.getSource(), linked.getConversionCallback());
             }
             else if (item instanceof SimplePropertyItem) {
-                editor = defaultFactory.call(item);
+                editor = Editors.createTextEditor(item);
             }
 
             if (editor != null) {
