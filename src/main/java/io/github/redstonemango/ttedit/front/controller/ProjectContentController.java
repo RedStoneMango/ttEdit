@@ -165,6 +165,29 @@ public class ProjectContentController {
     }
 
     @FXML
+    private void onDelete() {
+        mouseExit(addPageControl);
+
+        String name = selectedElements.size() == 1
+                ? "'" + selectedElements.getFirst().getName() + "'"
+                : selectedElements.size() + " elements";
+
+        UXUtilities.confirmationAlert(
+                "Do you really want to delete " + name + "?",
+                name + " will be lost forever",
+                () -> selectedElements.removeIf(element -> {
+                    try {
+                        ProjectIO.deleteProjectElement(element, Project.getCurrentProject());
+                        elements.remove(element);
+                        return true; // Remove from 'selected elements' list
+                    } catch (IOException e) {
+                        UXUtilities.errorAlert("Error deleting '" + element.getName() + "'", e.getMessage());
+                        return false; // Do not remove from 'selected elements' list because action failed
+                    }
+                }));
+    }
+
+    @FXML
     private void onConfigure() {
         mouseExit(configureProjectControl);
 
