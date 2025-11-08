@@ -25,8 +25,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.GridView;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -185,6 +188,44 @@ public class ProjectContentController {
                         return false; // Do not remove from 'selected elements' list because action failed
                     }
                 }));
+    }
+
+    @FXML
+    private void onClone() {
+        Set<ProjectElement> newElements = new HashSet<>();
+        selectedElements.forEach(element -> {
+            String newName = unusedName(element.getName());
+            Project project = Project.getCurrentProject();
+
+            File source = new File(project.getElementDir(), element.getName() + element.getType().fileSuffix());
+            File target = new File(project.getElementDir(), newName + element.getType().fileSuffix());
+            if (target.exists()) {
+                // This is not expected to ever happen
+                UXUtilities.errorAlert(
+                        "File '" + target.getName() + "' already exists",
+                        "Failed to clone element. This should not happen!"
+                        );
+                return;
+            }
+
+            try {
+                Files.copy(source.toPath(), target.toPath()); // Better error handling with NIO
+            } catch (IOException e) {
+                UXUtilities.errorAlert("Error copying element file '" + source.getName() + "'", e.getMessage());
+                return;
+            }
+
+            try {
+                newElements.add(
+                        ProjectIO.loadProjectElement(target)
+                );
+            } catch (IOException e) {
+                UXUtilities.errorAlert("Error parsing new element file '" + source.getName() + "'", e.getMessage());
+            }
+        });
+
+        elements.addAll(newElements);
+        selectedElements.setAll(newElements);
     }
 
     @FXML
