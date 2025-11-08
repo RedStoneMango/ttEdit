@@ -242,21 +242,23 @@ public class ProjectContentController {
         UXUtilities.applyStylesheet(dialog);
         dialog.showAndWait();
         if (dialog.getResult() != null) {
-            String basename = dialog.getResult();
-            String name = dialog.getResult();
-            int i = 1;
-            Set<String> existingNames = elements
-                    .stream()
-                    .map(ProjectElement::getName)
-                    .collect(Collectors.toSet());
-
-            while (existingNames.contains(name)) {
-                name = basename + "_" + i;
-                i++;
-            }
-
-            nameAction.accept(name);
+            nameAction.accept(unusedName(dialog.getResult()));
         }
+    }
+
+    private String unusedName(String name) {
+        String basename = name;
+        int i = 1;
+        Set<String> existingNames = elements
+                .stream()
+                .map(ProjectElement::getName)
+                .collect(Collectors.toSet());
+
+        while (existingNames.contains(name)) {
+            name = basename + "_" + i;
+            i++;
+        }
+        return name;
     }
 
     private void close() {
