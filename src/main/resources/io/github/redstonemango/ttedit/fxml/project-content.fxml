@@ -148,7 +148,7 @@
                                           <Insets left="10.0" right="10.0" />
                                        </VBox.margin>
                                     </HBox>
-                                    <HBox fx:id="deleteItemControl" alignment="CENTER_LEFT" disable="true" layoutX="21.0" layoutY="108.0" spacing="10.0">
+                                    <HBox fx:id="deleteItemControl" alignment="CENTER_LEFT" disable="true" layoutX="21.0" layoutY="108.0" onMouseClicked="#onDelete" spacing="10.0">
                                        <children>
                                           <Label contentDisplay="GRAPHIC_ONLY">
                                              <graphic>
