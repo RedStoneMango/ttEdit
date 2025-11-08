@@ -1,5 +1,6 @@
 package io.github.redstonemango.ttedit.front.controller;
 
+import io.github.redstonemango.mangoutils.OperatingSystem;
 import io.github.redstonemango.ttedit.TtEdit;
 import io.github.redstonemango.ttedit.back.Project;
 import io.github.redstonemango.ttedit.back.ProjectIO;
@@ -85,11 +86,14 @@ public class ProjectContentController {
         configureItem.setOnAction(_ -> onConfigure());
         MenuItem saveItem = new MenuItem("Save Whole Project");
         saveItem.setOnAction(_ -> onSave());
+        MenuItem folderItem = new MenuItem("Open Project Folder");
+        folderItem.setOnAction(_ ->
+                OperatingSystem.loadCurrentOS().open(Project.getCurrentProject().getDir()));
         MenuItem closeItem = new MenuItem("Close Project");
         closeItem.setOnAction(_ -> close());
 
         cxtMenu = new ContextMenu(
-                configureItem, saveItem,
+                configureItem, saveItem, folderItem,
                 new SeparatorMenuItem(),
                 closeItem
         );
