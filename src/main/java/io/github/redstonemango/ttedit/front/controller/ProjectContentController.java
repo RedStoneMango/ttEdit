@@ -135,10 +135,12 @@ public class ProjectContentController {
         mouseExit(addScriptControl);
         askName(name -> {
             ProjectElement element = new ProjectElement(name, ProjectElement.Type.SCRIPT);
-            elements.add(element);
 
             try {
                 ProjectIO.saveProjectElement(element, Project.getCurrentProject());
+                elements.add(element);
+                selectedElements.clear();
+                selectedElements.add(element);
             } catch (IOException e) {
                 UXUtilities.errorAlert("Unable to save '" + element.getName() + "'", e.getMessage());
             }
@@ -150,10 +152,12 @@ public class ProjectContentController {
         mouseExit(addPageControl);
         askName(name -> {
             ProjectElement element = new ProjectElement(name, ProjectElement.Type.PAGE);
-            elements.add(element);
 
             try {
                 ProjectIO.saveProjectElement(element, Project.getCurrentProject());
+                elements.add(element);
+                selectedElements.clear();
+                selectedElements.add(element);
             } catch (IOException e) {
                 UXUtilities.errorAlert("Unable to save '" + element.getName() + "'", e.getMessage());
             }
