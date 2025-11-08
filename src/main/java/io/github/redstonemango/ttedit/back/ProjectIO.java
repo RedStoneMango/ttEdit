@@ -55,8 +55,12 @@ public class ProjectIO {
         }
     }
 
+    public static void deleteProject(File projectFile) throws IOException {
+        MangoIO.deleteDirectoryRecursively(projectFile);
+    }
+
     public static void deleteProject(Project project) throws IOException {
-        MangoIO.deleteDirectoryRecursively(project.getDir());
+        deleteProject(project.getDir());
     }
 
     public static void saveProject(Project project, Consumer<Exception> onException) {

@@ -118,7 +118,7 @@ public class ProjectListController {
                 "Do you really want to delete this project? All data will be lost forever.",
                 () -> {
                     try {
-                        MangoIO.deleteDirectoryRecursively(file);
+                        ProjectIO.deleteProject(file);
                     } catch (IOException e) {
                         UXUtilities.errorAlert(
                                 "Error deleting project '" + file.getName() + "'",
