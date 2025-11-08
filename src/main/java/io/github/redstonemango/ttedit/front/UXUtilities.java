@@ -118,7 +118,7 @@ public class UXUtilities {
     public static void confirmationAlert(String heading, String content, Runnable onAction) {
         runOnApplicationThread(() -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Please confirm");
+            alert.setTitle("Confirmation Required");
             alert.setHeaderText(heading);
             alert.setContentText(content);
             applyStylesheet(alert);
