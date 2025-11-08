@@ -17,7 +17,7 @@
 <?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.GridView?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="680.0" prefWidth="603.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.redstonemango.ttedit.front.controller.ProjectContentController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="680.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.redstonemango.ttedit.front.controller.ProjectContentController">
    <top>
       <HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="44.0" prefWidth="603.0" BorderPane.alignment="CENTER">
          <children>
