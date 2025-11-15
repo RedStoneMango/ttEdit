@@ -261,7 +261,8 @@ public class UXUtilities {
         return COLORS[hash & 0x0F]; // lowest 4 bits → 0..15
     }
 
-    public static <T> ObservableList<T> applyCellFactoryAndSelection(GridView<T> gridView, Function<T, Node> nodeFunction) {
+    public static <T> ObservableList<T> applyCellFactoryAndSelection(GridView<T> gridView, Function<T, Node> nodeFunction,
+                                                                     Consumer<T> doubleClicked) {
         ObservableList<T> selectedItems = FXCollections.observableArrayList();
 
         final int[] lastSelectedIndex = {-1};
@@ -317,6 +318,10 @@ public class UXUtilities {
                         PseudoClass.getPseudoClass("selected"),
                         selectedItems.contains(cell.getItem())
                 );
+
+                if (event.getClickCount() >= 2) {
+                    doubleClicked.accept(cell.getItem());
+                }
             });
 
             return cell;
