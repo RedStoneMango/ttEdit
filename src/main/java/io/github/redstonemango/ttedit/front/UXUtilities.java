@@ -157,6 +157,19 @@ public class UXUtilities {
                 };
             }
         });
+        comboBox.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(BranchCondition.Comparison item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    setGraphic(null);
+                    setText(item.getLiteral());
+                }
+            }
+        });
     }
 
     public static <T> void applyCustomCellFactory(ListView<T> listView, Function<T, Node> nodeFunction,
