@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.github.redstonemango.mangoutils.MangoIO;
-import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 
 import java.io.File;
 import java.io.IOException;

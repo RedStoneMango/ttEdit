@@ -1,12 +1,11 @@
 package io.github.redstonemango.ttedit.front.listEntries;
 
-import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
+import io.github.redstonemango.ttedit.back.ProjectElement;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import org.controlsfx.control.GridView;
 
 import java.io.IOException;
 
