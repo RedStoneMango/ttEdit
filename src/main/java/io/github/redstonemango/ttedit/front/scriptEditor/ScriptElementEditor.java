@@ -1,5 +1,6 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
+import io.github.redstonemango.ttedit.front.IElementEditable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -13,15 +14,17 @@ import javafx.scene.layout.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ScriptEditor extends HBox {
+public class ScriptElementEditor extends HBox implements IElementEditable {
 
     public static final Image BIN_CLOSED = new Image(
-            ScriptEditor.class.getResource("/io/github/redstonemango/ttedit/image/bin_closed.png").toExternalForm());
+            ScriptElementEditor.class.getResource("/io/github/redstonemango/ttedit/image/bin_closed.png").toExternalForm());
     public static final Image BIN_OPEN = new Image(
-            ScriptEditor.class.getResource("/io/github/redstonemango/ttedit/image/bin_open.png").toExternalForm());
+            ScriptElementEditor.class.getResource("/io/github/redstonemango/ttedit/image/bin_open.png").toExternalForm());
 
-    public ScriptEditor() {
-        ObservableList<Branch> branches = FXCollections.observableArrayList();
+    private final ObservableList<Branch> branches;
+
+    public ScriptElementEditor() {
+        branches = FXCollections.observableArrayList();
 
         AnchorPane editorPane = new AnchorPane();
         ScrollPane editorScroll = new ScrollPane(editorPane);
@@ -50,6 +53,10 @@ public class ScriptEditor extends HBox {
         controlsBox.getChildren().add(JScriptActionElement.createPreview(editorPane, editorScroll, deleteIcon, branches));
 
         getChildren().addAll(controlsPane, editorArea);
+    }
+
+    public ObservableList<Branch> getBranches() {
+        return branches;
     }
 
     public record Branch(HeadScriptElement head, List<AbstractScriptActionElement> elements) {

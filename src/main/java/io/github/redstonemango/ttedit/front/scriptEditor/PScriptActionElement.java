@@ -1,5 +1,6 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
+import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -13,14 +14,16 @@ import org.jetbrains.annotations.Nullable;
 public class PScriptActionElement extends AbstractScriptActionElement {
 
     public PScriptActionElement(boolean preview, Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon, @Nullable AbstractScriptElement parent,
-                                ObservableList<ScriptEditor.Branch> branches) {
+                                ObservableList<ScriptElementEditor.Branch> branches) {
         super(preview, editorPane, editorScroll, deleteIcon, parent, false, branches);
     }
 
     public static PScriptActionElement createPreview(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                                     ObservableList<ScriptEditor.Branch> branches) {
+                                                     ObservableList<ScriptElementEditor.Branch> branches) {
         return new PScriptActionElement(true, editorPane, editorScroll, deleteIcon, null, branches);
     }
+
+    private String sound = "";
 
     @Override
     public void populate(HBox contentBox, boolean preview) {
@@ -31,6 +34,7 @@ public class PScriptActionElement extends AbstractScriptActionElement {
         f.setPrefWidth(140);
         f.setMouseTransparent(preview);
         f.setFocusTraversable(false);
+        f.textProperty().addListener((_, _, val) -> sound = val);
         applyColoring(f);
         contentBox.getChildren().addAll(l, f);
     }
@@ -38,7 +42,7 @@ public class PScriptActionElement extends AbstractScriptActionElement {
     @Override
     public AbstractScriptElement createDefault(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
                                                @Nullable AbstractScriptElement parent,
-                                               ObservableList<ScriptEditor.Branch> branches) {
+                                               ObservableList<ScriptElementEditor.Branch> branches) {
         return new PScriptActionElement(false, editorPane, editorScroll, deleteIcon, parent, branches);
     }
 
@@ -48,8 +52,14 @@ public class PScriptActionElement extends AbstractScriptActionElement {
     }
 
     @Override
-    public String build() {
-        return "";
+    public ScriptData build() {
+        ScriptData data = new ScriptData();
+        data.setType(ScriptData.Type.PLAY);
+        data.setSound(sound);
+        if (hasElementChild()) {
+            data.setChild(getElementChild().build());
+        }
+        return data;
     }
 
     @Override
