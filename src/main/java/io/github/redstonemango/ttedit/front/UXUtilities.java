@@ -141,15 +141,32 @@ public class UXUtilities {
         applyCustomCellFactory(listView, nodeFunction, _ -> {}, new Insets(0));
     }
 
+    public static <T> void applyCustomCellFactory(ComboBox<T> comboBox, Function<T, Node> nodeFunction) {
+        comboBox.setCellFactory(new Callback<>() {
+            @Override
+            public ListCell<T> call(ListView<T> lv) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(T item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            setGraphic(nodeFunction.apply(item));
+                        }
+                    }
+                };
+            }
+        });
+    }
+
     public static <T> void applyCustomCellFactory(ListView<T> listView, Function<T, Node> nodeFunction,
                                                       Consumer<T> onDoubleClick, Insets padding) {
         listView.setCellFactory(new Callback<>() {
             @Override
             public ListCell<T> call(ListView<T> lv) {
                 return new ListCell<>() {
-
-                    private long lastClick = -1;
-
                     @Override
                     protected void updateItem(T item, boolean empty) {
                         super.updateItem(item, empty);
@@ -159,9 +176,10 @@ public class UXUtilities {
                         } else {
                             setGraphic(nodeFunction.apply(item));
                             setPadding(padding);
-                            setOnMouseClicked(_ -> {
-                                if (System.currentTimeMillis() - lastClick <= 250) onDoubleClick.accept(getItem());
-                                lastClick = System.currentTimeMillis();
+                            setOnMouseClicked(e -> {
+                                if (e.getClickCount() >= 2) {
+                                    onDoubleClick.accept(getItem());
+                                }
                             });
                         }
                     }
