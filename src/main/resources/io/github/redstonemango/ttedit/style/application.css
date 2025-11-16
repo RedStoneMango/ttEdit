@@ -33,7 +33,7 @@
     -fx-border-width: 1px;
 }
 
-.scroll-bar{
+.scroll-bar {
     -fx-background-color: derive(-fx-base,45%);
 }
 
@@ -50,6 +50,14 @@
 
 .list-cell:odd {
     -fx-control-inner-background: derive(-fx-base, 20%);
+}
+
+.combo-box .list-cell {
+    -fx-control-inner-background: derive(-fx-base, 30%);
+    -fx-text-fill: white;
+}
+.combo-box .list-cell:hover {
+    -fx-control-inner-background: derive(-fx-base, 40%);
 }
 
 .list-cell:empty,
