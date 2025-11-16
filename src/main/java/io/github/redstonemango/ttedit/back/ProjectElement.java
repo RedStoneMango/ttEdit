@@ -1,10 +1,7 @@
-package io.github.redstonemango.ttedit.back.projectElement;
+package io.github.redstonemango.ttedit.back;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.github.redstonemango.ttedit.back.Project;
 import javafx.scene.image.Image;
-
-import java.io.File;
 
 public class ProjectElement {
 

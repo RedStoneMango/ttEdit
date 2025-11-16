@@ -3,7 +3,6 @@ package io.github.redstonemango.ttedit.back;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.github.redstonemango.ttedit.Launcher;
-import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
