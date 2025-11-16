@@ -2,6 +2,7 @@ package io.github.redstonemango.ttedit.front.controller;
 
 import io.github.redstonemango.mangoutils.OperatingSystem;
 import io.github.redstonemango.ttedit.TtEdit;
+import io.github.redstonemango.ttedit.front.ElementTab;
 import io.github.redstonemango.ttedit.back.Project;
 import io.github.redstonemango.ttedit.back.ProjectIO;
 import io.github.redstonemango.ttedit.back.ProjectElement;
@@ -18,6 +19,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
@@ -44,14 +47,17 @@ public class ProjectContentController {
     @FXML private HBox addScriptControl;
     @FXML private HBox addPageControl;
     @FXML private HBox editItemControl;
+    @FXML private HBox renameItemControl;
     @FXML private HBox cloneItemControl;
     @FXML private HBox deleteItemControl;
     @FXML private HBox configureProjectControl;
     @FXML private HBox saveProjectControl;
     @FXML private TextField filterField;
     @FXML private GridView<ProjectElement> contentView;
+    @FXML private TabPane tabPane;
 
     private ContextMenu cxtMenu;
+    private final ObservableList<ElementTab> tabs = FXCollections.observableArrayList();
 
     private ObservableList<ProjectElement> selectedElements;
     private final ObservableList<ProjectElement> elements = FXCollections.observableArrayList();
@@ -65,6 +71,7 @@ public class ProjectContentController {
         UXUtilities.registerHoverAnimation(addScriptControl);
         UXUtilities.registerHoverAnimation(addPageControl);
         UXUtilities.registerHoverAnimation(editItemControl);
+        UXUtilities.registerHoverAnimation(renameItemControl);
         UXUtilities.registerHoverAnimation(cloneItemControl);
         UXUtilities.registerHoverAnimation(deleteItemControl);
         UXUtilities.registerHoverAnimation(configureProjectControl);
@@ -82,8 +89,39 @@ public class ProjectContentController {
         contentView.setItems(filteredElements);
         contentView.setHorizontalCellSpacing(1.5);
         contentView.setVerticalCellSpacing(1.5);
-        selectedElements = UXUtilities.applyCellFactoryAndSelection(contentView, ProjectElementListEntry::build);
+        contentView.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            if (e.getCode() == KeyCode.ENTER) {
+                onEdit();
+            }
+        });
+        selectedElements = UXUtilities.applyCellFactoryAndSelection(contentView, ProjectElementListEntry::build, cell -> {
+            if (!selectedElements.isEmpty()) selectedElements.clear();
+            selectedElements.add(cell);
+            onEdit();
+        });
         elements.addAll(Project.getCurrentProject().getElements());
+
+        tabs.addListener((ListChangeListener<? super ElementTab>) l -> {
+            while (l.next()) {
+                if (l.wasAdded()) {
+                    tabPane.getTabs().addAll(l.getAddedSubList());
+                }
+                if (l.wasRemoved()) {
+                    tabPane.getTabs().removeAll(l.getRemoved());
+                }
+            }
+        });
+        tabPane.getTabs().addListener((ListChangeListener<? super Tab>) l -> {
+            while (l.next()) {
+                if (l.wasRemoved()) {
+                    l.getRemoved().forEach(tab -> {
+                        if (tab instanceof ElementTab elementTab) {
+                            tabs.remove(elementTab);
+                        }
+                    });
+                }
+            }
+        });
 
         MenuItem configureItem = new MenuItem("Configure Project");
         configureItem.setOnAction(_ -> onConfigure());
@@ -170,6 +208,18 @@ public class ProjectContentController {
                 UXUtilities.errorAlert("Unable to save '" + element.getName() + "'", e.getMessage());
             }
         });
+    }
+
+    @FXML
+    private void onEdit() {
+        if (selectedElements.size() != 1) return; // Just to be safe
+        ProjectElement element = selectedElements.getFirst();
+        ElementTab tab = new ElementTab(element);
+
+        if (!tabs.contains(tab)) {
+            tabs.add(tab);
+        }
+        tabPane.getSelectionModel().select(tab);
     }
 
     @FXML
