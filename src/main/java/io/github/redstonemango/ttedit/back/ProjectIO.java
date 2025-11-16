@@ -2,9 +2,13 @@ package io.github.redstonemango.ttedit.back;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.github.redstonemango.mangoutils.MangoIO;
+import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
+import io.github.redstonemango.ttedit.back.projectElement.ProjectLoadException;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,10 +18,12 @@ import java.util.function.Consumer;
 public class ProjectIO {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final DefaultPrettyPrinter prettyPrinter = new DefaultPrettyPrinter();
     static {
-        objectMapper.setVisibility(PropertyAccessor.    ALL, JsonAutoDetect.Visibility.NONE);
+        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        prettyPrinter.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
     }
 
     public static void saveProjectGeneralConfig(Project project) throws IOException {
@@ -27,7 +33,7 @@ public class ProjectIO {
             generalConfigFile.createNewFile();
         }
 
-        objectMapper.writerWithDefaultPrettyPrinter()
+        objectMapper.writer(prettyPrinter)
                 .writeValue(generalConfigFile, project);
     }
 
@@ -39,7 +45,7 @@ public class ProjectIO {
         File file = new File(owner.getElementDir(),
                 element.getName() + element.getType().fileSuffix());
 
-        objectMapper.writerWithDefaultPrettyPrinter()
+        objectMapper.writer(prettyPrinter)
                 .writeValue(file, element);
     }
 
@@ -99,14 +105,14 @@ public class ProjectIO {
                     project.getElements().add(
                             loadProjectElement(elementFile)
                     );
-                } catch (IOException e) {
+                } catch (IOException | ProjectLoadException e) {
                     onException.accept(e);
                 }
             }
         }
     }
 
-    public static ProjectElement loadProjectElement(File elementFile) throws IOException {
+    public static ProjectElement loadProjectElement(File elementFile) throws IOException, ProjectLoadException {
         ProjectElement element = objectMapper.readValue(elementFile, ProjectElement.class);
         element.initializeFields(elementFile.getName());
         return element;
