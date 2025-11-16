@@ -1,6 +1,11 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
+import io.github.redstonemango.mangoutils.tuple.Tuple2;
+import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
+import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
 import io.github.redstonemango.ttedit.front.IElementEditable;
+import io.github.redstonemango.ttedit.front.UXUtilities;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -10,9 +15,12 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ScriptElementEditor extends HBox implements IElementEditable {
 
@@ -23,7 +31,9 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
 
     private final ObservableList<Branch> branches;
 
-    public ScriptElementEditor() {
+    public ScriptElementEditor(ProjectElement element) {
+        if (element.getType() != ProjectElement.Type.SCRIPT) throw new IllegalArgumentException("ProjectElement has to be a script");
+
         branches = FXCollections.observableArrayList();
 
         AnchorPane editorPane = new AnchorPane();
@@ -53,6 +63,60 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
         controlsBox.getChildren().add(JScriptActionElement.createPreview(editorPane, editorScroll, deleteIcon, branches));
 
         getChildren().addAll(controlsPane, editorArea);
+
+        double currX = 10; // Default padding
+        Set<HeadScriptElement> heads = new HashSet<>();
+        for (ScriptData data : element.getBranches()) {
+            Tuple2<HeadScriptElement, Double> branchData =
+                    branchFromData(data, editorPane, editorScroll, deleteIcon, branches);
+
+            HeadScriptElement head = branchData.first;
+            heads.add(head);
+
+            branches.add(new Branch(head));
+
+            // Add elements to scene graph
+            AbstractScriptElement el = head;
+            while (el != null) {
+                editorPane.getChildren().add(el);
+                el = el.getElementChild();
+            }
+
+            head.setLayoutX(currX);
+            head.setLayoutY(10);
+
+            currX += branchData.second + 40;
+        }
+
+        // Position the head's children
+        heads.stream().findFirst().ifPresent(head ->
+            UXUtilities.doOnceSceneLoads(head, _ -> Platform.runLater(() ->
+                    heads.forEach(AbstractScriptElement::updateChildrenMove)))
+        );
+    }
+
+    private static Tuple2<HeadScriptElement, Double> branchFromData(ScriptData data, Pane editorPane,
+                                                                    ScrollPane editorScroll, ImageView deleteIcon,
+                                                                    ObservableList<ScriptElementEditor.Branch> branches) {
+
+        if (data.getType() != ScriptData.Type.HEAD) throw new IllegalArgumentException("ScriptData has to be of type HEAD");
+        HeadScriptElement he = new HeadScriptElement(false, editorPane, editorScroll, deleteIcon, null, branches);
+        he.loadFromData(data);
+
+        double width = he.width();
+
+        ScriptData curr = data.getChild();
+        AbstractScriptElement lastElement = he;
+        while (curr != null) {
+            AbstractScriptElement child = AbstractScriptElement.fromData(curr, editorPane, editorScroll, deleteIcon, branches);
+            lastElement.setElementChild(child);
+
+            width = Math.max(width, child.width() + 20);
+            lastElement = child;
+            curr = curr.getChild();
+        }
+
+        return new Tuple2<>(he, width);
     }
 
     public ObservableList<Branch> getBranches() {

@@ -1,6 +1,8 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
@@ -25,10 +27,12 @@ public class JScriptActionElement extends AbstractScriptActionElement {
         return new JScriptActionElement(true, editorPane, editorScroll, deleteIcon, null, branches);
     }
 
-    private String jumpTarget = "";
+    private StringProperty jumpTarget;
 
     @Override
     public void populate(HBox contentBox, boolean preview) {
+        if (jumpTarget == null) jumpTarget = new SimpleStringProperty("");
+
         Label l = new Label("Jump To");
         applyColoring(l);
         l.setMouseTransparent(preview);
@@ -37,9 +41,17 @@ public class JScriptActionElement extends AbstractScriptActionElement {
         b.setMouseTransparent(preview);
         b.setFocusTraversable(false);
         b.getSelectionModel().selectedItemProperty()
-                .addListener((_, _, val) -> jumpTarget = val);
+                .addListener((_, _, val) -> jumpTarget.set(val));
+        jumpTarget.addListener((_, _, val) ->
+                b.getSelectionModel().select(val));
         applyColoring(b);
         contentBox.getChildren().addAll(l, b);
+    }
+
+    @Override
+    void loadFromData(ScriptData data) {
+        if (data.getType() != ScriptData.Type.JUMP) throw new IllegalArgumentException("ScriptData has to be of type JUMP");
+        jumpTarget.set(data.getJumpTarget());
     }
 
     @Override
@@ -58,7 +70,7 @@ public class JScriptActionElement extends AbstractScriptActionElement {
     public ScriptData build() {
         ScriptData data = new ScriptData();
         data.setType(ScriptData.Type.JUMP);
-        data.setJumpTarget(jumpTarget);
+        data.setJumpTarget(jumpTarget.get());
         if (hasElementChild()) {
             data.setChild(getElementChild().build());
         }

@@ -1,6 +1,8 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -23,10 +25,12 @@ public class PScriptActionElement extends AbstractScriptActionElement {
         return new PScriptActionElement(true, editorPane, editorScroll, deleteIcon, null, branches);
     }
 
-    private String sound = "";
+    private StringProperty sound;
 
     @Override
     public void populate(HBox contentBox, boolean preview) {
+        if (sound == null) sound = new SimpleStringProperty("");
+
         Label l = new Label("Play sound");
         applyColoring(l);
         l.setMouseTransparent(preview);
@@ -34,9 +38,16 @@ public class PScriptActionElement extends AbstractScriptActionElement {
         f.setPrefWidth(140);
         f.setMouseTransparent(preview);
         f.setFocusTraversable(false);
-        f.textProperty().addListener((_, _, val) -> sound = val);
+        f.textProperty().addListener((_, _, val) -> sound.set(val));
+        sound.addListener((_, _, val) -> f.setText(val));
         applyColoring(f);
         contentBox.getChildren().addAll(l, f);
+    }
+
+    @Override
+    void loadFromData(ScriptData data) {
+        if (data.getType() != ScriptData.Type.PLAY) throw new IllegalArgumentException("ScriptData has to be of type PLAY");
+        sound.set(data.getSound());
     }
 
     @Override
@@ -55,7 +66,7 @@ public class PScriptActionElement extends AbstractScriptActionElement {
     public ScriptData build() {
         ScriptData data = new ScriptData();
         data.setType(ScriptData.Type.PLAY);
-        data.setSound(sound);
+        data.setSound(sound.get());
         if (hasElementChild()) {
             data.setChild(getElementChild().build());
         }

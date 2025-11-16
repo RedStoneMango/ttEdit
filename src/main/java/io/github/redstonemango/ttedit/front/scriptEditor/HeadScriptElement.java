@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -103,27 +104,34 @@ public class HeadScriptElement extends AbstractScriptElement {
         });
         conditionBox = new VBox(addConditionBtn);
         conditionBox.setSpacing(10);
-        staticConditionItem.setOnAction(_ -> {
-            conditionBox.getChildren().add(
-                    conditionBox.getChildren().size() - 1,
-                    new Condition(BranchCondition.Type.STATIC, this)
-            );
-            updateShape();
-            updateChildrenMove();
-        });
-        dynamicConditionItem.setOnAction(_ -> {
-            conditionBox.getChildren().add(
-                    conditionBox.getChildren().size() - 1,
-                    new Condition(BranchCondition.Type.DYNAMIC, this)
-            );
-            updateShape();
-            updateChildrenMove();
-        });
+        staticConditionItem.setOnAction(_ ->
+            addCondition(BranchCondition.Type.STATIC, BranchCondition.Comparison.EQUAL, "", "")
+        );
+        dynamicConditionItem.setOnAction(_ ->
+            addCondition(BranchCondition.Type.DYNAMIC, BranchCondition.Comparison.EQUAL, "", "")
+        );
         conditionBox.getChildren().addListener((ListChangeListener<? super Node>) _ ->
                 conditionCount = conditionBox.getChildren().size() - 1);
 
         content.getChildren().addAll(titleBox, conditionBox);
         contentBox.getChildren().addAll(content);
+    }
+
+    @Override
+    void loadFromData(ScriptData data) {
+        if (data.getType() != ScriptData.Type.HEAD) throw new IllegalArgumentException("ScriptData has to be of type HEAD");
+        data.getConditions().forEach(condition ->
+            addCondition(condition.getType(), condition.getComparison(), condition.getArgA(), condition.getArgB())
+        );
+    }
+
+    private void addCondition(BranchCondition.Type type, BranchCondition.Comparison comparison, String argA, String argB) {
+        conditionBox.getChildren().add(
+                conditionBox.getChildren().size() - 1,
+                new Condition(type, comparison, argA, argB, this)
+        );
+        updateShape();
+        updateChildrenMove();
     }
 
     private int retrieveIndex() {
@@ -205,7 +213,8 @@ public class HeadScriptElement extends AbstractScriptElement {
         private String argA = "";
         private String argB = "";
 
-        public Condition(BranchCondition.Type type, HeadScriptElement owner) {
+        public Condition(BranchCondition.Type type, BranchCondition.Comparison defComparison, String defArgA,
+                         String defArgB, HeadScriptElement owner) {
             this.type = type;
 
             setAlignment(Pos.CENTER);
@@ -219,12 +228,12 @@ public class HeadScriptElement extends AbstractScriptElement {
             owner.applyColoring(l2);
 
 
-            TextField fieldA = new TextField();
+            TextField fieldA = new TextField(defArgA);
             fieldA.setPrefWidth(70);
             fieldA.setFocusTraversable(false);
             fieldA.textProperty().addListener((_, _, val) -> argA = val);
             owner.applyColoring(fieldA);
-            TextField fieldB = new TextField();
+            TextField fieldB = new TextField(defArgB);
             fieldB.setPrefWidth(70);
             fieldB.setFocusTraversable(false);
             fieldB.textProperty().addListener((_, _, val) -> argB = val);
@@ -234,7 +243,7 @@ public class HeadScriptElement extends AbstractScriptElement {
             owner.applyColoring(comparisonBox);
             comparisonBox.getItems().addAll(BranchCondition.Comparison.values());
             UXUtilities.applyComparisonBoxCellFactory(comparisonBox);
-            comparisonBox.getSelectionModel().select(BranchCondition.Comparison.EQUAL);
+            comparisonBox.getSelectionModel().select(defComparison);
             comparisonBox.getSelectionModel().selectedItemProperty()
                     .addListener((_, _, val) -> comparison = val);
 
@@ -244,6 +253,7 @@ public class HeadScriptElement extends AbstractScriptElement {
             remove.setPickOnBounds(true);
             remove.setPreserveRatio(true);
             remove.setFitWidth(20);
+            remove.setCursor(Cursor.HAND);
             UXUtilities.registerHoverAnimation(remove);
             HBox.setMargin(remove, new Insets(0, 0, 0, 5));
             remove.setOnMouseClicked(_ -> {
