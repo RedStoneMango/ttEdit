@@ -1,6 +1,7 @@
 package io.github.redstonemango.ttedit.front;
 
 import io.github.redstonemango.mangoutils.OperatingSystem;
+import io.github.redstonemango.ttedit.back.projectElement.BranchCondition;
 import io.github.redstonemango.ttedit.front.propertySheetHelpers.*;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -137,23 +138,20 @@ public class UXUtilities {
         }
     }
 
-    public static <T> void applyCustomCellFactory(ListView<T> listView, Function<T, Node> nodeFunction) {
-        applyCustomCellFactory(listView, nodeFunction, _ -> {}, new Insets(0));
-    }
-
-    public static <T> void applyCustomCellFactory(ComboBox<T> comboBox, Function<T, Node> nodeFunction) {
+    public static void applyComparisonBoxCellFactory(ComboBox<BranchCondition.Comparison> comboBox) {
         comboBox.setCellFactory(new Callback<>() {
             @Override
-            public ListCell<T> call(ListView<T> lv) {
+            public ListCell<BranchCondition.Comparison> call(ListView<BranchCondition.Comparison> lv) {
                 return new ListCell<>() {
                     @Override
-                    protected void updateItem(T item, boolean empty) {
+                    protected void updateItem(BranchCondition.Comparison item, boolean empty) {
                         super.updateItem(item, empty);
                         if (empty || item == null) {
                             setGraphic(null);
                             setText(null);
                         } else {
-                            setGraphic(nodeFunction.apply(item));
+                            setGraphic(null);
+                            setText(item.getLiteral());
                         }
                     }
                 };

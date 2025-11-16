@@ -10,7 +10,7 @@ public abstract class AbstractScriptActionElement extends AbstractScriptElement{
 
     public AbstractScriptActionElement(boolean preview, Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
                                        @Nullable AbstractScriptElement parent, boolean isHead,
-                                       ObservableList<ScriptEditor.Branch> branches) {
+                                       ObservableList<ScriptElementEditor.Branch> branches) {
         super(preview, editorPane, editorScroll, deleteIcon, parent, isHead, branches);
     }
 }

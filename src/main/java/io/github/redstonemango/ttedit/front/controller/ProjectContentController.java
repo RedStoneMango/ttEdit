@@ -2,10 +2,11 @@ package io.github.redstonemango.ttedit.front.controller;
 
 import io.github.redstonemango.mangoutils.OperatingSystem;
 import io.github.redstonemango.ttedit.TtEdit;
+import io.github.redstonemango.ttedit.back.projectElement.ProjectLoadException;
 import io.github.redstonemango.ttedit.front.ElementTab;
 import io.github.redstonemango.ttedit.back.Project;
 import io.github.redstonemango.ttedit.back.ProjectIO;
-import io.github.redstonemango.ttedit.back.ProjectElement;
+import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import io.github.redstonemango.ttedit.front.UXUtilities;
 import io.github.redstonemango.ttedit.front.listEntries.ProjectElementListEntry;
 import javafx.application.Platform;
@@ -257,7 +258,7 @@ public class ProjectContentController {
                     newElements.add(
                             ProjectIO.loadProjectElement(target)
                     );
-                } catch (IOException e) {
+                } catch (IOException | ProjectLoadException e) {
                     UXUtilities.errorAlert("Error parsing new element file '" + source.getName() + "'", e.getMessage());
                 }
             });
@@ -324,7 +325,7 @@ public class ProjectContentController {
                     newElements.add(
                             ProjectIO.loadProjectElement(target)
                     );
-                } catch (IOException e) {
+                } catch (IOException | ProjectLoadException e) {
                     UXUtilities.errorAlert("Error parsing new element file '" + source.getName() + "'", e.getMessage());
                 }
             });

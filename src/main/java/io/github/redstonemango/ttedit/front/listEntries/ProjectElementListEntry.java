@@ -1,6 +1,6 @@
 package io.github.redstonemango.ttedit.front.listEntries;
 
-import io.github.redstonemango.ttedit.back.ProjectElement;
+import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;

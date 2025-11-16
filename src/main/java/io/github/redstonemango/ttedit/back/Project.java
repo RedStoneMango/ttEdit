@@ -3,6 +3,7 @@ package io.github.redstonemango.ttedit.back;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.github.redstonemango.ttedit.Launcher;
+import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -30,7 +31,7 @@ public class Project {
         this.language = language;
     }
 
-    public void initializeFields(String filename) {
+    public void initializeFields(String filename)  {
         dir = new File(Launcher.PROJECTS_HOME, filename);
         productID = Math.clamp(productID, 0, 999);
         elements = new HashSet<>();

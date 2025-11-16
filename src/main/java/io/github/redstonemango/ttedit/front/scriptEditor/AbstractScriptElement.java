@@ -1,5 +1,6 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
+import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -32,7 +33,7 @@ public abstract class AbstractScriptElement extends StackPane {
     private final ImageView deleteIcon;
     private final boolean isHead;
     final boolean preview;
-    final ObservableList<ScriptEditor.Branch> branches;
+    final ObservableList<ScriptElementEditor.Branch> branches;
 
     private @Nullable Path highlightShape;
 
@@ -44,7 +45,7 @@ public abstract class AbstractScriptElement extends StackPane {
 
     public AbstractScriptElement(boolean preview, Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
                                  @Nullable AbstractScriptElement parent, boolean isHead,
-                                 ObservableList<ScriptEditor.Branch> branches) {
+                                 ObservableList<ScriptElementEditor.Branch> branches) {
         this.parent = parent;
         this.deleteIcon = deleteIcon;
         this.isHead = isHead;
@@ -72,7 +73,7 @@ public abstract class AbstractScriptElement extends StackPane {
                 editorPane.getChildren().add(element);
 
                 if (element instanceof HeadScriptElement head) {
-                    branches.add(new ScriptEditor.Branch(head));
+                    branches.add(new ScriptElementEditor.Branch(head));
                 }
                 return;
             }
@@ -132,7 +133,7 @@ public abstract class AbstractScriptElement extends StackPane {
                 getControlIntoViewVertically(this, editorScroll, editorPane);
             }
 
-            deleteIcon.setImage(touchingDeleteIcon(e) ? ScriptEditor.BIN_OPEN : ScriptEditor.BIN_CLOSED);
+            deleteIcon.setImage(touchingDeleteIcon(e) ? ScriptElementEditor.BIN_OPEN : ScriptElementEditor.BIN_CLOSED);
         });
 
         setOnMouseReleased(e -> {
@@ -161,7 +162,7 @@ public abstract class AbstractScriptElement extends StackPane {
                     branches.removeIf(b -> b.head() == this);
                 }
 
-                deleteIcon.setImage(ScriptEditor.BIN_CLOSED);
+                deleteIcon.setImage(ScriptElementEditor.BIN_CLOSED);
             }
 
             setCursor(Cursor.DEFAULT);
@@ -447,9 +448,9 @@ public abstract class AbstractScriptElement extends StackPane {
 
     public abstract AbstractScriptElement createDefault(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
                                                         @Nullable AbstractScriptElement parent,
-                                                        ObservableList<ScriptEditor.Branch> branches);
+                                                        ObservableList<ScriptElementEditor.Branch> branches);
     public abstract Color color();
-    public abstract String build();
+    public abstract ScriptData build();
     public abstract double width();
     public abstract double height();
 

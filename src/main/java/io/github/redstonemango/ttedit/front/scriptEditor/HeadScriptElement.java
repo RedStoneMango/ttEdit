@@ -1,5 +1,7 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
+import io.github.redstonemango.ttedit.back.projectElement.BranchCondition;
+import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
 import io.github.redstonemango.ttedit.front.UXUtilities;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -15,6 +17,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+
 public class HeadScriptElement extends AbstractScriptElement {
 
     private int index;
@@ -23,12 +27,12 @@ public class HeadScriptElement extends AbstractScriptElement {
 
     public HeadScriptElement(boolean preview, Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
                              @Nullable AbstractScriptElement parent,
-                             ObservableList<ScriptEditor.Branch> branches) {
+                             ObservableList<ScriptElementEditor.Branch> branches) {
         super(preview, editorPane, editorScroll, deleteIcon, parent, true, branches);
     }
 
     public static HeadScriptElement createPreview(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                                  ObservableList<ScriptEditor.Branch> branches) {
+                                                  ObservableList<ScriptElementEditor.Branch> branches) {
         return new HeadScriptElement(true, editorPane, editorScroll, deleteIcon, null, branches);
     }
 
@@ -69,7 +73,7 @@ public class HeadScriptElement extends AbstractScriptElement {
         HBox titleBox = new HBox(l1, idxLabel, idxChangeBox);
         titleBox.setSpacing(10);
 
-        branches.addListener((ListChangeListener<? super ScriptEditor.Branch>) _ -> {
+        branches.addListener((ListChangeListener<? super ScriptElementEditor.Branch>) _ -> {
             if (preview) { // Always display highest+1 in preview
                 idxLabel.setText(String.valueOf(branches.size() + 1));
             }
@@ -102,7 +106,7 @@ public class HeadScriptElement extends AbstractScriptElement {
         staticConditionItem.setOnAction(_ -> {
             conditionBox.getChildren().add(
                     conditionBox.getChildren().size() - 1,
-                    new Condition(false, this)
+                    new Condition(BranchCondition.Type.STATIC, this)
             );
             updateShape();
             updateChildrenMove();
@@ -110,7 +114,7 @@ public class HeadScriptElement extends AbstractScriptElement {
         dynamicConditionItem.setOnAction(_ -> {
             conditionBox.getChildren().add(
                     conditionBox.getChildren().size() - 1,
-                    new Condition(true, this)
+                    new Condition(BranchCondition.Type.DYNAMIC, this)
             );
             updateShape();
             updateChildrenMove();
@@ -137,7 +141,7 @@ public class HeadScriptElement extends AbstractScriptElement {
 
         int indexCopy = index; // Removal from list will trigger 'index' variable to update: Store it temporarily
 
-        ScriptEditor.Branch myBranch = branches.get(index);
+        ScriptElementEditor.Branch myBranch = branches.get(index);
         branches.remove(index);
 
         if (up) {
@@ -156,7 +160,7 @@ public class HeadScriptElement extends AbstractScriptElement {
     @Override
     public AbstractScriptElement createDefault(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
                                                @Nullable AbstractScriptElement parent,
-                                               ObservableList<ScriptEditor.Branch> branches) {
+                                               ObservableList<ScriptElementEditor.Branch> branches) {
         return new HeadScriptElement(false, editorPane, editorScroll, deleteIcon, null, branches);
     }
 
@@ -166,8 +170,20 @@ public class HeadScriptElement extends AbstractScriptElement {
     }
 
     @Override
-    public String build() {
-        return "";
+    public ScriptData build() {
+        ScriptData data = new ScriptData();
+        data.setType(ScriptData.Type.HEAD);
+        data.setConditions(new ArrayList<>());
+        assert data.getConditions() != null: "";
+        for (Node child : conditionBox.getChildren()) {
+            if (child instanceof Condition condition) {
+                data.getConditions().add(condition.build());
+            }
+        }
+        if (hasElementChild()) {
+            data.setChild(getElementChild().build());
+        }
+        return data;
     }
 
     @Override
@@ -184,7 +200,14 @@ public class HeadScriptElement extends AbstractScriptElement {
 
     public static class Condition extends HBox {
 
-        public Condition(boolean dynamic, HeadScriptElement owner) {
+        private final BranchCondition.Type type;
+        private BranchCondition.Comparison comparison = BranchCondition.Comparison.EQUAL;
+        private String argA = "";
+        private String argB = "";
+
+        public Condition(BranchCondition.Type type, HeadScriptElement owner) {
+            this.type = type;
+
             setAlignment(Pos.CENTER);
             setSpacing(5);
 
@@ -199,17 +222,21 @@ public class HeadScriptElement extends AbstractScriptElement {
             TextField fieldA = new TextField();
             fieldA.setPrefWidth(70);
             fieldA.setFocusTraversable(false);
+            fieldA.textProperty().addListener((_, _, val) -> argA = val);
             owner.applyColoring(fieldA);
             TextField fieldB = new TextField();
             fieldB.setPrefWidth(70);
             fieldB.setFocusTraversable(false);
+            fieldB.textProperty().addListener((_, _, val) -> argB = val);
             owner.applyColoring(fieldB);
-            ComboBox<String> comparisonBox = new ComboBox<>();
+            ComboBox<BranchCondition.Comparison> comparisonBox = new ComboBox<>();
             comparisonBox.setFocusTraversable(false);
             owner.applyColoring(comparisonBox);
-            comparisonBox.getItems().addAll("less than", "less or equal to", "more than", "more or equal to",
-                    "equal to", "not equal to");
-            comparisonBox.getSelectionModel().select("equal to");
+            comparisonBox.getItems().addAll(BranchCondition.Comparison.values());
+            UXUtilities.applyComparisonBoxCellFactory(comparisonBox);
+            comparisonBox.getSelectionModel().select(BranchCondition.Comparison.EQUAL);
+            comparisonBox.getSelectionModel().selectedItemProperty()
+                    .addListener((_, _, val) -> comparison = val);
 
 
             ImageView remove = new ImageView(
@@ -227,6 +254,15 @@ public class HeadScriptElement extends AbstractScriptElement {
 
 
             getChildren().addAll(l1, fieldA, l2, comparisonBox, fieldB, remove);
+        }
+
+        public BranchCondition build() {
+            BranchCondition condition = new BranchCondition();
+            condition.setType(type);
+            condition.setComparison(comparison);
+            condition.setArgA(argA);
+            condition.setArgB(argB);
+            return condition;
         }
     }
 }

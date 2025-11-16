@@ -1,5 +1,6 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
+import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
@@ -15,14 +16,16 @@ public class JScriptActionElement extends AbstractScriptActionElement {
 
     public JScriptActionElement(boolean preview, Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
                                 @Nullable AbstractScriptElement parent,
-                                ObservableList<ScriptEditor.Branch> branches) {
+                                ObservableList<ScriptElementEditor.Branch> branches) {
         super(preview, editorPane, editorScroll, deleteIcon, parent, false, branches);
     }
 
     public static JScriptActionElement createPreview(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                                     ObservableList<ScriptEditor.Branch> branches) {
+                                                     ObservableList<ScriptElementEditor.Branch> branches) {
         return new JScriptActionElement(true, editorPane, editorScroll, deleteIcon, null, branches);
     }
+
+    private String jumpTarget = "";
 
     @Override
     public void populate(HBox contentBox, boolean preview) {
@@ -33,6 +36,8 @@ public class JScriptActionElement extends AbstractScriptActionElement {
         b.setPrefWidth(200);
         b.setMouseTransparent(preview);
         b.setFocusTraversable(false);
+        b.getSelectionModel().selectedItemProperty()
+                .addListener((_, _, val) -> jumpTarget = val);
         applyColoring(b);
         contentBox.getChildren().addAll(l, b);
     }
@@ -40,7 +45,7 @@ public class JScriptActionElement extends AbstractScriptActionElement {
     @Override
     public AbstractScriptElement createDefault(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
                                                @Nullable AbstractScriptElement parent,
-                                               ObservableList<ScriptEditor.Branch> branches) {
+                                               ObservableList<ScriptElementEditor.Branch> branches) {
         return new JScriptActionElement(false, editorPane, editorScroll, deleteIcon, parent, branches);
     }
 
@@ -50,8 +55,14 @@ public class JScriptActionElement extends AbstractScriptActionElement {
     }
 
     @Override
-    public String build() {
-        return "";
+    public ScriptData build() {
+        ScriptData data = new ScriptData();
+        data.setType(ScriptData.Type.JUMP);
+        data.setJumpTarget(jumpTarget);
+        if (hasElementChild()) {
+            data.setChild(getElementChild().build());
+        }
+        return data;
     }
 
     @Override
