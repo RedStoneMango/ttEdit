@@ -4,13 +4,12 @@ import io.github.redstonemango.mangoutils.OperatingSystem;
 import io.github.redstonemango.ttedit.TtEdit;
 import io.github.redstonemango.ttedit.back.Project;
 import io.github.redstonemango.ttedit.back.ProjectIO;
-import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
+import io.github.redstonemango.ttedit.back.ProjectElement;
 import io.github.redstonemango.ttedit.front.UXUtilities;
 import io.github.redstonemango.ttedit.front.listEntries.ProjectElementListEntry;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.*;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
@@ -34,6 +33,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ProjectContentController {
 
@@ -106,6 +106,11 @@ public class ProjectContentController {
                         () -> selectedElements.size() != 1,
                         selectedElements
                 ));
+        renameItemControl.disableProperty().bind(
+                Bindings.createBooleanBinding(
+                        () -> selectedElements.isEmpty(),
+                        selectedElements
+                ));
         cloneItemControl.disableProperty().bind(
                 Bindings.createBooleanBinding(
                         () -> selectedElements.isEmpty(),
@@ -137,7 +142,7 @@ public class ProjectContentController {
     private void onAddScript() {
         mouseExit(addScriptControl);
         askName(name -> {
-            ProjectElement element = new ProjectElement(name, ProjectElement.Type.SCRIPT);
+            ProjectElement element = new ProjectElement(unusedName(name), ProjectElement.Type.SCRIPT);
 
             try {
                 ProjectIO.saveProjectElement(element, Project.getCurrentProject());
@@ -154,7 +159,7 @@ public class ProjectContentController {
     private void onAddPage() {
         mouseExit(addPageControl);
         askName(name -> {
-            ProjectElement element = new ProjectElement(name, ProjectElement.Type.PAGE);
+            ProjectElement element = new ProjectElement(unusedName(name), ProjectElement.Type.PAGE);
 
             try {
                 ProjectIO.saveProjectElement(element, Project.getCurrentProject());
@@ -164,6 +169,51 @@ public class ProjectContentController {
             } catch (IOException e) {
                 UXUtilities.errorAlert("Unable to save '" + element.getName() + "'", e.getMessage());
             }
+        });
+    }
+
+    @FXML
+    private void onRename() {
+        mouseExit(renameItemControl);
+        boolean plural = selectedElements.size() > 1;
+        String nameSuggestion = plural ? "" : selectedElements.getFirst().getName();
+
+        askName(nameSuggestion, plural, name -> {
+            Set<ProjectElement> newElements = new HashSet<>();
+            selectedElements.forEach(element -> {
+                elements.remove(element);
+                String newName = unusedName(name, plural, newElements); // Also supply newElements because they aren't yet registered
+                Project project = Project.getCurrentProject();
+
+                File source = new File(project.getElementDir(), element.getName() + element.getType().fileSuffix());
+                File target = new File(project.getElementDir(), newName + element.getType().fileSuffix());
+                if (target.exists()) {
+                    // This is not expected to ever happen
+                    UXUtilities.errorAlert(
+                            "File '" + target.getName() + "' already exists",
+                            "Failed to rename element. This should not happen!"
+                    );
+                    return;
+                }
+
+                try {
+                    Files.move(source.toPath(), target.toPath()); // Better error handling with NIO
+                } catch (IOException e) {
+                    UXUtilities.errorAlert("Error moving element file '" + source.getName() + "'", e.getMessage());
+                    return;
+                }
+
+                try {
+                    newElements.add(
+                            ProjectIO.loadProjectElement(target)
+                    );
+                } catch (IOException e) {
+                    UXUtilities.errorAlert("Error parsing new element file '" + source.getName() + "'", e.getMessage());
+                }
+            });
+
+            elements.addAll(newElements);
+            selectedElements.setAll(newElements);
         });
     }
 
@@ -192,40 +242,46 @@ public class ProjectContentController {
 
     @FXML
     private void onClone() {
-        Set<ProjectElement> newElements = new HashSet<>();
-        selectedElements.forEach(element -> {
-            String newName = unusedName(element.getName());
-            Project project = Project.getCurrentProject();
+        mouseExit(cloneItemControl);
+        boolean plural = selectedElements.size() > 1;
+        String nameSuggestion = plural ? "" : selectedElements.getFirst().getName();
 
-            File source = new File(project.getElementDir(), element.getName() + element.getType().fileSuffix());
-            File target = new File(project.getElementDir(), newName + element.getType().fileSuffix());
-            if (target.exists()) {
-                // This is not expected to ever happen
-                UXUtilities.errorAlert(
-                        "File '" + target.getName() + "' already exists",
-                        "Failed to clone element. This should not happen!"
-                        );
-                return;
-            }
+        askName(nameSuggestion, plural, name -> {
+            Set<ProjectElement> newElements = new HashSet<>();
+            selectedElements.forEach(element -> {
+                String newName = unusedName(name, plural, newElements); // Also supply newElements because they aren't yet registered
+                Project project = Project.getCurrentProject();
 
-            try {
-                Files.copy(source.toPath(), target.toPath()); // Better error handling with NIO
-            } catch (IOException e) {
-                UXUtilities.errorAlert("Error copying element file '" + source.getName() + "'", e.getMessage());
-                return;
-            }
+                File source = new File(project.getElementDir(), element.getName() + element.getType().fileSuffix());
+                File target = new File(project.getElementDir(), newName + element.getType().fileSuffix());
+                if (target.exists()) {
+                    // This is not expected to ever happen
+                    UXUtilities.errorAlert(
+                            "File '" + target.getName() + "' already exists",
+                            "Failed to clone element. This should not happen!"
+                    );
+                    return;
+                }
 
-            try {
-                newElements.add(
-                        ProjectIO.loadProjectElement(target)
-                );
-            } catch (IOException e) {
-                UXUtilities.errorAlert("Error parsing new element file '" + source.getName() + "'", e.getMessage());
-            }
+                try {
+                    Files.copy(source.toPath(), target.toPath()); // Better error handling with NIO
+                } catch (IOException e) {
+                    UXUtilities.errorAlert("Error copying element file '" + source.getName() + "'", e.getMessage());
+                    return;
+                }
+
+                try {
+                    newElements.add(
+                            ProjectIO.loadProjectElement(target)
+                    );
+                } catch (IOException e) {
+                    UXUtilities.errorAlert("Error parsing new element file '" + source.getName() + "'", e.getMessage());
+                }
+            });
+
+            elements.addAll(newElements);
+            selectedElements.setAll(newElements);
         });
-
-        elements.addAll(newElements);
-        selectedElements.setAll(newElements);
     }
 
     @FXML
@@ -275,23 +331,37 @@ public class ProjectContentController {
             node.getOnMouseExited().handle(null); // Just call the handle function. Event is unused in this context
     }
 
-    private void askName(Consumer<String> nameAction) {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Create New Element");
-        dialog.setHeaderText("Please set a name for the new element");
+    private void askName(Consumer<String> nameAction){
+        askName("", false, nameAction);
+    }
+
+    private void askName(String suggestion, boolean plural, Consumer<String> nameAction) {
+        TextInputDialog dialog = new TextInputDialog(suggestion);
+        dialog.setTitle("Set Name");
+        dialog.setHeaderText("Please enter a name for the element" + (plural ? "s" : ""));
         dialog.setContentText("Name: ");
         UXUtilities.applyStylesheet(dialog);
         dialog.showAndWait();
         if (dialog.getResult() != null) {
-            nameAction.accept(unusedName(dialog.getResult()));
+            nameAction.accept(dialog.getResult());
         }
     }
 
     private String unusedName(String name) {
+        return unusedName(name, false, new HashSet<>());
+    }
+
+    private String unusedName(String name, boolean denyBaseOnly, Set<ProjectElement> additionalElements) {
         String basename = name;
         int i = 1;
-        Set<String> existingNames = elements
-                .stream()
+        if (denyBaseOnly) {
+            name = basename + "_1";
+        }
+        Set<String> existingNames =
+                Stream.concat(
+                        elements.stream(),
+                        additionalElements.stream()
+                )
                 .map(ProjectElement::getName)
                 .collect(Collectors.toSet());
 
