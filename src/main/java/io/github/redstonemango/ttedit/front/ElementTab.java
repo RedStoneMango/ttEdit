@@ -61,7 +61,7 @@ public class ElementTab extends Tab {
     }
 
     private Node scriptElementContent() {
-        ScriptElementEditor editor = new ScriptElementEditor();
+        ScriptElementEditor editor = new ScriptElementEditor(element);
         editable = editor;
         return editor;
     }

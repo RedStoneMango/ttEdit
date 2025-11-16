@@ -436,6 +436,31 @@ public abstract class AbstractScriptElement extends StackPane {
         );
     }
 
+    public static AbstractScriptElement fromData(ScriptData data, Pane editorPane, ScrollPane editorScroll,
+                                                    ImageView deleteIcon, ObservableList<ScriptElementEditor.Branch> branches) {
+
+        return switch (data.getType()) {
+            case HEAD -> {
+                HeadScriptElement he =
+                        new HeadScriptElement(false, editorPane, editorScroll, deleteIcon, null, branches);
+                he.loadFromData(data);
+                yield he;
+            }
+            case PLAY -> {
+                PScriptActionElement pe =
+                        new PScriptActionElement(false, editorPane, editorScroll, deleteIcon, null, branches);
+                pe.loadFromData(data);
+                yield pe;
+            }
+            case JUMP -> {
+                JScriptActionElement je =
+                        new JScriptActionElement(false, editorPane, editorScroll, deleteIcon, null, branches);
+                je.loadFromData(data);
+                yield je;
+            }
+        };
+    }
+
     @Nullable AbstractScriptElement getElementParent() {
         return parent;
     }
@@ -451,6 +476,7 @@ public abstract class AbstractScriptElement extends StackPane {
                                                         ObservableList<ScriptElementEditor.Branch> branches);
     public abstract Color color();
     public abstract ScriptData build();
+    abstract void loadFromData(ScriptData data);
     public abstract double width();
     public abstract double height();
 
