@@ -71,9 +71,6 @@ public class JScriptActionElement extends AbstractScriptActionElement {
         ScriptData data = new ScriptData();
         data.setType(ScriptData.Type.JUMP);
         data.setJumpTarget(jumpTarget.get());
-        if (hasElementChild()) {
-            data.setChild(getElementChild().build());
-        }
         return data;
     }
 

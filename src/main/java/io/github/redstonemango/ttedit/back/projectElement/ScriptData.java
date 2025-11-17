@@ -13,14 +13,13 @@ public class ScriptData {
 
     // HEAD ELEMENT
     private @Nullable List<BranchCondition> conditions;
+    private @Nullable List<ScriptData> actions;
 
     // PLAY ELEMENT
     private @Nullable String sound;
 
     // JUMP ELEMENT
     private @Nullable String jumpTarget;
-
-    private @Nullable ScriptData child;
 
     public ScriptData() {}
 
@@ -41,15 +40,21 @@ public class ScriptData {
                 for (BranchCondition condition : conditions) {
                     condition.initializeFields();
                 }
+                if (actions == null) actions = new ArrayList<>();
+                for (ScriptData action : actions) {
+                    action.initializeFields();
+                }
             }
             case PLAY -> {
                 jumpTarget = null;
                 conditions = null;
+                actions = null;
                 if (sound == null) sound = "";
             }
             case JUMP -> {
                 conditions = null;
                 sound = null;
+                actions = null;
                 if (jumpTarget == null) jumpTarget = "";
             }
         }
@@ -63,12 +68,12 @@ public class ScriptData {
         this.type = type;
     }
 
-    public @Nullable ScriptData getChild() {
-        return child;
+    public @Nullable List<ScriptData> getActions() {
+        return actions;
     }
 
-    public void setChild(@Nullable ScriptData child) {
-        this.child = child;
+    public void setActions(@Nullable List<ScriptData> actions) {
+        this.actions = actions;
     }
 
     public @Nullable List<BranchCondition> getConditions() {
