@@ -182,14 +182,16 @@ public class HeadScriptElement extends AbstractScriptElement {
         ScriptData data = new ScriptData();
         data.setType(ScriptData.Type.HEAD);
         data.setConditions(new ArrayList<>());
-        assert data.getConditions() != null: "";
+        data.setActions(new ArrayList<>());
         for (Node child : conditionBox.getChildren()) {
             if (child instanceof Condition condition) {
                 data.getConditions().add(condition.build());
             }
         }
-        if (hasElementChild()) {
-            data.setChild(getElementChild().build());
+        AbstractScriptElement curr = getElementChild();
+        while (curr != null) {
+            data.getActions().add(curr.build());
+            curr = curr.getElementChild();
         }
         return data;
     }

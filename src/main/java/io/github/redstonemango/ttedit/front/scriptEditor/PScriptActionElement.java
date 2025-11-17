@@ -67,9 +67,6 @@ public class PScriptActionElement extends AbstractScriptActionElement {
         ScriptData data = new ScriptData();
         data.setType(ScriptData.Type.PLAY);
         data.setSound(sound.get());
-        if (hasElementChild()) {
-            data.setChild(getElementChild().build());
-        }
         return data;
     }
 

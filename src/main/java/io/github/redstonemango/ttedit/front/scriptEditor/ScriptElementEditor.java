@@ -105,15 +105,13 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
 
         double width = he.width();
 
-        ScriptData curr = data.getChild();
         AbstractScriptElement lastElement = he;
-        while (curr != null) {
-            AbstractScriptElement child = AbstractScriptElement.fromData(curr, editorPane, editorScroll, deleteIcon, branches);
-            lastElement.setElementChild(child);
+        for (ScriptData action : data.getActions()) {
+            AbstractScriptElement element = AbstractScriptElement.fromData(action, editorPane, editorScroll, deleteIcon, branches);
+            lastElement.setElementChild(element);
 
-            width = Math.max(width, child.width() + 20);
-            lastElement = child;
-            curr = curr.getChild();
+            width = Math.max(width, element.width() + 20);
+            lastElement = element;
         }
 
         return new Tuple2<>(he, width);
