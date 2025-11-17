@@ -481,6 +481,4 @@ public abstract class AbstractScriptElement extends StackPane {
 
     private enum SnapPosition { ABOVE, BELOW, NONE }
     private record AbstractSnapTarget(AbstractScriptElement target, SnapPosition position) {}
-    private record GridKey(int x, int y) {}
-
 }
