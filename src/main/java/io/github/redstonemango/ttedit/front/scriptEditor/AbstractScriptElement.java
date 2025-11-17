@@ -94,8 +94,6 @@ public abstract class AbstractScriptElement extends StackPane {
             editorScroll.setPannable(false);
             furthestEditorCorner.set(editorScroll.localToScene(editorScroll.getWidth(), editorScroll.getHeight()));
             nearestEditorCorner.set(editorScroll.localToScene(0, 0));
-
-            setCursor(Cursor.MOVE);
         });
 
         setOnMouseDragged(e -> {
@@ -134,6 +132,7 @@ public abstract class AbstractScriptElement extends StackPane {
             }
 
             deleteIcon.setImage(touchingDeleteIcon(e) ? ScriptElementEditor.BIN_OPEN : ScriptElementEditor.BIN_CLOSED);
+            setCursor(Cursor.MOVE);
         });
 
         setOnMouseReleased(e -> {
