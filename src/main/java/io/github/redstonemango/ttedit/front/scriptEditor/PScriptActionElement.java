@@ -1,6 +1,7 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
@@ -15,17 +16,20 @@ import org.jetbrains.annotations.Nullable;
 
 public class PScriptActionElement extends AbstractScriptActionElement {
 
-    public PScriptActionElement(boolean preview, Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon, @Nullable AbstractScriptElement parent,
+    public PScriptActionElement(boolean preview, Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
+                                @Nullable AbstractScriptElement parent, BooleanProperty changed,
                                 ObservableList<ScriptElementEditor.Branch> branches) {
-        super(preview, editorPane, editorScroll, deleteIcon, parent, false, branches);
+        super(preview, editorPane, editorScroll, deleteIcon, parent, false, changed, branches);
     }
 
     public static PScriptActionElement createPreview(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
+                                                     BooleanProperty changed,
                                                      ObservableList<ScriptElementEditor.Branch> branches) {
-        return new PScriptActionElement(true, editorPane, editorScroll, deleteIcon, null, branches);
+        return new PScriptActionElement(true, editorPane, editorScroll, deleteIcon, null, changed, branches);
     }
 
     private StringProperty sound;
+    private boolean loading = false;
 
     @Override
     public void populate(HBox contentBox, boolean preview) {
@@ -38,7 +42,10 @@ public class PScriptActionElement extends AbstractScriptActionElement {
         f.setPrefWidth(140);
         f.setMouseTransparent(preview);
         f.setFocusTraversable(false);
-        f.textProperty().addListener((_, _, val) -> sound.set(val));
+        f.textProperty().addListener((_, _, val) -> {
+            sound.set(val);
+            if (!loading) changed.set(true);
+        });
         sound.addListener((_, _, val) -> f.setText(val));
         applyColoring(f);
         contentBox.getChildren().addAll(l, f);
@@ -47,14 +54,16 @@ public class PScriptActionElement extends AbstractScriptActionElement {
     @Override
     void loadFromData(ScriptData data) {
         if (data.getType() != ScriptData.Type.PLAY) throw new IllegalArgumentException("ScriptData has to be of type PLAY");
+        loading = true;
         sound.set(data.getSound());
+        loading = false;
     }
 
     @Override
     public AbstractScriptElement createDefault(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                               @Nullable AbstractScriptElement parent,
+                                               @Nullable AbstractScriptElement parent, BooleanProperty changed,
                                                ObservableList<ScriptElementEditor.Branch> branches) {
-        return new PScriptActionElement(false, editorPane, editorScroll, deleteIcon, parent, branches);
+        return new PScriptActionElement(false, editorPane, editorScroll, deleteIcon, parent, changed, branches);
     }
 
     @Override

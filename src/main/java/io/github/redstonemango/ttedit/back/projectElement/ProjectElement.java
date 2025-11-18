@@ -2,6 +2,8 @@ package io.github.redstonemango.ttedit.back.projectElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,6 +15,7 @@ public class ProjectElement {
 
     @JsonIgnore private String name;
     @JsonIgnore private Type type;
+    @JsonIgnore private BooleanProperty changed;
     // SCRIPT ELEMENT
     private @Nullable List<ScriptData> branches;
 
@@ -25,7 +28,8 @@ public class ProjectElement {
 
     public void initializeFields(String filename) throws ProjectLoadException {
         name = filename.substring(0, nthLastIndexOf(2, ".", filename));
-        this.type = Type.fromFileName(filename);
+        type = Type.fromFileName(filename);
+        changed = new SimpleBooleanProperty(false);
         if (type == Type.SCRIPT) {
             if (branches == null) {
                 branches = new ArrayList<>();
@@ -53,12 +57,28 @@ public class ProjectElement {
         return branches;
     }
 
+    public boolean isChanged() {
+        return changed.get();
+    }
+
+    public BooleanProperty changedProperty() {
+        return changed;
+    }
+
+    public void setChanged(boolean changed) {
+        this.changed.set(changed);
+    }
+
     public enum Type {
         SCRIPT, PAGE;
 
         public Image buildImage() {
+            return buildImage(false);
+        }
+
+        public Image buildImage(boolean changed) {
             return new Image(getClass().getResource("/io/github/redstonemango/ttedit/image/" +
-                    this.toString().toLowerCase() + ".png").toExternalForm());
+                    this.toString().toLowerCase() + (changed ? "_unsaved" : "") + ".png").toExternalForm());
         }
 
         public String fileSuffix() {

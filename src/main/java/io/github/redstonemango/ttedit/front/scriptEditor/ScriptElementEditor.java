@@ -6,6 +6,7 @@ import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
 import io.github.redstonemango.ttedit.front.IElementEditable;
 import io.github.redstonemango.ttedit.front.UXUtilities;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -58,9 +59,9 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
         controlsBox.setSpacing(20);
         controlsBox.setFillWidth(false);
         controlsBox.setPadding(new Insets(10, 2, 10, 2));
-        controlsBox.getChildren().add(HeadScriptElement.createPreview(editorPane, editorScroll, deleteIcon, branches));
-        controlsBox.getChildren().add(PScriptActionElement.createPreview(editorPane, editorScroll, deleteIcon, branches));
-        controlsBox.getChildren().add(JScriptActionElement.createPreview(editorPane, editorScroll, deleteIcon, branches));
+        controlsBox.getChildren().add(HeadScriptElement.createPreview(editorPane, editorScroll, deleteIcon, element.changedProperty(), branches));
+        controlsBox.getChildren().add(PScriptActionElement.createPreview(editorPane, editorScroll, deleteIcon, element.changedProperty(), branches));
+        controlsBox.getChildren().add(JScriptActionElement.createPreview(editorPane, editorScroll, deleteIcon, element.changedProperty(), branches));
 
         getChildren().addAll(controlsPane, editorArea);
 
@@ -68,7 +69,7 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
         Set<HeadScriptElement> heads = new HashSet<>();
         for (ScriptData data : element.getBranches()) {
             Tuple2<HeadScriptElement, Double> branchData =
-                    branchFromData(data, editorPane, editorScroll, deleteIcon, branches);
+                    branchFromData(data, editorPane, editorScroll, deleteIcon, element.changedProperty(), branches);
 
             HeadScriptElement head = branchData.first;
             heads.add(head);
@@ -97,18 +98,19 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
 
     private static Tuple2<HeadScriptElement, Double> branchFromData(ScriptData data, Pane editorPane,
                                                                     ScrollPane editorScroll, ImageView deleteIcon,
+                                                                    BooleanProperty changed,
                                                                     ObservableList<ScriptElementEditor.Branch> branches) {
 
         if (data.getType() != ScriptData.Type.HEAD) throw new IllegalArgumentException("ScriptData has to be of type HEAD");
-        HeadScriptElement he = new HeadScriptElement(false, editorPane, editorScroll, deleteIcon, null, branches);
+        HeadScriptElement he = new HeadScriptElement(false, editorPane, editorScroll, deleteIcon, null, changed, branches);
         he.loadFromData(data);
 
         double width = he.width();
 
         AbstractScriptElement lastElement = he;
         for (ScriptData action : data.getActions()) {
-            AbstractScriptElement element = AbstractScriptElement.fromData(action, editorPane, editorScroll, deleteIcon, branches);
-            lastElement.setElementChild(element);
+            AbstractScriptElement element = AbstractScriptElement.fromData(action, editorPane, editorScroll, changed, deleteIcon, branches);
+            lastElement.setElementChild(element, true);
 
             width = Math.max(width, element.width() + 20);
             lastElement = element;

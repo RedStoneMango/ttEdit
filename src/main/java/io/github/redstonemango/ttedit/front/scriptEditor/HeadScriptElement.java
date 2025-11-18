@@ -3,6 +3,7 @@ package io.github.redstonemango.ttedit.front.scriptEditor;
 import io.github.redstonemango.ttedit.back.projectElement.BranchCondition;
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
 import io.github.redstonemango.ttedit.front.UXUtilities;
+import javafx.beans.property.BooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -25,16 +26,18 @@ public class HeadScriptElement extends AbstractScriptElement {
     private int index;
     private int conditionCount = 0;
     private VBox conditionBox;
+    private boolean loading = false;
 
     public HeadScriptElement(boolean preview, Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                             @Nullable AbstractScriptElement parent,
+                             @Nullable AbstractScriptElement parent, BooleanProperty changed,
                              ObservableList<ScriptElementEditor.Branch> branches) {
-        super(preview, editorPane, editorScroll, deleteIcon, parent, true, branches);
+        super(preview, editorPane, editorScroll, deleteIcon, parent, true, changed, branches);
     }
 
     public static HeadScriptElement createPreview(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
+                                                  BooleanProperty changed,
                                                   ObservableList<ScriptElementEditor.Branch> branches) {
-        return new HeadScriptElement(true, editorPane, editorScroll, deleteIcon, null, branches);
+        return new HeadScriptElement(true, editorPane, editorScroll, deleteIcon, null, changed, branches);
     }
 
     @Override
@@ -110,8 +113,10 @@ public class HeadScriptElement extends AbstractScriptElement {
         dynamicConditionItem.setOnAction(_ ->
             addCondition(BranchCondition.Type.DYNAMIC, BranchCondition.Comparison.EQUAL, "", "")
         );
-        conditionBox.getChildren().addListener((ListChangeListener<? super Node>) _ ->
-                conditionCount = conditionBox.getChildren().size() - 1);
+        conditionBox.getChildren().addListener((ListChangeListener<? super Node>) _ -> {
+            conditionCount = conditionBox.getChildren().size() - 1;
+            if (!loading) changed.set(true);
+        });
 
         content.getChildren().addAll(titleBox, conditionBox);
         contentBox.getChildren().addAll(content);
@@ -120,9 +125,11 @@ public class HeadScriptElement extends AbstractScriptElement {
     @Override
     void loadFromData(ScriptData data) {
         if (data.getType() != ScriptData.Type.HEAD) throw new IllegalArgumentException("ScriptData has to be of type HEAD");
+        loading = true;
         data.getConditions().forEach(condition ->
             addCondition(condition.getType(), condition.getComparison(), condition.getArgA(), condition.getArgB())
         );
+        loading = false;
     }
 
     private void addCondition(BranchCondition.Type type, BranchCondition.Comparison comparison, String argA, String argB) {
@@ -167,9 +174,9 @@ public class HeadScriptElement extends AbstractScriptElement {
 
     @Override
     public AbstractScriptElement createDefault(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                               @Nullable AbstractScriptElement parent,
+                                               @Nullable AbstractScriptElement parent, BooleanProperty changed,
                                                ObservableList<ScriptElementEditor.Branch> branches) {
-        return new HeadScriptElement(false, editorPane, editorScroll, deleteIcon, null, branches);
+        return new HeadScriptElement(false, editorPane, editorScroll, deleteIcon, null, changed, branches);
     }
 
     @Override
@@ -233,12 +240,18 @@ public class HeadScriptElement extends AbstractScriptElement {
             TextField fieldA = new TextField(defArgA);
             fieldA.setPrefWidth(70);
             fieldA.setFocusTraversable(false);
-            fieldA.textProperty().addListener((_, _, val) -> argA = val);
+            fieldA.textProperty().addListener((_, _, val) -> {
+                argA = val;
+                owner.changed.set(true);
+            });
             owner.applyColoring(fieldA);
             TextField fieldB = new TextField(defArgB);
             fieldB.setPrefWidth(70);
             fieldB.setFocusTraversable(false);
-            fieldB.textProperty().addListener((_, _, val) -> argB = val);
+            fieldB.textProperty().addListener((_, _, val) -> {
+                argB = val;
+                owner.changed.set(true);
+            });
             owner.applyColoring(fieldB);
             ComboBox<BranchCondition.Comparison> comparisonBox = new ComboBox<>();
             comparisonBox.setFocusTraversable(false);
@@ -247,7 +260,10 @@ public class HeadScriptElement extends AbstractScriptElement {
             UXUtilities.applyComparisonBoxCellFactory(comparisonBox);
             comparisonBox.getSelectionModel().select(defComparison);
             comparisonBox.getSelectionModel().selectedItemProperty()
-                    .addListener((_, _, val) -> comparison = val);
+                    .addListener((_, _, val) -> {
+                        comparison = val;
+                        owner.changed.set(true);
+                    });
 
 
             ImageView remove = new ImageView(
