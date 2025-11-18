@@ -79,6 +79,7 @@ public abstract class AbstractScriptElement extends StackPane {
 
                 if (element instanceof HeadScriptElement head) {
                     branches.add(new ScriptElementEditor.Branch(head));
+                    changed.set(true);
                 }
                 return;
             }
@@ -175,6 +176,7 @@ public abstract class AbstractScriptElement extends StackPane {
 
                 if (this instanceof HeadScriptElement) {
                     branches.removeIf(b -> b.head() == this);
+                    changed.set(true);
                 }
 
                 deleteIcon.setImage(ScriptElementEditor.BIN_CLOSED);
