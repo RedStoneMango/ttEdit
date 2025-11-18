@@ -49,7 +49,8 @@ public class ProjectListController {
                     updateProjects();
                 }
             });
-            sc.getWindow().setOnCloseRequest(_ -> {}); // Override possible handlers that might be set by previous scenes
+            UXUtilities.doOnceAvailable(sc.windowProperty(), wndw ->
+                    wndw.setOnCloseRequest(_ -> {})); // Override possible handlers that might be set by previous scenes
         });
 
         UXUtilities.applyCustomCellFactory(projectView, file ->
