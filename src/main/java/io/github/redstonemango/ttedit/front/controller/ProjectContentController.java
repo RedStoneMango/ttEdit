@@ -124,6 +124,31 @@ public class ProjectContentController {
             }
         });
 
+        UXUtilities.doOnceSceneLoads(contentView, scene ->
+            scene.getWindow().setOnCloseRequest(e -> {
+                boolean changed = tabs.stream().anyMatch(t -> t.getElement().isChanged());
+                if (changed) {
+                    ButtonType discardButton = new ButtonType("Discard and Close", ButtonBar.ButtonData.RIGHT);
+                    ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.LEFT);
+                    ButtonType saveButton = new ButtonType("Save and Close", ButtonBar.ButtonData.RIGHT);
+
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.getButtonTypes().setAll(discardButton, cancelButton, saveButton);
+                    alert.setTitle("Unsaved Changes");
+                    alert.setHeaderText("There are unsaved changes in your project");
+                    alert.setContentText("Do you really want to discard them?");
+                    UXUtilities.applyStylesheet(alert);
+                    alert.showAndWait();
+
+                    if (alert.getResult() == cancelButton)
+                        e.consume();
+                    else if (alert.getResult() == saveButton) {
+                        save(false);
+                    }
+                }
+            })
+        );
+
         MenuItem configureItem = new MenuItem("Configure Project");
         configureItem.setOnAction(_ -> onConfigure());
         MenuItem saveItem = new MenuItem("Save Whole Project");
@@ -365,7 +390,10 @@ public class ProjectContentController {
     @FXML
     private void onSave() {
         mouseExit(saveProjectControl);
+        save(true);
+    }
 
+    private void save(boolean showMessage) {
         AtomicBoolean success = new AtomicBoolean(true);
         ProjectIO.saveProject(Project.getCurrentProject(), e -> {
             success.set(false);
@@ -381,7 +409,7 @@ public class ProjectContentController {
             }
         });
 
-        if (success.get()) {
+        if (success.get() && showMessage) {
             UXUtilities.informationAlert("Save successful", "Your whole project has been successfully saved!");
         }
     }

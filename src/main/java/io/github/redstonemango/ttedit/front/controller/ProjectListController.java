@@ -1,6 +1,5 @@
 package io.github.redstonemango.ttedit.front.controller;
 
-import io.github.redstonemango.mangoutils.MangoIO;
 import io.github.redstonemango.mangoutils.OperatingSystem;
 import io.github.redstonemango.ttedit.Launcher;
 import io.github.redstonemango.ttedit.TtEdit;
@@ -43,14 +42,15 @@ public class ProjectListController {
         );
         projectView.setItems(filteredProjects);
 
-        UXUtilities.doOnceSceneLoads(projectView, sc ->
+        UXUtilities.doOnceSceneLoads(projectView, sc -> {
             sc.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
                 boolean controlDown = OperatingSystem.isMac() ? e.isMetaDown() : e.isControlDown();
                 if (e.getCode() == KeyCode.R && controlDown) {
                     updateProjects();
                 }
-            })
-        );
+            });
+            sc.getWindow().setOnCloseRequest(_ -> {}); // Override possible handlers that might be set by previous scenes
+        });
 
         UXUtilities.applyCustomCellFactory(projectView, file ->
                 ProjectListEntry.build(file, () -> deleteProject(file), projectView),
