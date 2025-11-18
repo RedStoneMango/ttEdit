@@ -64,13 +64,13 @@ public class ElementTab extends Tab {
         setOnCloseRequest(e -> {
             if (!element.isChanged()) return;
 
-            ButtonType discardButton = new ButtonType("Discard and Close");
-            ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-            ButtonType saveButton = new ButtonType("Save and Close");
+            ButtonType discardButton = new ButtonType("Discard and Close", ButtonBar.ButtonData.RIGHT);
+            ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.LEFT);
+            ButtonType saveButton = new ButtonType("Save and Close", ButtonBar.ButtonData.RIGHT);
 
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.getButtonTypes().setAll(discardButton, cancelButton, saveButton);
-            alert.setTitle("Unsaved Changed");
+            alert.setTitle("Unsaved Changes");
             alert.setHeaderText("There are unsaved changes in '" + element.getName() + "'");
             alert.setContentText("Do you really want to discard them?");
             UXUtilities.applyStylesheet(alert);
