@@ -5,7 +5,9 @@ import io.github.redstonemango.ttedit.back.projectElement.BranchCondition;
 import io.github.redstonemango.ttedit.front.propertySheetHelpers.*;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
+import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -75,17 +77,22 @@ public class UXUtilities {
         else r.run();
     }
 
-    public static void doOnceSceneLoads(Node node, Consumer<Scene> action) {
-        AtomicReference<ChangeListener<? super Scene>> l = new AtomicReference<>();
+    public static <T> void doOnceAvailable(ObservableValue<T> property, Consumer<T> action) {
+        if (property.getValue() != null) {
+            action.accept(property.getValue());
+            return;
+        }
 
-        l.set((_, _, scene) -> {
-            if (scene != null) {
-                action.accept(scene);
-                node.sceneProperty().removeListener(l.get());
+        AtomicReference<ChangeListener<? super T>> l = new AtomicReference<>();
+
+        l.set((_, _, val) -> {
+            if (val != null) {
+                action.accept(val);
+                property.removeListener(l.get());
             }
         });
 
-        node.sceneProperty().addListener(l.get());
+        property.addListener(l.get());
     }
 
     public static void errorAlert(String heading, String content) {

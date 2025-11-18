@@ -42,7 +42,7 @@ public class ProjectListController {
         );
         projectView.setItems(filteredProjects);
 
-        UXUtilities.doOnceSceneLoads(projectView, sc -> {
+        UXUtilities.doOnceAvailable(projectView.sceneProperty(), sc -> {
             sc.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
                 boolean controlDown = OperatingSystem.isMac() ? e.isMetaDown() : e.isControlDown();
                 if (e.getCode() == KeyCode.R && controlDown) {
