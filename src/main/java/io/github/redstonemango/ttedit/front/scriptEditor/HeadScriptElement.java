@@ -170,6 +170,7 @@ public class HeadScriptElement extends AbstractScriptElement {
         }
 
         branches.add(indexCopy, myBranch);
+        changed.set(true);
     }
 
     @Override
