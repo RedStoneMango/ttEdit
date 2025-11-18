@@ -124,7 +124,7 @@ public class ProjectContentController {
             }
         });
 
-        UXUtilities.doOnceSceneLoads(contentView, scene ->
+        UXUtilities.doOnceAvailable(contentView.sceneProperty(), scene ->
             scene.getWindow().setOnCloseRequest(e -> {
                 boolean changed = tabs.stream().anyMatch(t -> t.getElement().isChanged());
                 if (changed) {

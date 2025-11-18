@@ -16,7 +16,6 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -91,7 +90,7 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
 
         // Position the head's children
         heads.stream().findFirst().ifPresent(head ->
-            UXUtilities.doOnceSceneLoads(head, _ -> Platform.runLater(() ->
+            UXUtilities.doOnceAvailable(head.sceneProperty(), _ -> Platform.runLater(() ->
                     heads.forEach(AbstractScriptElement::updateChildrenMove)))
         );
     }
