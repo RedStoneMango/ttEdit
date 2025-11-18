@@ -9,15 +9,14 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ElementTab extends Tab {
 
@@ -28,9 +27,12 @@ public class ElementTab extends Tab {
     public ElementTab(ProjectElement element) {
         this.element = element;
 
-        ImageView typeImageView = new ImageView(element.getType().buildImage());
+        ImageView typeImageView = new ImageView(element.getType().buildImage(element.isChanged()));
         typeImageView.setPreserveRatio(true);
         typeImageView.setFitHeight(20);
+        element.changedProperty().addListener((_, _, changed) -> {
+            typeImageView.setImage(element.getType().buildImage(changed));
+        });
 
         setText(element.getName());
         setGraphic(typeImageView);
@@ -58,6 +60,28 @@ public class ElementTab extends Tab {
 
         VBox content = new VBox(buttonBox, editor);
         setContent(content);
+
+        setOnCloseRequest(e -> {
+            if (!element.isChanged()) return;
+
+            ButtonType discardButton = new ButtonType("Discard and Close");
+            ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType saveButton = new ButtonType("Save and Close");
+
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.getButtonTypes().setAll(discardButton, cancelButton, saveButton);
+            alert.setTitle("Unsaved Changed");
+            alert.setHeaderText("There are unsaved changes in '" + element.getName() + "'");
+            alert.setContentText("Do you really want to discard them?");
+            UXUtilities.applyStylesheet(alert);
+            alert.showAndWait();
+
+            if (alert.getResult() == cancelButton)
+                e.consume();
+            else if (alert.getResult() == saveButton) {
+                save();
+            }
+        });
     }
 
     private Node scriptElementContent() {
@@ -72,7 +96,11 @@ public class ElementTab extends Tab {
         return label;
     }
 
-    private void save() {
+    public void save() {
+        save(() -> {});
+    }
+
+    public void save(Runnable onError) {
         if (editable instanceof ScriptElementEditor editor) {
             List<ScriptData> elementBranches = element.getBranches();
             assert elementBranches != null: "Elements that have a ScriptElementEditor should always supply branches";
@@ -84,6 +112,7 @@ public class ElementTab extends Tab {
                 UXUtilities.errorAlert("Error saving element '" + element.getName() + "'", e.getMessage());
             }
         }
+        element.setChanged(false);
     }
 
     public ProjectElement getElement() {

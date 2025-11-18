@@ -1,6 +1,7 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
+import javafx.beans.property.BooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -34,6 +35,7 @@ public abstract class AbstractScriptElement extends StackPane {
     private final boolean isHead;
     final boolean preview;
     final ObservableList<ScriptElementEditor.Branch> branches;
+    final BooleanProperty changed;
 
     private @Nullable Path highlightShape;
 
@@ -44,12 +46,13 @@ public abstract class AbstractScriptElement extends StackPane {
     private @Nullable AbstractScriptElement parent;
 
     public AbstractScriptElement(boolean preview, Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                 @Nullable AbstractScriptElement parent, boolean isHead,
+                                 @Nullable AbstractScriptElement parent, boolean isHead, BooleanProperty changed,
                                  ObservableList<ScriptElementEditor.Branch> branches) {
         this.parent = parent;
         this.deleteIcon = deleteIcon;
         this.isHead = isHead;
         this.preview = preview;
+        this.changed = changed;
         this.branches = branches;
 
         HBox content = new HBox();
@@ -67,7 +70,7 @@ public abstract class AbstractScriptElement extends StackPane {
             if (preview) {
                 Point2D scrollTopLeft = editorScroll.localToScene(0, 0);
                 Point2D paneTopLeftVisual = editorPane.sceneToLocal(scrollTopLeft);
-                AbstractScriptElement element = createDefault(editorPane, editorScroll, deleteIcon, null, branches);
+                AbstractScriptElement element = createDefault(editorPane, editorScroll, deleteIcon, null, changed, branches);
                 element.setLayoutX(paneTopLeftVisual.getX());
                 element.setLayoutY(paneTopLeftVisual.getY());
                 editorPane.getChildren().add(element);
@@ -396,6 +399,10 @@ public abstract class AbstractScriptElement extends StackPane {
     }
 
     void setElementChild(@Nullable AbstractScriptElement newChild) {
+        setElementChild(newChild, false);
+    }
+
+    void setElementChild(@Nullable AbstractScriptElement newChild, boolean internal) {
         if (newChild == null) {
             if (child != null) child.parent = null;
             child = null;
@@ -404,6 +411,9 @@ public abstract class AbstractScriptElement extends StackPane {
             if (child != null) throw new IllegalStateException("There already is a child for element " + this);
             child = newChild;
             newChild.parent = this;
+        }
+        if (!internal) {
+            changed.set(true);
         }
     }
 
@@ -436,24 +446,25 @@ public abstract class AbstractScriptElement extends StackPane {
     }
 
     public static AbstractScriptElement fromData(ScriptData data, Pane editorPane, ScrollPane editorScroll,
-                                                    ImageView deleteIcon, ObservableList<ScriptElementEditor.Branch> branches) {
+                                                 BooleanProperty changed, ImageView deleteIcon,
+                                                 ObservableList<ScriptElementEditor.Branch> branches) {
 
         return switch (data.getType()) {
             case HEAD -> {
                 HeadScriptElement he =
-                        new HeadScriptElement(false, editorPane, editorScroll, deleteIcon, null, branches);
+                        new HeadScriptElement(false, editorPane, editorScroll, deleteIcon, null, changed, branches);
                 he.loadFromData(data);
                 yield he;
             }
             case PLAY -> {
                 PScriptActionElement pe =
-                        new PScriptActionElement(false, editorPane, editorScroll, deleteIcon, null, branches);
+                        new PScriptActionElement(false, editorPane, editorScroll, deleteIcon, null, changed, branches);
                 pe.loadFromData(data);
                 yield pe;
             }
             case JUMP -> {
                 JScriptActionElement je =
-                        new JScriptActionElement(false, editorPane, editorScroll, deleteIcon, null, branches);
+                        new JScriptActionElement(false, editorPane, editorScroll, deleteIcon, null, changed, branches);
                 je.loadFromData(data);
                 yield je;
             }
@@ -471,7 +482,7 @@ public abstract class AbstractScriptElement extends StackPane {
     public abstract void populate(HBox contentBox, boolean preview);
 
     public abstract AbstractScriptElement createDefault(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                                        @Nullable AbstractScriptElement parent,
+                                                        @Nullable AbstractScriptElement parent, BooleanProperty changed,
                                                         ObservableList<ScriptElementEditor.Branch> branches);
     public abstract Color color();
     public abstract ScriptData build();

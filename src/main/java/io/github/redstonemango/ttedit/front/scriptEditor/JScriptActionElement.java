@@ -1,6 +1,7 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -17,17 +18,19 @@ import org.jetbrains.annotations.Nullable;
 public class JScriptActionElement extends AbstractScriptActionElement {
 
     public JScriptActionElement(boolean preview, Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                @Nullable AbstractScriptElement parent,
+                                @Nullable AbstractScriptElement parent, BooleanProperty changed,
                                 ObservableList<ScriptElementEditor.Branch> branches) {
-        super(preview, editorPane, editorScroll, deleteIcon, parent, false, branches);
+        super(preview, editorPane, editorScroll, deleteIcon, parent, false, changed, branches);
     }
 
     public static JScriptActionElement createPreview(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
+                                                     BooleanProperty changed,
                                                      ObservableList<ScriptElementEditor.Branch> branches) {
-        return new JScriptActionElement(true, editorPane, editorScroll, deleteIcon, null, branches);
+        return new JScriptActionElement(true, editorPane, editorScroll, deleteIcon, null, changed, branches);
     }
 
     private StringProperty jumpTarget;
+    private boolean loading = false;
 
     @Override
     public void populate(HBox contentBox, boolean preview) {
@@ -41,7 +44,10 @@ public class JScriptActionElement extends AbstractScriptActionElement {
         b.setMouseTransparent(preview);
         b.setFocusTraversable(false);
         b.getSelectionModel().selectedItemProperty()
-                .addListener((_, _, val) -> jumpTarget.set(val));
+                .addListener((_, _, val) -> {
+                    jumpTarget.set(val);
+                    if (!loading) changed.set(true);
+                });
         jumpTarget.addListener((_, _, val) ->
                 b.getSelectionModel().select(val));
         applyColoring(b);
@@ -51,14 +57,16 @@ public class JScriptActionElement extends AbstractScriptActionElement {
     @Override
     void loadFromData(ScriptData data) {
         if (data.getType() != ScriptData.Type.JUMP) throw new IllegalArgumentException("ScriptData has to be of type JUMP");
+        loading = true;
         jumpTarget.set(data.getJumpTarget());
+        loading = false;
     }
 
     @Override
     public AbstractScriptElement createDefault(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                               @Nullable AbstractScriptElement parent,
+                                               @Nullable AbstractScriptElement parent, BooleanProperty changed,
                                                ObservableList<ScriptElementEditor.Branch> branches) {
-        return new JScriptActionElement(false, editorPane, editorScroll, deleteIcon, parent, branches);
+        return new JScriptActionElement(false, editorPane, editorScroll, deleteIcon, parent, changed, branches);
     }
 
     @Override

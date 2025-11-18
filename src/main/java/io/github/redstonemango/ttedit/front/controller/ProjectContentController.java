@@ -371,6 +371,15 @@ public class ProjectContentController {
             success.set(false);
             UXUtilities.errorAlert("Error saving project", e.getMessage());
         });
+        tabs.forEach(tab -> {
+            if (tab.getElement().isChanged()) {
+                tab.save(() ->
+                        // On exception, do not show success message.
+                        // Error Alerts are handled inside the function
+                        success.set(false)
+                );
+            }
+        });
 
         if (success.get()) {
             UXUtilities.informationAlert("Save successful", "Your whole project has been successfully saved!");
