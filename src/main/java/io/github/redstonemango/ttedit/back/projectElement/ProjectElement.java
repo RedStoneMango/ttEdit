@@ -24,6 +24,8 @@ public class ProjectElement {
     public ProjectElement(String name, Type type) {
         this.name = name;
         this.type = type;
+        changed = new SimpleBooleanProperty(false);
+        if (type == Type.SCRIPT) branches = new ArrayList<>();
     }
 
     public void initializeFields(String filename) throws ProjectLoadException {
