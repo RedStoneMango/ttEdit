@@ -41,6 +41,8 @@ public abstract class AbstractScriptElement extends StackPane {
 
     private double dragOffsetX = -1;
     private double dragOffsetY = -1;
+    private boolean dragged;
+    private boolean hadParent;
 
     private @Nullable AbstractScriptElement child;
     private @Nullable AbstractScriptElement parent;
@@ -91,7 +93,8 @@ public abstract class AbstractScriptElement extends StackPane {
             editorPane.getChildren().addAll(children);
 
             if (hasElementParent()) {
-                getElementParent().setElementChild(null);
+                getElementParent().setElementChild(null, true);
+                hadParent = true;
             }
 
             editorScroll.setPannable(false);
@@ -101,6 +104,11 @@ public abstract class AbstractScriptElement extends StackPane {
 
         setOnMouseDragged(e -> {
             if (preview) return;
+
+            dragged = true;
+            if (hadParent) {
+                changed.set(true);
+            }
 
             AbstractScriptElement lowest = lowestChild();
             AbstractSnapTarget snapTarget = findSnapTarget(this, lowest, editorPane);
@@ -143,16 +151,21 @@ public abstract class AbstractScriptElement extends StackPane {
 
             dragOffsetX = dragOffsetY = -1;
             clearHighlight(editorPane);
+            hadParent = false; // Unimportant now
 
-            AbstractScriptElement lowest = lowestChild();
-            AbstractSnapTarget snapTarget = findSnapTarget(this, lowest, editorPane);
+            if (dragged) {
+                AbstractScriptElement lowest = lowestChild();
+                AbstractSnapTarget snapTarget = findSnapTarget(this, lowest, editorPane);
 
-            if (snapTarget != null) {
-                if (snapTarget.target() == this) return; // Safety
-                if (snapTarget.position() == SnapPosition.BELOW)
-                    doSnapFor(snapTarget.target(), snapTarget.position());
-                else
-                    lowest.doSnapFor(snapTarget.target(), snapTarget.position());
+                if (snapTarget != null) {
+                    if (snapTarget.target() == this) return; // Safety
+                    if (snapTarget.position() == SnapPosition.BELOW) {
+                        doSnapFor(snapTarget.target(), snapTarget.position());
+                    }
+                    else {
+                        lowest.doSnapFor(snapTarget.target(), snapTarget.position());
+                    }
+                }
             }
 
             if (touchingDeleteIcon(e)) {
@@ -169,6 +182,7 @@ public abstract class AbstractScriptElement extends StackPane {
 
             setCursor(Cursor.DEFAULT);
             editorScroll.setPannable(true);
+            dragged = false;
         });
 
         content.widthProperty().addListener((_, _, _) -> updateShape());
