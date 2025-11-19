@@ -3,7 +3,7 @@
 This app uses [TTTool](https://github.com/entropia/tip-toi-reveng/), so you’ll need to have it installed and available
 in your **PATH**:
 
-### 🪟 Windows
+### Windows
 1. Download the **tttool-xx.zip** from the [latest TTTool release](https://github.com/entropia/tip-toi-reveng/releases/latest).
 2. Extract it somewhere you like, e.g. `C:\Program Files\TTTool\`.
 3. Add that folder to your system **PATH** (via *Edit environment variables*).
@@ -13,7 +13,7 @@ in your **PATH**:
    ```
    If you see a help text with an overview of commands, you’re ready.
 
-### 🐧 Linux
+### Linux
 1. Download the **tttool-xx.zip** from the [latest TTTool release](https://github.com/entropia/tip-toi-reveng/releases/latest).
 2. Extract it and create a link to the `tttool` binary somewhere in your PATH, e.g.:
    ```
@@ -29,7 +29,7 @@ in your **PATH**:
    ```
    If you see a help text with an overview of commands, you’re ready.
 
-### 🍎 macOS
+### macOS
 1. Download the **tttool-xx.zip** from the [latest TTTool release](https://github.com/entropia/tip-toi-reveng/releases/latest).
 2. Extract it and move the `tttool` binary to a folder in your PATH, e.g.:
    ```
