@@ -26,7 +26,6 @@ public class HeadScriptElement extends AbstractScriptElement {
     private int index;
     private int conditionCount = 0;
     private VBox conditionBox;
-    private boolean loading = false;
 
     public HeadScriptElement(boolean preview, Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
                              @Nullable AbstractScriptElement parent, BooleanProperty changed,
@@ -115,7 +114,7 @@ public class HeadScriptElement extends AbstractScriptElement {
         );
         conditionBox.getChildren().addListener((ListChangeListener<? super Node>) _ -> {
             conditionCount = conditionBox.getChildren().size() - 1;
-            if (!loading) changed.set(true);
+            markChanged();
         });
 
         content.getChildren().addAll(titleBox, conditionBox);
@@ -125,11 +124,10 @@ public class HeadScriptElement extends AbstractScriptElement {
     @Override
     void loadFromData(ScriptData data) {
         if (data.getType() != ScriptData.Type.HEAD) throw new IllegalArgumentException("ScriptData has to be of type HEAD");
-        loading = true;
         data.getConditions().forEach(condition ->
             addCondition(condition.getType(), condition.getComparison(), condition.getArgA(), condition.getArgB())
         );
-        loading = false;
+        markIsInBranch();
     }
 
     private void addCondition(BranchCondition.Type type, BranchCondition.Comparison comparison, String argA, String argB) {
@@ -170,13 +168,12 @@ public class HeadScriptElement extends AbstractScriptElement {
         }
 
         branches.add(indexCopy, myBranch);
-        changed.set(true);
+        markChanged();
     }
 
     @Override
     public AbstractScriptElement createDefault(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                               @Nullable AbstractScriptElement parent, BooleanProperty changed,
-                                               ObservableList<ScriptElementEditor.Branch> branches) {
+                                               @Nullable AbstractScriptElement parent) {
         return new HeadScriptElement(false, editorPane, editorScroll, deleteIcon, null, changed, branches);
     }
 
@@ -243,7 +240,7 @@ public class HeadScriptElement extends AbstractScriptElement {
             fieldA.setFocusTraversable(false);
             fieldA.textProperty().addListener((_, _, val) -> {
                 argA = val;
-                owner.changed.set(true);
+                owner.markChanged();
             });
             owner.applyColoring(fieldA);
             TextField fieldB = new TextField(defArgB);
@@ -251,7 +248,7 @@ public class HeadScriptElement extends AbstractScriptElement {
             fieldB.setFocusTraversable(false);
             fieldB.textProperty().addListener((_, _, val) -> {
                 argB = val;
-                owner.changed.set(true);
+                owner.markChanged();
             });
             owner.applyColoring(fieldB);
             ComboBox<BranchCondition.Comparison> comparisonBox = new ComboBox<>();
@@ -263,7 +260,7 @@ public class HeadScriptElement extends AbstractScriptElement {
             comparisonBox.getSelectionModel().selectedItemProperty()
                     .addListener((_, _, val) -> {
                         comparison = val;
-                        owner.changed.set(true);
+                        owner.markChanged();
                     });
 
 

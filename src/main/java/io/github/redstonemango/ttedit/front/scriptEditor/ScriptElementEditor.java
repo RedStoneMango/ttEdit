@@ -109,7 +109,7 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
         AbstractScriptElement lastElement = he;
         for (ScriptData action : data.getActions()) {
             AbstractScriptElement element = AbstractScriptElement.fromData(action, editorPane, editorScroll, changed, deleteIcon, branches);
-            lastElement.setElementChild(element, true);
+            lastElement.setElementChild(element);
 
             width = Math.max(width, element.width() + 20);
             lastElement = element;
