@@ -42,7 +42,7 @@ public abstract class AbstractScriptElement extends StackPane {
     private double dragOffsetX = -1;
     private double dragOffsetY = -1;
     private boolean dragged;
-    private boolean hadParent;
+    private boolean isInBranch;
 
     private @Nullable AbstractScriptElement child;
     private @Nullable AbstractScriptElement parent;
@@ -72,14 +72,14 @@ public abstract class AbstractScriptElement extends StackPane {
             if (preview) {
                 Point2D scrollTopLeft = editorScroll.localToScene(0, 0);
                 Point2D paneTopLeftVisual = editorPane.sceneToLocal(scrollTopLeft);
-                AbstractScriptElement element = createDefault(editorPane, editorScroll, deleteIcon, null, changed, branches);
+                AbstractScriptElement element = createDefault(editorPane, editorScroll, deleteIcon, null);
                 element.setLayoutX(paneTopLeftVisual.getX());
                 element.setLayoutY(paneTopLeftVisual.getY());
                 editorPane.getChildren().add(element);
 
                 if (element instanceof HeadScriptElement head) {
                     branches.add(new ScriptElementEditor.Branch(head));
-                    changed.set(true);
+                    markChanged();
                 }
                 return;
             }
@@ -94,8 +94,7 @@ public abstract class AbstractScriptElement extends StackPane {
             editorPane.getChildren().addAll(children);
 
             if (hasElementParent()) {
-                getElementParent().setElementChild(null, true);
-                hadParent = true;
+                getElementParent().setElementChild(null);
             }
 
             editorScroll.setPannable(false);
@@ -107,8 +106,10 @@ public abstract class AbstractScriptElement extends StackPane {
             if (preview) return;
 
             dragged = true;
-            if (hadParent) {
-                changed.set(true);
+            if (!isHead) {
+                markChanged();
+                isInBranch = false;
+                resolveChildrenRecursively().forEach(c -> c.isInBranch = false);
             }
 
             AbstractScriptElement lowest = lowestChild();
@@ -152,20 +153,23 @@ public abstract class AbstractScriptElement extends StackPane {
 
             dragOffsetX = dragOffsetY = -1;
             clearHighlight(editorPane);
-            hadParent = false; // Unimportant now
 
-            if (dragged) {
-                AbstractScriptElement lowest = lowestChild();
-                AbstractSnapTarget snapTarget = findSnapTarget(this, lowest, editorPane);
+            AbstractScriptElement lowest = lowestChild();
+            AbstractSnapTarget snapTarget = findSnapTarget(this, lowest, editorPane);
 
-                if (snapTarget != null) {
-                    if (snapTarget.target() == this) return; // Safety
-                    if (snapTarget.position() == SnapPosition.BELOW) {
-                        doSnapFor(snapTarget.target(), snapTarget.position());
-                    }
-                    else {
-                        lowest.doSnapFor(snapTarget.target(), snapTarget.position());
-                    }
+            if (snapTarget != null) {
+                if (snapTarget.target() == this) return;
+                if (snapTarget.position() == SnapPosition.NONE) return;
+                if (snapTarget.position() == SnapPosition.BELOW) {
+                    doSnapFor(snapTarget.target(), snapTarget.position());
+                }
+                else {
+                    lowest.doSnapFor(snapTarget.target(), snapTarget.position());
+                }
+                isInBranch = resolveParentsRecursively().getLast().isHead;
+                resolveChildrenRecursively().forEach(c -> c.isInBranch = isInBranch); // Copy to children
+                if (dragged) {
+                    markChanged();
                 }
             }
 
@@ -174,9 +178,9 @@ public abstract class AbstractScriptElement extends StackPane {
                 editorPane.getChildren().removeAll(children);
                 editorPane.getChildren().remove(this);
 
-                if (this instanceof HeadScriptElement) {
+                if (isHead) {
                     branches.removeIf(b -> b.head() == this);
-                    changed.set(true);
+                    markChanged();
                 }
 
                 deleteIcon.setImage(ScriptElementEditor.BIN_CLOSED);
@@ -189,6 +193,16 @@ public abstract class AbstractScriptElement extends StackPane {
 
         content.widthProperty().addListener((_, _, _) -> updateShape());
         content.heightProperty().addListener((_, _, _) -> updateShape());
+    }
+
+    void markChanged() {
+        if (isInBranch) {
+            changed.set(true);
+        }
+    }
+
+    void markIsInBranch() {
+        isInBranch = true;
     }
 
     private void getControlIntoViewVertically(Region element, ScrollPane scrollPane, Pane parent) {
@@ -294,6 +308,20 @@ public abstract class AbstractScriptElement extends StackPane {
             curr = curr.getElementChild();
         }
         return children;
+    }
+
+    /**
+     * This method does not only resolve all parents but also adds this element itself to the list
+     */
+    private List<AbstractScriptElement> resolveParentsRecursively() {
+        AbstractScriptElement curr = this;
+        List<AbstractScriptElement> parents = new ArrayList<>();
+
+        while (curr != null) {
+            parents.add(curr);
+            curr = curr.getElementParent();
+        }
+        return parents;
     }
 
     void updateShape() {
@@ -415,10 +443,6 @@ public abstract class AbstractScriptElement extends StackPane {
     }
 
     void setElementChild(@Nullable AbstractScriptElement newChild) {
-        setElementChild(newChild, false);
-    }
-
-    void setElementChild(@Nullable AbstractScriptElement newChild, boolean internal) {
         if (newChild == null) {
             if (child != null) child.parent = null;
             child = null;
@@ -427,9 +451,6 @@ public abstract class AbstractScriptElement extends StackPane {
             if (child != null) throw new IllegalStateException("There already is a child for element " + this);
             child = newChild;
             newChild.parent = this;
-        }
-        if (!internal) {
-            changed.set(true);
         }
     }
 
@@ -498,8 +519,7 @@ public abstract class AbstractScriptElement extends StackPane {
     public abstract void populate(HBox contentBox, boolean preview);
 
     public abstract AbstractScriptElement createDefault(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                                        @Nullable AbstractScriptElement parent, BooleanProperty changed,
-                                                        ObservableList<ScriptElementEditor.Branch> branches);
+                                                        @Nullable AbstractScriptElement parent);
     public abstract Color color();
     public abstract ScriptData build();
     abstract void loadFromData(ScriptData data);

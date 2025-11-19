@@ -30,7 +30,6 @@ public class JScriptActionElement extends AbstractScriptActionElement {
     }
 
     private StringProperty jumpTarget;
-    private boolean loading = false;
 
     @Override
     public void populate(HBox contentBox, boolean preview) {
@@ -46,7 +45,7 @@ public class JScriptActionElement extends AbstractScriptActionElement {
         b.getSelectionModel().selectedItemProperty()
                 .addListener((_, _, val) -> {
                     jumpTarget.set(val);
-                    if (!loading) changed.set(true);
+                    markChanged();
                 });
         jumpTarget.addListener((_, _, val) ->
                 b.getSelectionModel().select(val));
@@ -57,15 +56,13 @@ public class JScriptActionElement extends AbstractScriptActionElement {
     @Override
     void loadFromData(ScriptData data) {
         if (data.getType() != ScriptData.Type.JUMP) throw new IllegalArgumentException("ScriptData has to be of type JUMP");
-        loading = true;
         jumpTarget.set(data.getJumpTarget());
-        loading = false;
+        markIsInBranch();
     }
 
     @Override
     public AbstractScriptElement createDefault(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                               @Nullable AbstractScriptElement parent, BooleanProperty changed,
-                                               ObservableList<ScriptElementEditor.Branch> branches) {
+                                               @Nullable AbstractScriptElement parent) {
         return new JScriptActionElement(false, editorPane, editorScroll, deleteIcon, parent, changed, branches);
     }
 

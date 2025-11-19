@@ -29,7 +29,6 @@ public class PScriptActionElement extends AbstractScriptActionElement {
     }
 
     private StringProperty sound;
-    private boolean loading = false;
 
     @Override
     public void populate(HBox contentBox, boolean preview) {
@@ -44,7 +43,7 @@ public class PScriptActionElement extends AbstractScriptActionElement {
         f.setFocusTraversable(false);
         f.textProperty().addListener((_, _, val) -> {
             sound.set(val);
-            if (!loading) changed.set(true);
+            markChanged();
         });
         sound.addListener((_, _, val) -> f.setText(val));
         applyColoring(f);
@@ -54,15 +53,13 @@ public class PScriptActionElement extends AbstractScriptActionElement {
     @Override
     void loadFromData(ScriptData data) {
         if (data.getType() != ScriptData.Type.PLAY) throw new IllegalArgumentException("ScriptData has to be of type PLAY");
-        loading = true;
         sound.set(data.getSound());
-        loading = false;
+        markIsInBranch();
     }
 
     @Override
     public AbstractScriptElement createDefault(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                               @Nullable AbstractScriptElement parent, BooleanProperty changed,
-                                               ObservableList<ScriptElementEditor.Branch> branches) {
+                                               @Nullable AbstractScriptElement parent) {
         return new PScriptActionElement(false, editorPane, editorScroll, deleteIcon, parent, changed, branches);
     }
 
