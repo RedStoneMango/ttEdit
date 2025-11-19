@@ -5,7 +5,6 @@ import io.github.redstonemango.ttedit.back.projectElement.BranchCondition;
 import io.github.redstonemango.ttedit.front.propertySheetHelpers.*;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
-import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -31,6 +30,7 @@ import org.controlsfx.property.editor.Editors;
 import org.controlsfx.property.editor.PropertyEditor;
 
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -301,7 +301,7 @@ public class UXUtilities {
                                                                      Consumer<T> doubleClicked) {
         ObservableList<T> selectedItems = FXCollections.observableArrayList();
 
-        final int[] lastSelectedIndex = {-1};
+        AtomicInteger lastSelectedIndex = new AtomicInteger(-1);
 
         gridView.setCellFactory(_ -> {
             GridCell<T> cell = new GridCell<>() {
@@ -336,18 +336,18 @@ public class UXUtilities {
                     } else {
                         selectedItems.add(cell.getItem());
                     }
-                    lastSelectedIndex[0] = index;
+                    lastSelectedIndex.set(index);
 
-                } else if (event.isShiftDown() && lastSelectedIndex[0] >= 0) {
-                    int start = Math.min(lastSelectedIndex[0], index);
-                    int end = Math.max(lastSelectedIndex[0], index);
+                } else if (event.isShiftDown() && lastSelectedIndex.get() >= 0 && lastSelectedIndex.get() != index) {
+                    int start = Math.min(lastSelectedIndex.get(), index);
+                    int end = Math.max(lastSelectedIndex.get(), index);
                     selectedItems.clear();
                     selectedItems.addAll(gridView.getItems().subList(start, end + 1));
 
-                } else {
+                } else if (lastSelectedIndex.get() != index) {
                     selectedItems.clear();
                     selectedItems.add(cell.getItem());
-                    lastSelectedIndex[0] = index;
+                    lastSelectedIndex.set(index);
                 }
 
                 cell.pseudoClassStateChanged(
