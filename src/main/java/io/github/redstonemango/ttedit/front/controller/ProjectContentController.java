@@ -1,7 +1,6 @@
 package io.github.redstonemango.ttedit.front.controller;
 
 import io.github.redstonemango.mangoutils.OperatingSystem;
-import io.github.redstonemango.ttedit.TtEdit;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectLoadException;
 import io.github.redstonemango.ttedit.front.ElementTab;
 import io.github.redstonemango.ttedit.back.Project;
