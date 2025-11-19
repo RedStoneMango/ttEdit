@@ -26,6 +26,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.controlsfx.control.GridView;
 
 import java.io.File;
@@ -461,7 +462,11 @@ public class ProjectContentController {
     }
 
     private void close() {
-        Stage stage = TtEdit.getPrimaryStage();
+        Stage stage = (Stage) contentView.getScene().getWindow();
+        WindowEvent evt = new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST);
+        stage.getOnCloseRequest().handle(evt);
+        if (evt.isConsumed()) return;
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/io/github/redstonemango/ttedit/fxml/project-list.fxml"));
         Scene scene;
         try {
