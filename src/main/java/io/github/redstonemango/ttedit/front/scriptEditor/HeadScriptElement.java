@@ -242,7 +242,9 @@ public class HeadScriptElement extends AbstractScriptElement {
                 argA = val;
                 owner.markChanged();
             });
+            argA = defArgA;
             owner.applyColoring(fieldA);
+
             TextField fieldB = new TextField(defArgB);
             fieldB.setPrefWidth(70);
             fieldB.setFocusTraversable(false);
@@ -250,7 +252,9 @@ public class HeadScriptElement extends AbstractScriptElement {
                 argB = val;
                 owner.markChanged();
             });
+            argB = defArgB;
             owner.applyColoring(fieldB);
+
             ComboBox<BranchCondition.Comparison> comparisonBox = new ComboBox<>();
             comparisonBox.setFocusTraversable(false);
             owner.applyColoring(comparisonBox);
@@ -262,6 +266,7 @@ public class HeadScriptElement extends AbstractScriptElement {
                         comparison = val;
                         owner.markChanged();
                     });
+            comparison = defComparison;
 
 
             ImageView remove = new ImageView(
