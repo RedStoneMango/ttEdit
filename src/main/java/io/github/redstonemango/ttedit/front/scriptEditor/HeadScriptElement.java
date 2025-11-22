@@ -255,7 +255,7 @@ public class HeadScriptElement extends AbstractScriptElement {
             comparisonBox.setFocusTraversable(false);
             owner.applyColoring(comparisonBox);
             comparisonBox.getItems().addAll(BranchCondition.Comparison.values());
-            UXUtilities.applyComparisonBoxCellFactory(comparisonBox);
+            UXUtilities.applyComparisonComboBoxCellFactory(comparisonBox);
             comparisonBox.getSelectionModel().select(defComparison);
             comparisonBox.getSelectionModel().selectedItemProperty()
                     .addListener((_, _, val) -> {

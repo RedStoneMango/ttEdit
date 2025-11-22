@@ -73,7 +73,6 @@ public class BranchCondition {
         Comparison(String literal) {
             this.literal = literal;
         }
-
         public String getLiteral() {
             return literal;
         }

@@ -505,6 +505,12 @@ public abstract class AbstractScriptElement extends StackPane {
                 je.loadFromData(data);
                 yield je;
             }
+            case REGISTER -> {
+                RegisterScriptActionElement re =
+                        new RegisterScriptActionElement(false, editorPane, editorScroll, deleteIcon, null, changed, branches);
+                re.loadFromData(data);
+                yield re;
+            }
         };
     }
 
