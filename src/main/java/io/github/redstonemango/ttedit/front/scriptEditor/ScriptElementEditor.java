@@ -58,9 +58,14 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
         controlsBox.setSpacing(20);
         controlsBox.setFillWidth(false);
         controlsBox.setPadding(new Insets(10, 2, 10, 2));
-        controlsBox.getChildren().add(HeadScriptElement.createPreview(editorPane, editorScroll, deleteIcon, element.changedProperty(), branches));
-        controlsBox.getChildren().add(PScriptActionElement.createPreview(editorPane, editorScroll, deleteIcon, element.changedProperty(), branches));
-        controlsBox.getChildren().add(JScriptActionElement.createPreview(editorPane, editorScroll, deleteIcon, element.changedProperty(), branches));
+        controlsBox.getChildren().add(
+                HeadScriptElement.createPreview(editorPane, editorScroll, deleteIcon, element.changedProperty(), branches));
+        controlsBox.getChildren().add(
+                PScriptActionElement.createPreview(editorPane, editorScroll, deleteIcon, element.changedProperty(), branches));
+        controlsBox.getChildren().add(
+                JScriptActionElement.createPreview(editorPane, editorScroll, deleteIcon, element.changedProperty(), branches));
+        controlsBox.getChildren().add(
+                RegisterScriptActionElement.createPreview(editorPane, editorScroll, deleteIcon, element.changedProperty(), branches));
 
         getChildren().addAll(controlsPane, editorArea);
 

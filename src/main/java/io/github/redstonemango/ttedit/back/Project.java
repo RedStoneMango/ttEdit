@@ -19,6 +19,7 @@ public class Project {
     @JsonIgnore private Set<ProjectElement> elements;
 
     private int productID;
+    private Set<String> knownRegisters;
     private @Nullable String comment;
     private @Nullable String language;
 
@@ -35,6 +36,7 @@ public class Project {
         dir = new File(Launcher.PROJECTS_HOME, filename);
         productID = Math.clamp(productID, 0, 999);
         elements = new HashSet<>();
+        if (knownRegisters != null) knownRegisters = new HashSet<>();
     }
 
     public File getDir() {

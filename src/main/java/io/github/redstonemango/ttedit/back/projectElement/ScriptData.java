@@ -21,6 +21,11 @@ public class ScriptData {
     // JUMP ELEMENT
     private @Nullable String jumpTarget;
 
+    // REGISTER ELEMENT
+    private @Nullable String register;
+    private @Nullable Action action;
+    private @Nullable String value;
+
     public ScriptData() {}
 
     public void initializeFields() throws ProjectLoadException {
@@ -36,6 +41,9 @@ public class ScriptData {
             case HEAD -> {
                 sound = null;
                 jumpTarget = null;
+                register = null;
+                action = null;
+                value = null;
                 if (conditions == null) conditions = new ArrayList<>();
                 for (BranchCondition condition : conditions) {
                     condition.initializeFields();
@@ -49,13 +57,28 @@ public class ScriptData {
                 jumpTarget = null;
                 conditions = null;
                 actions = null;
+                register = null;
+                action = null;
+                value = null;
                 if (sound == null) sound = "";
             }
             case JUMP -> {
                 conditions = null;
                 sound = null;
                 actions = null;
+                register = null;
+                action = null;
+                value = null;
                 if (jumpTarget == null) jumpTarget = "";
+            }
+            case REGISTER -> {
+                conditions = null;
+                sound = null;
+                actions = null;
+                jumpTarget = null;
+                if (register != null) register = "";
+                if (action != null) action = Action.SET;
+                if (value != null) value = "";
             }
         }
     }
@@ -100,5 +123,47 @@ public class ScriptData {
         this.jumpTarget = jumpTarget;
     }
 
-    public enum Type { HEAD, PLAY, JUMP}
+    public @Nullable String getRegister() {
+        return register;
+    }
+
+    public void setRegister(@Nullable String register) {
+        this.register = register;
+    }
+
+    public @Nullable Action getAction() {
+        return action;
+    }
+
+    public void setAction(@Nullable Action action) {
+        this.action = action;
+    }
+
+    public @Nullable String getValue() {
+        return value;
+    }
+
+    public void setValue(@Nullable String value) {
+        this.value = value;
+    }
+
+
+    public enum Type { HEAD, PLAY, JUMP, REGISTER;}
+    public enum Action {
+        SET("value"),
+        ADDITION("itself plus"),
+        SUBSTRACTION("itself minus"),
+        MULTIPLICATION("itself times"),
+        DIVISION("itself divided by"),
+        MODULO("itself modulo");
+
+        private final String literal;
+
+        Action(String literal) {
+            this.literal = literal;
+        }
+        public String getLiteral() {
+            return literal;
+        }
+    }
 }

@@ -2,6 +2,7 @@ package io.github.redstonemango.ttedit.front;
 
 import io.github.redstonemango.mangoutils.OperatingSystem;
 import io.github.redstonemango.ttedit.back.projectElement.BranchCondition;
+import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
 import io.github.redstonemango.ttedit.front.propertySheetHelpers.*;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -145,7 +146,40 @@ public class UXUtilities {
         }
     }
 
-    public static void applyComparisonBoxCellFactory(ComboBox<BranchCondition.Comparison> comboBox) {
+    public static void applyActionComboBoxCellFactory(ComboBox<ScriptData.Action> comboBox) {
+        comboBox.setCellFactory(new Callback<>() {
+            @Override
+            public ListCell<ScriptData.Action> call(ListView<ScriptData.Action> lv) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(ScriptData.Action item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            setGraphic(null);
+                            setText(item.getLiteral());
+                        }
+                    }
+                };
+            }
+        });
+        comboBox.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(ScriptData.Action item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    setGraphic(null);
+                    setText(item.getLiteral());
+                }
+            }
+        });
+    }
+    public static void applyComparisonComboBoxCellFactory(ComboBox<BranchCondition.Comparison> comboBox) {
         comboBox.setCellFactory(new Callback<>() {
             @Override
             public ListCell<BranchCondition.Comparison> call(ListView<BranchCondition.Comparison> lv) {
