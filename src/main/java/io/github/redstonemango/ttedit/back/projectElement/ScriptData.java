@@ -26,12 +26,15 @@ public class ScriptData {
     // JUMP ELEMENT
     private @Nullable String jumpTarget;
 
-    // REGISTER & NEGATE ELEMENT
+    // REGISTER, NEGATE & TIME ELEMENT
     private @Nullable String register;
 
     // ONLY REGISTER ELEMENT (also needs '@Nullable String register')
     private @Nullable Action action;
     private @Nullable String value;
+
+    // ONLY TIME ELEMENT (also needs '@Nullable String register')
+    private @Nullable String modulo;
 
     public ScriptData() {}
 
@@ -45,6 +48,7 @@ public class ScriptData {
             else throw new ProjectLoadException("No script type supplied! Automated type detection failed.");
         }
 
+        // Ugly
         switch (type) {
             case HEAD -> {
                 sound = null;
@@ -68,6 +72,7 @@ public class ScriptData {
                 register = null;
                 action = null;
                 value = null;
+                modulo = null;
                 if (sound == null) sound = "";
             }
             case JUMP -> {
@@ -77,6 +82,7 @@ public class ScriptData {
                 register = null;
                 action = null;
                 value = null;
+                modulo = null;
                 if (jumpTarget == null) jumpTarget = "";
             }
             case REGISTER -> {
@@ -84,6 +90,7 @@ public class ScriptData {
                 sound = null;
                 actions = null;
                 jumpTarget = null;
+                modulo = null;
                 if (register == null) register = "";
                 if (action == null) action = Action.SET;
                 if (value == null) value = "";
@@ -95,7 +102,18 @@ public class ScriptData {
                 jumpTarget = null;
                 action = null;
                 value = null;
+                modulo = null;
                 if (register == null) register = "";
+            }
+            case TIME -> {
+                conditions = null;
+                sound = null;
+                actions = null;
+                jumpTarget = null;
+                action = null;
+                value = null;
+                if (register == null) register = "";
+                if (modulo == null) modulo = "";
             }
         }
     }
@@ -188,12 +206,20 @@ public class ScriptData {
         this.value = value;
     }
 
+    public @Nullable String getModulo() {
+        return modulo;
+    }
+
+    public void setModulo(@Nullable String modulo) {
+        this.modulo = modulo;
+    }
+
     public static boolean matchesRegisterPattern(String s) {
         return REGISTER_PATTERN.matcher(s).matches();
     }
 
 
-    public enum Type { HEAD, PLAY, JUMP, REGISTER, NEGATE }
+    public enum Type { HEAD, PLAY, JUMP, REGISTER, NEGATE, TIME }
     public enum Action {
         SET("value"),
         ADDITION("itself plus"),
