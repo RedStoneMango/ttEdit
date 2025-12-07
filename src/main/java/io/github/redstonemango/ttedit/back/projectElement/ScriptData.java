@@ -199,7 +199,10 @@ public class ScriptData {
         SUBSTRACTION("itself minus"),
         MULTIPLICATION("itself times"),
         DIVISION("itself divided by"),
-        MODULO("itself modulo");
+        MODULO("itself modulo"),
+        OR("itself bitwise-OR with"),
+        AND("itself bitwise-AND with"),
+        XOR("itself bitwise-XOR with");
 
         private final String literal;
 
