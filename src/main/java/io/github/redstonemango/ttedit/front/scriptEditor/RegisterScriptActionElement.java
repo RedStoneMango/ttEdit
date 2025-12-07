@@ -58,6 +58,7 @@ public class RegisterScriptActionElement extends AbstractScriptActionElement {
         b.setMouseTransparent(preview);
         b.setFocusTraversable(false);
         UXUtilities.applyActionComboBoxCellFactory(b);
+        b.getSelectionModel().select(action.getValue());
         b.getSelectionModel().selectedItemProperty()
                 .addListener((_, _, val) -> {
                     action.setValue(val);
