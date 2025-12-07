@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class AbstractScriptElement extends StackPane {
@@ -36,6 +37,7 @@ public abstract class AbstractScriptElement extends StackPane {
     private final boolean isHead;
     final boolean preview;
     final ObservableList<ScriptElementEditor.Branch> branches;
+    final ObservableList<ProjectElement> existingScripts;
     final ProjectElement element;
 
     private @Nullable Path highlightShape;
@@ -56,6 +58,7 @@ public abstract class AbstractScriptElement extends StackPane {
         this.preview = preview;
         this.element = meta.element();
         this.branches = meta.branches();
+        this.existingScripts = meta.existingScripts();
         var editorPane = meta.editorPane();
         var editorScroll = meta.editorScroll();
 

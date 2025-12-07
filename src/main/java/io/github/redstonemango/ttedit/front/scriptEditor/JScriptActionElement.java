@@ -1,6 +1,8 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
+import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
+import io.github.redstonemango.ttedit.front.UXUtilities;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -9,6 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class JScriptActionElement extends AbstractScriptActionElement {
 
@@ -25,23 +29,29 @@ public class JScriptActionElement extends AbstractScriptActionElement {
 
     @Override
     public void populate(HBox contentBox, boolean preview) {
-        if (jumpTarget == null) jumpTarget = new SimpleStringProperty("");
+        if (jumpTarget == null) jumpTarget = new SimpleStringProperty(existingScripts.getFirst().getName());
 
         Label l = new Label("Jump To");
         applyColoring(l);
         l.setMouseTransparent(preview);
-        ComboBox<String> b = new ComboBox<>(FXCollections.observableArrayList("hello", "test", "hi"));
+        ComboBox<ProjectElement> b = new ComboBox<>(existingScripts);
         b.setPrefWidth(200);
         b.setMouseTransparent(preview);
         b.setFocusTraversable(false);
+        b.getSelectionModel().select(existingScripts.getFirst());
         b.getSelectionModel().selectedItemProperty()
                 .addListener((_, _, val) -> {
-                    jumpTarget.set(val);
+                    if (val != null) jumpTarget.set(val.getName());
                     markChanged();
                 });
-        jumpTarget.addListener((_, _, val) ->
-                b.getSelectionModel().select(val));
+        jumpTarget.addListener((_, _, val) -> {
+                b.getSelectionModel().select(existingScripts.stream()
+                        .filter(e -> e.getName().equals(val))
+                        .findFirst()
+                        .orElse(existingScripts.getFirst()));
+        });
         applyColoring(b);
+        UXUtilities.applyProjectElementComboBoxCellFactory(b);
         contentBox.getChildren().addAll(l, b);
     }
 
