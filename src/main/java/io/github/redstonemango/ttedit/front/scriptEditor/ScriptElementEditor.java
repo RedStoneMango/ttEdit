@@ -58,14 +58,12 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
         controlsBox.setSpacing(20);
         controlsBox.setFillWidth(false);
         controlsBox.setPadding(new Insets(10, 2, 10, 2));
-        controlsBox.getChildren().add(
-                HeadScriptElement.createPreview(editorPane, editorScroll, deleteIcon, element.changedProperty(), branches));
-        controlsBox.getChildren().add(
-                PScriptActionElement.createPreview(editorPane, editorScroll, deleteIcon, element.changedProperty(), branches));
-        controlsBox.getChildren().add(
-                JScriptActionElement.createPreview(editorPane, editorScroll, deleteIcon, element.changedProperty(), branches));
-        controlsBox.getChildren().add(
-                RegisterScriptActionElement.createPreview(editorPane, editorScroll, deleteIcon, element.changedProperty(), branches));
+
+        ScriptElementMeta meta = new ScriptElementMeta(editorPane, editorScroll, deleteIcon, branches, element);
+        controlsBox.getChildren().add(HeadScriptElement.createPreview(meta));
+        controlsBox.getChildren().add(PScriptActionElement.createPreview(meta));
+        controlsBox.getChildren().add(JScriptActionElement.createPreview(meta));
+        controlsBox.getChildren().add(RegisterScriptActionElement.createPreview(meta));
 
         getChildren().addAll(controlsPane, editorArea);
 
@@ -73,7 +71,7 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
         Set<HeadScriptElement> heads = new HashSet<>();
         for (ScriptData data : element.getBranches()) {
             Tuple2<HeadScriptElement, Double> branchData =
-                    branchFromData(data, editorPane, editorScroll, deleteIcon, element.changedProperty(), branches);
+                    branchFromData(data, meta);
 
             HeadScriptElement head = branchData.first;
             heads.add(head);
@@ -100,20 +98,17 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
         );
     }
 
-    private static Tuple2<HeadScriptElement, Double> branchFromData(ScriptData data, Pane editorPane,
-                                                                    ScrollPane editorScroll, ImageView deleteIcon,
-                                                                    BooleanProperty changed,
-                                                                    ObservableList<ScriptElementEditor.Branch> branches) {
+    private static Tuple2<HeadScriptElement, Double> branchFromData(ScriptData data, ScriptElementMeta meta) {
 
         if (data.getType() != ScriptData.Type.HEAD) throw new IllegalArgumentException("ScriptData has to be of type HEAD");
-        HeadScriptElement he = new HeadScriptElement(false, editorPane, editorScroll, deleteIcon, null, changed, branches);
+        HeadScriptElement he = new HeadScriptElement(false, null, meta);
         he.loadFromData(data);
 
         double width = he.width();
 
         AbstractScriptElement lastElement = he;
         for (ScriptData action : data.getActions()) {
-            AbstractScriptElement element = AbstractScriptElement.fromData(action, editorPane, editorScroll, changed, deleteIcon, branches);
+            AbstractScriptElement element = AbstractScriptElement.fromData(action, meta);
             lastElement.setElementChild(element);
 
             width = Math.max(width, element.width() + 20);

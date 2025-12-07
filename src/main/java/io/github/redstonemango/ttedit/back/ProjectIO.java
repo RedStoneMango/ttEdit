@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import io.github.redstonemango.mangoutils.MangoIO;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectLoadException;
+import io.github.redstonemango.ttedit.back.registerDictionary.RegisterFileIndex;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +32,7 @@ public class ProjectIO {
     public static void saveProjectGeneralConfig(Project project) throws IOException {
         File generalConfigFile = new File(project.getDir(), "general.json");
         if (!generalConfigFile.exists()) {
-            generalConfigFile.getParentFile().mkdir(); // No need for complex mkdirs: All parent dirs already exist
+            generalConfigFile.getParentFile().mkdirs();
             generalConfigFile.createNewFile();
         }
 
@@ -105,7 +106,7 @@ public class ProjectIO {
                 File elementFile = new File(project.getElementDir(), elementName);
                 try {
                     project.getElements().add(
-                            loadProjectElement(elementFile)
+                            loadProjectElement(elementFile, project.getRegisterIndexUnifier().getFileIndex())
                     );
                 } catch (IOException | ProjectLoadException e) {
                     onException.accept(e);
@@ -114,9 +115,12 @@ public class ProjectIO {
         }
     }
 
-    public static ProjectElement loadProjectElement(File elementFile) throws IOException, ProjectLoadException {
+    public static ProjectElement loadProjectElement(File elementFile, RegisterFileIndex registerFileIndex)
+            throws IOException, ProjectLoadException {
+
         ProjectElement element = objectMapper.readValue(elementFile, ProjectElement.class);
         element.initializeFields(elementFile.getName());
+        registerFileIndex.loadEntries(element);
         return element;
     }
 

@@ -240,7 +240,7 @@ public class ProjectContentController {
     private void onEdit() {
         if (selectedElements.size() != 1) return; // Just to be safe
         ProjectElement element = selectedElements.getFirst();
-        ElementTab tab = new ElementTab(element);
+        ElementTab tab = new ElementTab(element, Project.getCurrentProject());
 
         if (!tabs.contains(tab)) {
             tabs.add(tab);
@@ -281,7 +281,7 @@ public class ProjectContentController {
 
                 try {
                     newElements.add(
-                            ProjectIO.loadProjectElement(target)
+                            ProjectIO.loadProjectElement(target, project.getRegisterIndexUnifier().getFileIndex())
                     );
                 } catch (IOException | ProjectLoadException e) {
                     UXUtilities.errorAlert("Error parsing new element file '" + source.getName() + "'", e.getMessage());
@@ -348,7 +348,7 @@ public class ProjectContentController {
 
                 try {
                     newElements.add(
-                            ProjectIO.loadProjectElement(target)
+                            ProjectIO.loadProjectElement(target, project.getRegisterIndexUnifier().getFileIndex())
                     );
                 } catch (IOException | ProjectLoadException e) {
                     UXUtilities.errorAlert("Error parsing new element file '" + source.getName() + "'", e.getMessage());

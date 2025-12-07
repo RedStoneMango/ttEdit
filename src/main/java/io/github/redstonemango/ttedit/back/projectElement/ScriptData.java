@@ -5,9 +5,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ScriptData {
+
+    public static final Pattern REGISTER_PATTERN = Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]*");
 
     private Type type;
 
@@ -82,6 +87,27 @@ public class ScriptData {
             }
         }
     }
+    public void loadRegisters(Set<String> registerSet) {
+        switch (type) {
+            case REGISTER -> {
+                if (matchesRegisterPattern(register)) registerSet.add(register);
+                if (matchesRegisterPattern(value)) registerSet.add(value);
+            }
+            case HEAD -> {
+                for (BranchCondition condition : conditions) {
+                    if (matchesRegisterPattern(condition.getArgA())) {
+                        registerSet.add(condition.getArgA());
+                    }
+                    if (matchesRegisterPattern(condition.getArgB())) {
+                        registerSet.add(condition.getArgB());
+                    }
+                }
+                for (ScriptData action : actions) {
+                    action.loadRegisters(registerSet);
+                }
+            }
+        }
+    }
 
     public Type getType() {
         return type;
@@ -145,6 +171,10 @@ public class ScriptData {
 
     public void setValue(@Nullable String value) {
         this.value = value;
+    }
+
+    public static boolean matchesRegisterPattern(String s) {
+        return REGISTER_PATTERN.matcher(s).matches();
     }
 
 

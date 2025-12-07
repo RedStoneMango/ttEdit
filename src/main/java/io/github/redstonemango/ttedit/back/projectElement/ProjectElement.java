@@ -7,8 +7,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProjectElement {
@@ -18,6 +17,7 @@ public class ProjectElement {
     @JsonIgnore private BooleanProperty changed;
     // SCRIPT ELEMENT
     private @Nullable List<ScriptData> branches;
+    private @JsonIgnore Set<String> registers;
 
     public ProjectElement() {}
 
@@ -25,20 +25,33 @@ public class ProjectElement {
         this.name = name;
         this.type = type;
         changed = new SimpleBooleanProperty(false);
-        if (type == Type.SCRIPT) branches = new ArrayList<>();
+        if (type == Type.SCRIPT) {
+            branches = new ArrayList<>();
+            registers = new HashSet<>();
+        }
     }
 
     public void initializeFields(String filename) throws ProjectLoadException {
         name = filename.substring(0, nthLastIndexOf(2, ".", filename));
         type = Type.fromFileName(filename);
         changed = new SimpleBooleanProperty(false);
+        registers = new HashSet<>();
         if (type == Type.SCRIPT) {
             if (branches == null) {
                 branches = new ArrayList<>();
             }
             for (ScriptData data : branches) {
                 data.initializeFields();
+                data.loadRegisters(registers);
             }
+        }
+    }
+
+    public void indexRegisters() throws UnsupportedOperationException {
+        if (type != Type.SCRIPT) throw new UnsupportedOperationException("Registers not supported for " + type);
+        registers.clear();
+        for (ScriptData data : branches) {
+            data.loadRegisters(registers);
         }
     }
 
@@ -69,6 +82,10 @@ public class ProjectElement {
 
     public void setChanged(boolean changed) {
         this.changed.set(changed);
+    }
+
+    public Set<String> getRegisters() {
+        return Collections.unmodifiableSet(registers);
     }
 
     public enum Type {

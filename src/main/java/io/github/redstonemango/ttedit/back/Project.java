@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.github.redstonemango.ttedit.Launcher;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
+import io.github.redstonemango.ttedit.back.registerDictionary.RegisterIndexUnifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -17,9 +18,9 @@ public class Project {
 
     @JsonIgnore private File dir;
     @JsonIgnore private Set<ProjectElement> elements;
+    @JsonIgnore private RegisterIndexUnifier registerIndexUnifier;
 
     private int productID;
-    private Set<String> knownRegisters;
     private @Nullable String comment;
     private @Nullable String language;
 
@@ -36,7 +37,7 @@ public class Project {
         dir = new File(Launcher.PROJECTS_HOME, filename);
         productID = Math.clamp(productID, 0, 999);
         elements = new HashSet<>();
-        if (knownRegisters != null) knownRegisters = new HashSet<>();
+        registerIndexUnifier = RegisterIndexUnifier.create(this);
     }
 
     public File getDir() {
@@ -77,6 +78,10 @@ public class Project {
 
     public Set<ProjectElement> getElements() {
         return elements;
+    }
+
+    public RegisterIndexUnifier getRegisterIndexUnifier() {
+        return registerIndexUnifier;
     }
 
     public static Project getCurrentProject() {

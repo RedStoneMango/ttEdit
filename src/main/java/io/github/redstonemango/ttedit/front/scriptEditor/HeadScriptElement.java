@@ -1,13 +1,12 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
+import io.github.redstonemango.ttedit.back.Project;
 import io.github.redstonemango.ttedit.back.projectElement.BranchCondition;
+import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
 import io.github.redstonemango.ttedit.front.UXUtilities;
-import javafx.beans.property.BooleanProperty;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -27,16 +26,13 @@ public class HeadScriptElement extends AbstractScriptElement {
     private int conditionCount = 0;
     private VBox conditionBox;
 
-    public HeadScriptElement(boolean preview, Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                             @Nullable AbstractScriptElement parent, BooleanProperty changed,
-                             ObservableList<ScriptElementEditor.Branch> branches) {
-        super(preview, editorPane, editorScroll, deleteIcon, parent, true, changed, branches);
+    public HeadScriptElement(boolean preview, @Nullable AbstractScriptElement parent,
+                             ScriptElementMeta meta) {
+        super(preview, parent, true, meta);
     }
 
-    public static HeadScriptElement createPreview(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                                  BooleanProperty changed,
-                                                  ObservableList<ScriptElementEditor.Branch> branches) {
-        return new HeadScriptElement(true, editorPane, editorScroll, deleteIcon, null, changed, branches);
+    public static HeadScriptElement createPreview(ScriptElementMeta meta) {
+        return new HeadScriptElement(true, null, meta);
     }
 
     @Override
@@ -89,29 +85,14 @@ public class HeadScriptElement extends AbstractScriptElement {
             }
         });
 
-        MenuItem staticConditionItem = new MenuItem("+ Static Condition");
-        MenuItem dynamicConditionItem = new MenuItem("+ Dynamic Condition");
-        ContextMenu conditionCtxMenu = new ContextMenu(staticConditionItem, dynamicConditionItem);
-
         Button addConditionBtn = new Button("+ Condition");
         setFocusTraversable(false);
         applyColoring(addConditionBtn, false);
         addConditionBtn.setOnAction(_ -> {
-            if (conditionCtxMenu.isShowing()) {
-                conditionCtxMenu.hide();
-                return;
-            }
-            Point2D pos = addConditionBtn.localToScreen(0, addConditionBtn.getHeight());
-            conditionCtxMenu.show(addConditionBtn, pos.getX(), pos.getY());
+            addCondition(BranchCondition.Comparison.EQUAL, "", "");
         });
         conditionBox = new VBox(addConditionBtn);
         conditionBox.setSpacing(10);
-        staticConditionItem.setOnAction(_ ->
-            addCondition(BranchCondition.Type.STATIC, BranchCondition.Comparison.EQUAL, "", "")
-        );
-        dynamicConditionItem.setOnAction(_ ->
-            addCondition(BranchCondition.Type.DYNAMIC, BranchCondition.Comparison.EQUAL, "", "")
-        );
         conditionBox.getChildren().addListener((ListChangeListener<? super Node>) _ -> {
             conditionCount = conditionBox.getChildren().size() - 1;
             markChanged();
@@ -125,15 +106,15 @@ public class HeadScriptElement extends AbstractScriptElement {
     void loadFromData(ScriptData data) {
         if (data.getType() != ScriptData.Type.HEAD) throw new IllegalArgumentException("ScriptData has to be of type HEAD");
         data.getConditions().forEach(condition ->
-            addCondition(condition.getType(), condition.getComparison(), condition.getArgA(), condition.getArgB())
+            addCondition(condition.getComparison(), condition.getArgA(), condition.getArgB())
         );
         markIsInBranch();
     }
 
-    private void addCondition(BranchCondition.Type type, BranchCondition.Comparison comparison, String argA, String argB) {
+    private void addCondition(BranchCondition.Comparison comparison, String argA, String argB) {
         conditionBox.getChildren().add(
                 conditionBox.getChildren().size() - 1,
-                new Condition(type, comparison, argA, argB, this)
+                new Condition(comparison, argA, argB, this)
         );
         updateShape();
         updateChildrenMove();
@@ -172,9 +153,8 @@ public class HeadScriptElement extends AbstractScriptElement {
     }
 
     @Override
-    public AbstractScriptElement createDefault(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                               @Nullable AbstractScriptElement parent) {
-        return new HeadScriptElement(false, editorPane, editorScroll, deleteIcon, null, changed, branches);
+    public AbstractScriptElement createDefault(ScriptElementMeta meta) {
+        return new HeadScriptElement(false, null, meta);
     }
 
     @Override
@@ -215,15 +195,12 @@ public class HeadScriptElement extends AbstractScriptElement {
 
     public static class Condition extends HBox {
 
-        private final BranchCondition.Type type;
         private BranchCondition.Comparison comparison = BranchCondition.Comparison.EQUAL;
         private String argA = "";
         private String argB = "";
 
-        public Condition(BranchCondition.Type type, BranchCondition.Comparison defComparison, String defArgA,
+        public Condition(BranchCondition.Comparison defComparison, String defArgA,
                          String defArgB, HeadScriptElement owner) {
-            this.type = type;
-
             setAlignment(Pos.CENTER);
             setSpacing(5);
 
@@ -243,6 +220,7 @@ public class HeadScriptElement extends AbstractScriptElement {
                 owner.markChanged();
             });
             argA = defArgA;
+            UXUtilities.applyRegisterCompletion(fieldA, owner.element, Project.getCurrentProject().getRegisterIndexUnifier());
             owner.applyColoring(fieldA);
 
             TextField fieldB = new TextField(defArgB);
@@ -253,6 +231,7 @@ public class HeadScriptElement extends AbstractScriptElement {
                 owner.markChanged();
             });
             argB = defArgB;
+            UXUtilities.applyRegisterCompletion(fieldB, owner.element, Project.getCurrentProject().getRegisterIndexUnifier());
             owner.applyColoring(fieldB);
 
             ComboBox<BranchCondition.Comparison> comparisonBox = new ComboBox<>();
@@ -289,7 +268,6 @@ public class HeadScriptElement extends AbstractScriptElement {
 
         public BranchCondition build() {
             BranchCondition condition = new BranchCondition();
-            condition.setType(type);
             condition.setComparison(comparison);
             condition.setArgA(argA);
             condition.setArgB(argB);

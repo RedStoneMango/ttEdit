@@ -1,31 +1,25 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
+import io.github.redstonemango.ttedit.back.Project;
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
 import io.github.redstonemango.ttedit.front.UXUtilities;
 import javafx.beans.property.*;
-import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.Nullable;
 
 public class RegisterScriptActionElement extends AbstractScriptActionElement {
 
-    public RegisterScriptActionElement(boolean preview, Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                       @Nullable AbstractScriptElement parent, BooleanProperty changed,
-                                       ObservableList<ScriptElementEditor.Branch> branches) {
-        super(preview, editorPane, editorScroll, deleteIcon, parent, false, changed, branches);
+    public RegisterScriptActionElement(boolean preview, @Nullable AbstractScriptElement parent,
+                                       ScriptElementMeta meta) {
+        super(preview, parent, false, meta);
     }
 
-    public static RegisterScriptActionElement createPreview(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                                            BooleanProperty changed,
-                                                            ObservableList<ScriptElementEditor.Branch> branches) {
-        return new RegisterScriptActionElement(true, editorPane, editorScroll, deleteIcon, null, changed, branches);
+    public static RegisterScriptActionElement createPreview(ScriptElementMeta meta) {
+        return new RegisterScriptActionElement(true, null, meta);
     }
 
     private StringProperty register;
@@ -51,6 +45,7 @@ public class RegisterScriptActionElement extends AbstractScriptActionElement {
             markChanged();
         });
         register.addListener((_, _, val) -> registerField.setText(val));
+        UXUtilities.applyRegisterCompletion(registerField, element, Project.getCurrentProject().getRegisterIndexUnifier());
         applyColoring(registerField);
 
         Label l2 = new Label("to");
@@ -80,6 +75,7 @@ public class RegisterScriptActionElement extends AbstractScriptActionElement {
             markChanged();
         });
         value.addListener((_, _, val) -> valueField.setText(val));
+        UXUtilities.applyRegisterCompletion(valueField, element, Project.getCurrentProject().getRegisterIndexUnifier());
         applyColoring(valueField);
 
         contentBox.getChildren().addAll(l, registerField, l2, b, valueField);
@@ -95,9 +91,8 @@ public class RegisterScriptActionElement extends AbstractScriptActionElement {
     }
 
     @Override
-    public AbstractScriptElement createDefault(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                               @Nullable AbstractScriptElement parent) {
-        return new RegisterScriptActionElement(false, editorPane, editorScroll, deleteIcon, parent, changed, branches);
+    public AbstractScriptElement createDefault(ScriptElementMeta meta) {
+        return new RegisterScriptActionElement(false, null, meta);
     }
 
     @Override

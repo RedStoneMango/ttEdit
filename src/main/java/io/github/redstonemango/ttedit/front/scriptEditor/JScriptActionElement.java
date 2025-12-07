@@ -1,32 +1,24 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.Nullable;
 
 public class JScriptActionElement extends AbstractScriptActionElement {
 
-    public JScriptActionElement(boolean preview, Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                @Nullable AbstractScriptElement parent, BooleanProperty changed,
-                                ObservableList<ScriptElementEditor.Branch> branches) {
-        super(preview, editorPane, editorScroll, deleteIcon, parent, false, changed, branches);
+    public JScriptActionElement(boolean preview, @Nullable AbstractScriptElement parent,
+                                ScriptElementMeta meta) {
+        super(preview, parent, false, meta);
     }
 
-    public static JScriptActionElement createPreview(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                                     BooleanProperty changed,
-                                                     ObservableList<ScriptElementEditor.Branch> branches) {
-        return new JScriptActionElement(true, editorPane, editorScroll, deleteIcon, null, changed, branches);
+    public static JScriptActionElement createPreview(ScriptElementMeta meta) {
+        return new JScriptActionElement(true, null, meta);
     }
 
     private StringProperty jumpTarget;
@@ -61,9 +53,8 @@ public class JScriptActionElement extends AbstractScriptActionElement {
     }
 
     @Override
-    public AbstractScriptElement createDefault(Pane editorPane, ScrollPane editorScroll, ImageView deleteIcon,
-                                               @Nullable AbstractScriptElement parent) {
-        return new JScriptActionElement(false, editorPane, editorScroll, deleteIcon, parent, changed, branches);
+    public AbstractScriptElement createDefault(ScriptElementMeta meta) {
+        return new JScriptActionElement(false, null, meta);
     }
 
     @Override
