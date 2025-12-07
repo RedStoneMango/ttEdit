@@ -76,7 +76,8 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
         controlsBox.setPadding(new Insets(10, 2, 10, 2));
         applyDragResizing(controlsBox, controlsScroll);
 
-        ScriptElementMeta meta = new ScriptElementMeta(editorPane, editorScroll, deleteIcon, branches, element);
+        ScriptElementMeta meta = new ScriptElementMeta(editorPane, editorScroll, deleteIcon, branches,
+                element, Project.getCurrentProject().getScripts());
         controlsBox.getChildren().add(HeadScriptElement.createPreview(meta));
         controlsBox.getChildren().add(PScriptActionElement.createPreview(meta));
         controlsBox.getChildren().add(JScriptActionElement.createPreview(meta));

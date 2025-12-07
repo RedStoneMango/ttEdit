@@ -232,6 +232,39 @@ public class UXUtilities {
             }
         });
     }
+    public static void applyProjectElementComboBoxCellFactory(ComboBox<ProjectElement> comboBox) {
+        comboBox.setCellFactory(new Callback<>() {
+            @Override
+            public ListCell<ProjectElement> call(ListView<ProjectElement> lv) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(ProjectElement item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            setGraphic(null);
+                            setText(item.getName());
+                        }
+                    }
+                };
+            }
+        });
+        comboBox.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(ProjectElement item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    setGraphic(null);
+                    setText(item.getName());
+                }
+            }
+        });
+    }
 
     public static <T> void applyCustomCellFactory(ListView<T> listView, Function<T, Node> nodeFunction,
                                                       Consumer<T> onDoubleClick, Insets padding) {
