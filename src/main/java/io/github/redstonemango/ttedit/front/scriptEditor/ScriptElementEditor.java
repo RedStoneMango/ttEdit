@@ -64,6 +64,7 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
         controlsBox.getChildren().add(PScriptActionElement.createPreview(meta));
         controlsBox.getChildren().add(JScriptActionElement.createPreview(meta));
         controlsBox.getChildren().add(RegisterScriptActionElement.createPreview(meta));
+        controlsBox.getChildren().add(NegScriptActionElement.createPreview(meta));
 
         getChildren().addAll(controlsPane, editorArea);
 

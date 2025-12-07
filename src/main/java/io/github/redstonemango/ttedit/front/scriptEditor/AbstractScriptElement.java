@@ -512,6 +512,12 @@ public abstract class AbstractScriptElement extends StackPane {
                 re.loadFromData(data);
                 yield re;
             }
+            case NEGATE -> {
+                NegScriptActionElement ne =
+                        new NegScriptActionElement(false, null, meta);
+                ne.loadFromData(data);
+                yield ne;
+            }
         };
     }
 

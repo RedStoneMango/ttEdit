@@ -26,8 +26,10 @@ public class ScriptData {
     // JUMP ELEMENT
     private @Nullable String jumpTarget;
 
-    // REGISTER ELEMENT
+    // REGISTER & NEGATE ELEMENT
     private @Nullable String register;
+
+    // ONLY REGISTER ELEMENT (also needs '@Nullable String register')
     private @Nullable Action action;
     private @Nullable String value;
 
@@ -85,6 +87,15 @@ public class ScriptData {
                 if (action != null) action = Action.SET;
                 if (value != null) value = "";
             }
+            case NEGATE -> {
+                conditions = null;
+                sound = null;
+                actions = null;
+                jumpTarget = null;
+                action = null;
+                value = null;
+                if (register != null) register = "";
+            }
         }
     }
     public void loadRegisters(Set<String> registerSet) {
@@ -92,6 +103,9 @@ public class ScriptData {
             case REGISTER -> {
                 if (matchesRegisterPattern(register)) registerSet.add(register);
                 if (matchesRegisterPattern(value)) registerSet.add(value);
+            }
+            case NEGATE -> {
+                if (matchesRegisterPattern(register)) registerSet.add(register);
             }
             case HEAD -> {
                 for (BranchCondition condition : conditions) {
@@ -178,7 +192,7 @@ public class ScriptData {
     }
 
 
-    public enum Type { HEAD, PLAY, JUMP, REGISTER;}
+    public enum Type { HEAD, PLAY, JUMP, REGISTER, NEGATE }
     public enum Action {
         SET("value"),
         ADDITION("itself plus"),
