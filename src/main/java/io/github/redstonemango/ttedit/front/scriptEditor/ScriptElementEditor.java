@@ -6,21 +6,24 @@ import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
 import io.github.redstonemango.ttedit.front.IElementEditable;
 import io.github.redstonemango.ttedit.front.UXUtilities;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ScriptElementEditor extends HBox implements IElementEditable {
 
@@ -28,6 +31,7 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
             ScriptElementEditor.class.getResource("/io/github/redstonemango/ttedit/image/bin_closed.png").toExternalForm());
     public static final Image BIN_OPEN = new Image(
             ScriptElementEditor.class.getResource("/io/github/redstonemango/ttedit/image/bin_open.png").toExternalForm());
+    public static final double MAX_LIBRARY_WIDTH = 470;
 
     private final ObservableList<Branch> branches;
 
@@ -49,15 +53,22 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
         HBox.setHgrow(editorArea, Priority.ALWAYS);
 
         VBox controlsBox = new VBox(20);
-        TitledPane controlsPane = new TitledPane("Add Control", new ScrollPane(controlsBox));
-        controlsPane.setPrefWidth(250);
-        controlsPane.setMinWidth(250);
-        controlsPane.setMaxWidth(250);
+        ScrollPane controlsScroll = new ScrollPane(controlsBox);
+        TitledPane controlsPane = new TitledPane("Add Control", controlsScroll);
         controlsPane.prefHeightProperty().bind(heightProperty());
+        controlsPane.prefWidthProperty().bind(controlsScroll.widthProperty().add(2));
+        controlsPane.minWidthProperty().bind(controlsPane.prefWidthProperty());
+        controlsPane.maxWidthProperty().bind(controlsPane.prefWidthProperty());
         controlsPane.setCollapsible(false);
-        controlsBox.setSpacing(20);
+        controlsScroll.setFitToWidth(true);
+        controlsScroll.setPrefWidth(MAX_LIBRARY_WIDTH);
+        controlsScroll.setMinWidth(MAX_LIBRARY_WIDTH);
+        controlsScroll.setMaxWidth(MAX_LIBRARY_WIDTH);
+        controlsScroll.prefHeightProperty().bind(controlsPane.heightProperty().subtract(42));
+        controlsBox.prefHeightProperty().bind(controlsScroll.heightProperty().subtract(15));
         controlsBox.setFillWidth(false);
         controlsBox.setPadding(new Insets(10, 2, 10, 2));
+        applyDragResizing(controlsBox, controlsScroll);
 
         ScriptElementMeta meta = new ScriptElementMeta(editorPane, editorScroll, deleteIcon, branches, element);
         controlsBox.getChildren().add(HeadScriptElement.createPreview(meta));
@@ -95,8 +106,8 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
 
         // Position the head's children
         heads.stream().findFirst().ifPresent(head ->
-            UXUtilities.doOnceAvailable(head.sceneProperty(), _ -> Platform.runLater(() ->
-                    heads.forEach(AbstractScriptElement::updateChildrenMove)))
+                UXUtilities.doOnceAvailable(head.sceneProperty(), _ -> Platform.runLater(() ->
+                        heads.forEach(AbstractScriptElement::updateChildrenMove)))
         );
     }
 
@@ -118,6 +129,51 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
         }
 
         return new Tuple2<>(he, width);
+    }
+
+    private static void applyDragResizing(VBox box, ScrollPane pane) {
+        final double THRESHOLD = 10;
+        AtomicBoolean isDragging = new AtomicBoolean();
+        AtomicReference<Double> offset = new AtomicReference<>();
+
+        // Register as filter to be able to consume the 'add block' click event when dragging
+        pane.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
+            // Check is on right side
+            if (e.getX() > pane.getWidth() - THRESHOLD
+                    &&
+                    e.getX() < pane.getWidth() + THRESHOLD) {
+                isDragging.set(true);
+                offset.set(e.getX() - pane.getWidth());
+                e.consume();
+            }
+        });
+
+        pane.setOnMouseMoved(e -> {
+            if (e.getX() > pane.getWidth() - THRESHOLD
+                    &&
+                    e.getX() < pane.getWidth() + THRESHOLD) {
+                pane.setCursor(Cursor.H_RESIZE);
+            }
+            else {
+                if (!isDragging.get()) {
+                    pane.setCursor(null);
+                }
+            }
+        });
+        box.setOnMouseDragged(e -> {
+            if (isDragging.get()) { // Only if started at right corner
+                double newWidth = e.getSceneX() - pane.localToScene(0, 0).getX();
+                newWidth -= offset.get();
+                newWidth = Math.clamp(newWidth, THRESHOLD, MAX_LIBRARY_WIDTH);
+                pane.setMinWidth(newWidth);
+                pane.setPrefWidth(newWidth);
+                pane.setMaxWidth(newWidth);
+            }
+        });
+        pane.setOnMouseReleased(_ -> {
+            isDragging.set(false);
+            pane.setCursor(null);
+        });
     }
 
     public ObservableList<Branch> getBranches() {
