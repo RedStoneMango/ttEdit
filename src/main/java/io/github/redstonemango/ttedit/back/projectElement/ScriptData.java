@@ -41,6 +41,7 @@ public class ScriptData {
             if (conditions != null) type = Type.HEAD;
             else if (sound != null) type = Type.PLAY;
             else if (jumpTarget != null) type = Type.JUMP;
+            else if (register != null) type = Type.NEGATE;
             else throw new ProjectLoadException("No script type supplied! Automated type detection failed.");
         }
 
@@ -83,9 +84,9 @@ public class ScriptData {
                 sound = null;
                 actions = null;
                 jumpTarget = null;
-                if (register != null) register = "";
-                if (action != null) action = Action.SET;
-                if (value != null) value = "";
+                if (register == null) register = "";
+                if (action == null) action = Action.SET;
+                if (value == null) value = "";
             }
             case NEGATE -> {
                 conditions = null;
@@ -94,7 +95,7 @@ public class ScriptData {
                 jumpTarget = null;
                 action = null;
                 value = null;
-                if (register != null) register = "";
+                if (register == null) register = "";
             }
         }
     }
