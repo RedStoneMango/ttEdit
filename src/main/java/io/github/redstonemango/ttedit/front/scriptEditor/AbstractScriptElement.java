@@ -81,7 +81,8 @@ public abstract class AbstractScriptElement extends StackPane {
 
                 if (element instanceof HeadScriptElement head) {
                     branches.add(new ScriptElementEditor.Branch(head));
-                    markChanged();
+                    head.markIsInBranch();
+                    head.markChanged();
                 }
                 return;
             }
