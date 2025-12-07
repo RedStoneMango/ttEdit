@@ -2,7 +2,9 @@ package io.github.redstonemango.ttedit.front;
 
 import io.github.redstonemango.mangoutils.OperatingSystem;
 import io.github.redstonemango.ttedit.back.projectElement.BranchCondition;
+import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
+import io.github.redstonemango.ttedit.back.registerDictionary.RegisterIndexUnifier;
 import io.github.redstonemango.ttedit.front.propertySheetHelpers.*;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
@@ -26,6 +28,7 @@ import javafx.util.Duration;
 import org.controlsfx.control.GridCell;
 import org.controlsfx.control.GridView;
 import org.controlsfx.control.PropertySheet;
+import org.controlsfx.control.textfield.TextFields;
 import org.controlsfx.property.editor.DefaultPropertyEditorFactory;
 import org.controlsfx.property.editor.Editors;
 import org.controlsfx.property.editor.PropertyEditor;
@@ -35,6 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class UXUtilities {
 
@@ -144,6 +148,22 @@ public class UXUtilities {
         else {
             Platform.runLater(action);
         }
+    }
+
+    public static void applyRegisterCompletion(TextField field, ProjectElement element,
+                                               RegisterIndexUnifier registerIndexUnifier) {
+        TextFields.bindAutoCompletion(field, s -> registerIndexUnifier.getRegisters().stream()
+                .filter(r ->
+                        r.toLowerCase().contains(s.getUserText().toLowerCase())
+                        &&
+                        !r.equals(s.getUserText()))
+                .collect(Collectors.toSet()));
+
+        field.textProperty().addListener((_, _, newVal) ->
+                registerIndexUnifier.getLiveIndex().updateEntry(field, element, newVal)
+        );
+        // Init entry
+        registerIndexUnifier.getLiveIndex().updateEntry(field, element, field.getText());
     }
 
     public static void applyActionComboBoxCellFactory(ComboBox<ScriptData.Action> comboBox) {

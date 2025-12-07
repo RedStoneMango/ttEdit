@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BranchCondition {
 
-    private Type type;
     private Comparison comparison;
     private String argA;
     private String argB;
@@ -13,9 +12,6 @@ public class BranchCondition {
     public BranchCondition() {}
 
     public void initializeFields() {
-        if (type == null) {
-            type = Type.STATIC;
-        }
         if (comparison == null) {
             comparison = Comparison.EQUAL;
         }
@@ -25,14 +21,6 @@ public class BranchCondition {
         if (argB == null) {
             argB = "";
         }
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
     }
 
     public Comparison getComparison() {
@@ -59,7 +47,6 @@ public class BranchCondition {
         this.argB = argB;
     }
 
-    public enum Type { STATIC, DYNAMIC }
     public enum Comparison {
         EQUAL("equal to"),
         UNEQUAL("not equal to"),

@@ -16,16 +16,17 @@ import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class ElementTab extends Tab {
 
     private final ProjectElement element;
+    private final Project project;
 
     private IElementEditable editable;
 
-    public ElementTab(ProjectElement element) {
+    public ElementTab(ProjectElement element, Project project) {
         this.element = element;
+        this.project = project;
 
         ImageView typeImageView = new ImageView(element.getType().buildImage(element.isChanged()));
         typeImageView.setPreserveRatio(true);
@@ -82,6 +83,10 @@ public class ElementTab extends Tab {
                 save();
             }
         });
+        setOnClosed(_ -> {
+            project.getRegisterIndexUnifier().getLiveIndex().closeElement(element);
+            element.setChanged(false);
+        });
     }
 
     private Node scriptElementContent() {
@@ -107,10 +112,13 @@ public class ElementTab extends Tab {
             elementBranches.clear();
             editor.getBranches().forEach(editorBranch -> elementBranches.add(editorBranch.head().build()));
             try {
-                ProjectIO.saveProjectElement(element, Project.getCurrentProject());
+                ProjectIO.saveProjectElement(element, project);
             } catch (IOException e) {
                 UXUtilities.errorAlert("Error saving element '" + element.getName() + "'", e.getMessage());
+                onError.run();
             }
+            element.indexRegisters();
+            project.getRegisterIndexUnifier().getFileIndex().loadEntries(element);
         }
         element.setChanged(false);
     }
