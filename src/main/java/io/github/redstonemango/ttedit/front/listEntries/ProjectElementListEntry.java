@@ -16,7 +16,10 @@ public class ProjectElementListEntry {
 
     void init(ProjectElement element) {
         nameLabel.setText(element.getName());
-        iconImage.setImage(element.getType().buildImage());
+        iconImage.setImage(element.getType().buildImage(element.isChanged()));
+        element.changedProperty().addListener((_, _, changed) ->
+                iconImage.setImage(element.getType().buildImage(changed))
+        );
     }
 
     public static HBox build(ProjectElement source) {
