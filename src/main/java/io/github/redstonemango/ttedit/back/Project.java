@@ -6,11 +6,11 @@ import io.github.redstonemango.ttedit.Launcher;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import io.github.redstonemango.ttedit.back.registerDictionary.RegisterIndexUnifier;
 import io.github.redstonemango.ttedit.front.scriptEditor.ScriptElementEditor;
+import javafx.collections.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.Set;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Project {
@@ -18,7 +18,8 @@ public class Project {
     private static Project currentProject;
 
     @JsonIgnore private File dir;
-    @JsonIgnore private Set<ProjectElement> elements;
+    @JsonIgnore private ObservableList<ProjectElement> elements;
+    @JsonIgnore private ObservableList<ProjectElement> scripts;
     @JsonIgnore private RegisterIndexUnifier registerIndexUnifier;
 
     private int productID;
@@ -43,10 +44,25 @@ public class Project {
                 ScriptElementEditor.MAX_LIBRARY_WIDTH
         );
 
-        // Non-persisting data
+        // Non-persistent data
         dir = new File(Launcher.PROJECTS_HOME, filename);
-        elements = new HashSet<>();
         registerIndexUnifier = RegisterIndexUnifier.create(this);
+        scripts = FXCollections.observableArrayList();
+        elements = FXCollections.observableArrayList();
+        elements.addListener((ListChangeListener<? super ProjectElement>) l -> {
+            while (l.next()) {
+                if (l.wasAdded()) {
+                    l.getAddedSubList().stream()
+                            .filter(e ->  e.getType() == ProjectElement.Type.SCRIPT)
+                            .forEach(e -> scripts.add(e));
+                }
+                if (l.wasRemoved()) {
+                    l.getRemoved().stream()
+                            .filter(e ->  e.getType() == ProjectElement.Type.SCRIPT)
+                            .forEach(e -> scripts.remove(e));
+                }
+            }
+        });
     }
 
     public File getDir() {
@@ -93,8 +109,12 @@ public class Project {
         this.language = language;
     }
 
-    public Set<ProjectElement> getElements() {
+    public ObservableList<ProjectElement> getElements() {
         return elements;
+    }
+
+    public ObservableList<ProjectElement> getScripts() {
+        return scripts;
     }
 
     public RegisterIndexUnifier getRegisterIndexUnifier() {
