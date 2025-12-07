@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.github.redstonemango.ttedit.Launcher;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import io.github.redstonemango.ttedit.back.registerDictionary.RegisterIndexUnifier;
+import io.github.redstonemango.ttedit.front.scriptEditor.ScriptElementEditor;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -23,6 +24,7 @@ public class Project {
     private int productID;
     private @Nullable String comment;
     private @Nullable String language;
+    private double scriptBoxLibraryWidth = ScriptElementEditor.MAX_LIBRARY_WIDTH;
 
     public Project() {}
 
@@ -34,8 +36,15 @@ public class Project {
     }
 
     public void initializeFields(String filename)  {
-        dir = new File(Launcher.PROJECTS_HOME, filename);
         productID = Math.clamp(productID, 0, 999);
+        scriptBoxLibraryWidth = Math.clamp(
+                scriptBoxLibraryWidth,
+                ScriptElementEditor.MIN_LIBRARY_WIDTH,
+                ScriptElementEditor.MAX_LIBRARY_WIDTH
+        );
+
+        // Non-persisting data
+        dir = new File(Launcher.PROJECTS_HOME, filename);
         elements = new HashSet<>();
         registerIndexUnifier = RegisterIndexUnifier.create(this);
     }
@@ -58,6 +67,14 @@ public class Project {
 
     public void setProductID(int productID) {
         this.productID = productID;
+    }
+
+    public double getScriptBoxLibraryWidth() {
+        return scriptBoxLibraryWidth;
+    }
+
+    public void setScriptBoxLibraryWidth(double scriptBoxLibraryWidth) {
+        this.scriptBoxLibraryWidth = scriptBoxLibraryWidth;
     }
 
     public @Nullable String getComment() {

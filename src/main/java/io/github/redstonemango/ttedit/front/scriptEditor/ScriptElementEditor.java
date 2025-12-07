@@ -1,6 +1,8 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
 import io.github.redstonemango.mangoutils.tuple.Tuple2;
+import io.github.redstonemango.ttedit.back.Project;
+import io.github.redstonemango.ttedit.back.ProjectIO;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
 import io.github.redstonemango.ttedit.front.IElementEditable;
@@ -18,6 +20,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +35,7 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
     public static final Image BIN_OPEN = new Image(
             ScriptElementEditor.class.getResource("/io/github/redstonemango/ttedit/image/bin_open.png").toExternalForm());
     public static final double MAX_LIBRARY_WIDTH = 470;
+    public static final double MIN_LIBRARY_WIDTH = 10;
 
     private final ObservableList<Branch> branches;
 
@@ -52,6 +56,8 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
         editorArea.setAlignment(Pos.BOTTOM_RIGHT);
         HBox.setHgrow(editorArea, Priority.ALWAYS);
 
+        double controlsAreaWidth = Project.getCurrentProject().getScriptBoxLibraryWidth();
+
         VBox controlsBox = new VBox(20);
         ScrollPane controlsScroll = new ScrollPane(controlsBox);
         TitledPane controlsPane = new TitledPane("Add Control", controlsScroll);
@@ -61,9 +67,9 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
         controlsPane.maxWidthProperty().bind(controlsPane.prefWidthProperty());
         controlsPane.setCollapsible(false);
         controlsScroll.setFitToWidth(true);
-        controlsScroll.setPrefWidth(MAX_LIBRARY_WIDTH);
-        controlsScroll.setMinWidth(MAX_LIBRARY_WIDTH);
-        controlsScroll.setMaxWidth(MAX_LIBRARY_WIDTH);
+        controlsScroll.setPrefWidth(controlsAreaWidth);
+        controlsScroll.setMinWidth(controlsAreaWidth);
+        controlsScroll.setMaxWidth(controlsAreaWidth);
         controlsScroll.prefHeightProperty().bind(controlsPane.heightProperty().subtract(42));
         controlsBox.prefHeightProperty().bind(controlsScroll.heightProperty().subtract(15));
         controlsBox.setFillWidth(false);
@@ -164,15 +170,21 @@ public class ScriptElementEditor extends HBox implements IElementEditable {
             if (isDragging.get()) { // Only if started at right corner
                 double newWidth = e.getSceneX() - pane.localToScene(0, 0).getX();
                 newWidth -= offset.get();
-                newWidth = Math.clamp(newWidth, THRESHOLD, MAX_LIBRARY_WIDTH);
+                newWidth = Math.clamp(newWidth, MIN_LIBRARY_WIDTH, MAX_LIBRARY_WIDTH);
                 pane.setMinWidth(newWidth);
                 pane.setPrefWidth(newWidth);
                 pane.setMaxWidth(newWidth);
+                Project.getCurrentProject().setScriptBoxLibraryWidth(newWidth);
             }
         });
         pane.setOnMouseReleased(_ -> {
-            isDragging.set(false);
-            pane.setCursor(null);
+            if (isDragging.get()) {
+                isDragging.set(false);
+                pane.setCursor(null);
+                try {
+                    ProjectIO.saveProjectGeneralConfig(Project.getCurrentProject());
+                } catch (IOException _) {} // Fail silently
+            }
         });
     }
 
