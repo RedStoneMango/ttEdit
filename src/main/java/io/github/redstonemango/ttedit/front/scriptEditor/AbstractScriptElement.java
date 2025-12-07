@@ -518,6 +518,12 @@ public abstract class AbstractScriptElement extends StackPane {
                 ne.loadFromData(data);
                 yield ne;
             }
+            case TIME -> {
+                TScriptActionElement te =
+                        new TScriptActionElement(false, null, meta);
+                te.loadFromData(data);
+                yield te;
+            }
         };
     }
 
