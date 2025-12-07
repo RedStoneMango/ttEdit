@@ -54,7 +54,7 @@ public class RegisterScriptActionElement extends AbstractScriptActionElement {
 
         ComboBox<ScriptData.Action> b = new ComboBox<>();
         b.getItems().addAll(ScriptData.Action.values());
-        b.setPrefWidth(150);
+        b.setPrefWidth(190);
         b.setMouseTransparent(preview);
         b.setFocusTraversable(false);
         UXUtilities.applyActionComboBoxCellFactory(b);
@@ -112,7 +112,7 @@ public class RegisterScriptActionElement extends AbstractScriptActionElement {
 
     @Override
     public double width() {
-        return 360;
+        return 400;
     }
 
     @Override
