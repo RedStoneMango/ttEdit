@@ -59,15 +59,17 @@ public class ProjectContentController {
 
     private ContextMenu cxtMenu;
     private final ObservableList<ElementTab> tabs = FXCollections.observableArrayList();
+    private Project project;
 
     private ObservableList<ProjectElement> selectedElements;
-    private final ObservableList<ProjectElement> elements = FXCollections.observableArrayList();
     private final FilteredList<ProjectElement> filteredElements = new FilteredList<>(
-            new SortedList<>(elements, Comparator.comparing(ProjectElement::getName)),
+            new SortedList<>(Project.getCurrentProject().getElements(), Comparator.comparing(ProjectElement::getName)),
             _ -> true);
 
     @FXML
     private void initialize() {
+        project = Project.getCurrentProject();
+
         UXUtilities.registerHoverAnimation(projectTitle);
         UXUtilities.registerHoverAnimation(addScriptControl);
         UXUtilities.registerHoverAnimation(addPageControl);
@@ -78,7 +80,6 @@ public class ProjectContentController {
         UXUtilities.registerHoverAnimation(configureProjectControl);
         UXUtilities.registerHoverAnimation(saveProjectControl);
 
-        Project project = Project.getCurrentProject();
         nameLabel.setText(project.name());
         iconText.setText(UXUtilities.determineAbbreviation(project.name()));
         iconBackground.setFill(UXUtilities.determineColor(project.name()));
@@ -100,7 +101,6 @@ public class ProjectContentController {
             selectedElements.add(cell);
             onEdit();
         });
-        elements.addAll(Project.getCurrentProject().getElements());
 
         tabs.addListener((ListChangeListener<? super ElementTab>) l -> {
             while (l.next()) {
@@ -210,7 +210,7 @@ public class ProjectContentController {
 
             try {
                 ProjectIO.saveProjectElement(element, Project.getCurrentProject());
-                elements.add(element);
+                Project.getCurrentProject().getElements().add(element);
                 selectedElements.clear();
                 selectedElements.add(element);
             } catch (IOException e) {
@@ -227,7 +227,7 @@ public class ProjectContentController {
 
             try {
                 ProjectIO.saveProjectElement(element, Project.getCurrentProject());
-                elements.add(element);
+                Project.getCurrentProject().getElements().add(element);
                 selectedElements.clear();
                 selectedElements.add(element);
             } catch (IOException e) {
@@ -257,9 +257,8 @@ public class ProjectContentController {
         askName(nameSuggestion, plural, name -> {
             Set<ProjectElement> newElements = new HashSet<>();
             selectedElements.forEach(element -> {
-                elements.remove(element);
+                Project.getCurrentProject().getElements().remove(element);
                 String newName = unusedName(name, plural, newElements); // Also supply newElements because they aren't yet registered
-                Project project = Project.getCurrentProject();
 
                 File source = new File(project.getElementDir(), element.getName() + element.getType().fileSuffix());
                 File target = new File(project.getElementDir(), newName + element.getType().fileSuffix());
@@ -288,7 +287,7 @@ public class ProjectContentController {
                 }
             });
 
-            elements.addAll(newElements);
+            project.getElements().addAll(newElements);
             selectedElements.setAll(newElements);
         });
     }
@@ -307,7 +306,7 @@ public class ProjectContentController {
                 () -> selectedElements.removeIf(element -> {
                     try {
                         ProjectIO.deleteProjectElement(element, Project.getCurrentProject());
-                        elements.remove(element);
+                        project.getElements().remove(element);
                         return true; // Remove from 'selected elements' list
                     } catch (IOException e) {
                         UXUtilities.errorAlert("Error deleting '" + element.getName() + "'", e.getMessage());
@@ -326,7 +325,6 @@ public class ProjectContentController {
             Set<ProjectElement> newElements = new HashSet<>();
             selectedElements.forEach(element -> {
                 String newName = unusedName(name, plural, newElements); // Also supply newElements because they aren't yet registered
-                Project project = Project.getCurrentProject();
 
                 File source = new File(project.getElementDir(), element.getName() + element.getType().fileSuffix());
                 File target = new File(project.getElementDir(), newName + element.getType().fileSuffix());
@@ -355,7 +353,7 @@ public class ProjectContentController {
                 }
             });
 
-            elements.addAll(newElements);
+            project.getElements().addAll(newElements);
             selectedElements.setAll(newElements);
         });
     }
@@ -364,7 +362,6 @@ public class ProjectContentController {
     private void onConfigure() {
         mouseExit(configureProjectControl);
 
-        Project project = Project.getCurrentProject();
         Stage stage = new Stage();
         stage.setTitle("Configure '" + project.name() + "'");
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -447,7 +444,7 @@ public class ProjectContentController {
         }
         Set<String> existingNames =
                 Stream.concat(
-                        elements.stream(),
+                        project.getElements().stream(),
                         additionalElements.stream()
                 )
                 .map(ProjectElement::getName)
