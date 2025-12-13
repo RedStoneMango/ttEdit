@@ -17,7 +17,7 @@ public class ProjectElement {
     @JsonIgnore private BooleanProperty changed;
     // SCRIPT ELEMENT
     private @Nullable List<ScriptData> branches;
-    private @JsonIgnore Set<String> registers;
+    private @JsonIgnore @Nullable Set<String> registers;
 
     public ProjectElement() {}
 
