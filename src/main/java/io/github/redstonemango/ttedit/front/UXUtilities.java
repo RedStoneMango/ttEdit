@@ -33,12 +33,15 @@ import org.controlsfx.property.editor.DefaultPropertyEditorFactory;
 import org.controlsfx.property.editor.Editors;
 import org.controlsfx.property.editor.PropertyEditor;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class UXUtilities {
 
@@ -164,6 +167,18 @@ public class UXUtilities {
         );
         // Init entry
         registerIndexUnifier.getLiveIndex().updateEntry(field, element, field.getText());
+    }
+
+    public static void applyReadonlyRegisterCompletion(TextField field, RegisterIndexUnifier registerIndexUnifier,
+                                                       Supplier<Collection<String>> additionalRegistersSupplier) {
+        TextFields.bindAutoCompletion(field, s -> Stream.concat(
+                    registerIndexUnifier.getRegisters().stream(),
+                    additionalRegistersSupplier.get().stream()
+                ).filter(r ->
+                        r.toLowerCase().contains(s.getUserText().toLowerCase())
+                                &&
+                                !r.equals(s.getUserText()))
+                .collect(Collectors.toSet()));
     }
 
     public static void applyActionComboBoxCellFactory(ComboBox<ScriptData.Action> comboBox) {
