@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 public class UXUtilities {
 
-    private static String styleSheet =
+    private static final String STYLE_SHEET =
             UXUtilities.class.getResource("/io/github/redstonemango/ttedit/style/application.css").toExternalForm();
 
     public static void informationAlert(String heading, String content) {
@@ -57,15 +57,15 @@ public class UXUtilities {
     }
 
     public static void applyStylesheet(Scene scene) {
-        scene.getStylesheets().add(styleSheet);
+        scene.getStylesheets().add(STYLE_SHEET);
     }
 
     public static void applyStylesheet(Alert alert) {
-        alert.getDialogPane().getStylesheets().add(styleSheet);
+        alert.getDialogPane().getStylesheets().add(STYLE_SHEET);
     }
 
     public static void applyStylesheet(TextInputDialog dialog) {
-        dialog.getDialogPane().getStylesheets().add(styleSheet);
+        dialog.getDialogPane().getStylesheets().add(STYLE_SHEET);
     }
 
     public static void defineMinSize(Stage stage) {
@@ -313,6 +313,9 @@ public class UXUtilities {
             }
             else if (item instanceof SimpleStringPropertyItemLinked linked) {
                 editor = new LinkedFieldPropertyEditor(item, linked.getSource(), linked.getConversionCallback());
+            }
+            else if (item instanceof RegistersPropertyItem registers) {
+                editor = new RegistersPropertyEditor(registers);
             }
             else if (item instanceof SimplePropertyItem) {
                 editor = Editors.createTextEditor(item);
