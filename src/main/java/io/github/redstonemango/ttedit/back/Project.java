@@ -10,7 +10,8 @@ import javafx.collections.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Project {
@@ -26,6 +27,7 @@ public class Project {
     private @Nullable String comment;
     private @Nullable String language;
     private double scriptBoxLibraryWidth = ScriptElementEditor.MAX_LIBRARY_WIDTH;
+    private final Map<String, Integer> initialRegisters = new HashMap<>();
 
     public Project() {}
 
@@ -126,5 +128,9 @@ public class Project {
     }
     public static void defineAsCurrentProject(Project project) {
         currentProject = project;
+    }
+
+    public Map<String, Integer> getInitialRegisters() {
+        return initialRegisters;
     }
 }
