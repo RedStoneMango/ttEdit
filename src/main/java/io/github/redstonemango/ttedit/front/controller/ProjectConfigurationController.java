@@ -3,12 +3,14 @@ package io.github.redstonemango.ttedit.front.controller;
 import io.github.redstonemango.ttedit.Launcher;
 import io.github.redstonemango.ttedit.back.Project;
 import io.github.redstonemango.ttedit.back.ProjectIO;
+import io.github.redstonemango.ttedit.front.propertySheetHelpers.RegistersPropertyItem;
 import io.github.redstonemango.ttedit.front.propertySheetHelpers.SimplePropertyItem;
 import io.github.redstonemango.ttedit.front.propertySheetHelpers.SimpleNumberPropertyItem;
 import io.github.redstonemango.ttedit.front.UXUtilities;
 import io.github.redstonemango.ttedit.front.propertySheetHelpers.SimpleStringPropertyItemCompletable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class ProjectConfigurationController {
 
@@ -31,7 +34,8 @@ public class ProjectConfigurationController {
     private SimpleIntegerProperty productID;
     private SimpleStringProperty comment;
     private SimpleStringProperty language;
-    
+    private SimpleMapProperty<String, Integer> initialRegisters;
+
     private Project project;
     private boolean createNew;
 
@@ -86,6 +90,8 @@ public class ProjectConfigurationController {
         project.setProductID(productID.getValue());
         project.setComment(comment.getValue());
         project.setLanguage(language.getValue());
+        project.getInitialRegisters().clear();
+        project.getInitialRegisters().putAll(initialRegisters.get());
         try {
             ProjectIO.saveProjectGeneralConfig(project);
             onClose();
@@ -106,6 +112,11 @@ public class ProjectConfigurationController {
         productID = new SimpleIntegerProperty(project != null ? project.getProductID() : 900);
         comment = new SimpleStringProperty(project != null ? project.getComment() : "");
         language = new SimpleStringProperty(project != null ? project.getLanguage() : "");
+        initialRegisters = new SimpleMapProperty<>(
+                project != null
+                ? FXCollections.observableMap(new HashMap<>(project.getInitialRegisters()))
+                : FXCollections.emptyObservableMap()
+        );
 
         items.add(new SimplePropertyItem(
                 "Project Name",
@@ -134,6 +145,14 @@ public class ProjectConfigurationController {
                 "The language your project is targeting. Usually, there is no need to set this for personal projects",
                 language,
                 "ENGLISH", "GERMAN", "DUTCH", "FRENCH", "ITALIA", "RUSSIA"));
+
+        items.add(new RegistersPropertyItem(
+                "Initial Registers",
+                "Scripting",
+                "Initial values for registers (variables) to be initialized when the project starts",
+                initialRegisters,
+                project,
+                createNew));
 
         return items;
     }
