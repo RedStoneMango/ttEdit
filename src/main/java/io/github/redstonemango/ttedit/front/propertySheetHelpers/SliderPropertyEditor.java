@@ -53,6 +53,9 @@ public class SliderPropertyEditor implements PropertyEditor<Number> {
                 return;
             }
 
+            // Let's prevent some parsing bugs
+            if (current.equals("-") || current.equals(".")) current = "";
+
             if (current.isEmpty()) {
                 ignoreSliderChange.set(true);
                 slider.setValue(0);
@@ -72,8 +75,10 @@ public class SliderPropertyEditor implements PropertyEditor<Number> {
                     slider.setValue(0);
                     return;
                 }
+                String text = inputField.getText();
+                if (text.equals(".") || text.equals("-")) text = "0";
 
-                double val = Double.parseDouble(inputField.getText());
+                double val = Double.parseDouble(text);
                 ignoreTextChange.set(true);
                 inputField.setText(buildVal(
                         Math.clamp(val, min, max),
