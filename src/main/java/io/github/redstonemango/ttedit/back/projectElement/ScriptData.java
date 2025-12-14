@@ -7,12 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ScriptData {
 
     public static final Pattern REGISTER_PATTERN = Pattern.compile("^[a-zA-Z][a-zA-Z0-9_]*");
+    public static final Pattern REGISTER_EXCLUDE_CHARS_PATTERN = Pattern.compile("[^a-zA-Z0-9_]");
 
     private Type type;
 
@@ -216,6 +218,13 @@ public class ScriptData {
 
     public static boolean matchesRegisterPattern(String s) {
         return REGISTER_PATTERN.matcher(s).matches();
+    }
+
+    public static String forceRegisterPattern(String s) {
+        if (matchesRegisterPattern(s)) return s;
+        s = REGISTER_EXCLUDE_CHARS_PATTERN.matcher(s).replaceAll("");
+        if (!matchesRegisterPattern(s)) s = "a" + s;
+        return s;
     }
 
 
