@@ -126,26 +126,8 @@ public class ProjectContentController {
 
         UXUtilities.doOnceAvailable(contentView.sceneProperty(), scene ->
             scene.getWindow().setOnCloseRequest(e -> {
-                boolean changed = tabs.stream().anyMatch(t -> t.getElement().isChanged());
-                if (changed) {
-                    ButtonType discardButton = new ButtonType("Discard and Close", ButtonBar.ButtonData.RIGHT);
-                    ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.LEFT);
-                    ButtonType saveButton = new ButtonType("Save and Close", ButtonBar.ButtonData.RIGHT);
-
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.getButtonTypes().setAll(discardButton, cancelButton, saveButton);
-                    alert.setTitle("Unsaved Changes");
-                    alert.setHeaderText("There are unsaved changes in your project");
-                    alert.setContentText("Do you really want to discard them?");
-                    UXUtilities.applyStylesheet(alert);
-                    alert.showAndWait();
-
-                    if (alert.getResult() == cancelButton)
-                        e.consume();
-                    else if (alert.getResult() == saveButton) {
-                        save(false);
-                    }
-                }
+                e.consume();
+                ifCanClose(this::close);
             })
         );
 
@@ -157,7 +139,7 @@ public class ProjectContentController {
         folderItem.setOnAction(_ ->
                 OperatingSystem.loadCurrentOS().open(Project.getCurrentProject().getDir()));
         MenuItem closeItem = new MenuItem("Close Project");
-        closeItem.setOnAction(_ -> close());
+        closeItem.setOnAction(_ -> ifCanClose(this::close));
 
         cxtMenu = new ContextMenu(
                 configureItem, saveItem, folderItem,
@@ -457,11 +439,35 @@ public class ProjectContentController {
         return name;
     }
 
+    private void ifCanClose(Runnable action) {
+        boolean changed = tabs.stream().anyMatch(t -> t.getElement().isChanged());
+        if (changed) {
+            ButtonType discardButton = new ButtonType("Discard and Close", ButtonBar.ButtonData.RIGHT);
+            ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.LEFT);
+            ButtonType saveButton = new ButtonType("Save and Close", ButtonBar.ButtonData.RIGHT);
+
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.getButtonTypes().setAll(discardButton, cancelButton, saveButton);
+            alert.setTitle("Unsaved Changes");
+            alert.setHeaderText("There are unsaved changes in your project");
+            alert.setContentText("Do you really want to discard them?");
+            UXUtilities.applyStylesheet(alert);
+            alert.showAndWait();
+
+            if (alert.getResult() == cancelButton)
+                return;
+            else if (alert.getResult() == saveButton) {
+                save(false);
+            }
+            action.run();
+        }
+        else {
+            action.run();
+        }
+    }
+
     private void close() {
         Stage stage = (Stage) contentView.getScene().getWindow();
-        WindowEvent evt = new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST);
-        stage.getOnCloseRequest().handle(evt);
-        if (evt.isConsumed()) return;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/io/github/redstonemango/ttedit/fxml/project-list.fxml"));
         Scene scene;
