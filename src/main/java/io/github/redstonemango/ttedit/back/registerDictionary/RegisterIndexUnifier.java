@@ -35,6 +35,10 @@ public class RegisterIndexUnifier {
         return unifier;
     }
 
+    public void update() {
+        onRegisterChange();
+    }
+
     void onRegisterChange() {
         Set<ProjectElement> openElements = liveIndex.getOpenElements();
         Stream<String> liveEntries = liveIndex.getEntriesStream();
