@@ -49,6 +49,7 @@ public class ProjectConfigurationController {
 
         UXUtilities.applyPropertyEditorFactory(propertySheet);
         propertySheet.getItems().addAll(buildConfigList());
+        propertySheet.requestFocus();
 
         actionButton.disableProperty().bind(Bindings.createBooleanBinding(() -> {
             if (!createNew) return false;
