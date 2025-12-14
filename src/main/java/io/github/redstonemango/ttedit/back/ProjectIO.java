@@ -135,6 +135,7 @@ public class ProjectIO {
         }
 
         loadProjectElements(project, onException);
+        project.getRegisterIndexUnifier().update(); // Load registers from script elements
         return project;
     }
 }
