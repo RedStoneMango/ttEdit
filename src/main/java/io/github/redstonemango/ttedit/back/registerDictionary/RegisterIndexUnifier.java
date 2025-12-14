@@ -54,8 +54,13 @@ public class RegisterIndexUnifier {
 
         registers.clear();
         registers.addAll(
-                Stream.concat(fileEntries, liveEntries)
-                        .collect(Collectors.toSet())
+                Stream.concat(fileEntries,
+                      Stream.concat(
+                            liveEntries,
+                            project.getInitialRegisters().keySet().stream()
+                      )
+                )
+                .collect(Collectors.toSet())
         );
     }
 

@@ -92,6 +92,7 @@ public class ProjectConfigurationController {
         project.setLanguage(language.getValue());
         project.getInitialRegisters().clear();
         project.getInitialRegisters().putAll(initialRegisters.get());
+        project.getRegisterIndexUnifier().update();
         try {
             ProjectIO.saveProjectGeneralConfig(project);
             onClose();
