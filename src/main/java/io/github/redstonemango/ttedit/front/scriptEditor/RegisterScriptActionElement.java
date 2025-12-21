@@ -45,7 +45,8 @@ public class RegisterScriptActionElement extends AbstractScriptActionElement {
             markChanged();
         });
         register.addListener((_, _, val) -> registerField.setText(val));
-        UXUtilities.applyRegisterCompletion(registerField, element, Project.getCurrentProject().getRegisterIndexUnifier());
+        UXUtilities.applyRegisterCompletion(registerField, element,
+                Project.getCurrentProject().getRegisterIndexUnifier(), false);
         applyColoring(registerField);
 
         Label l2 = new Label("to");
@@ -76,7 +77,8 @@ public class RegisterScriptActionElement extends AbstractScriptActionElement {
             markChanged();
         });
         value.addListener((_, _, val) -> valueField.setText(val));
-        UXUtilities.applyRegisterCompletion(valueField, element, Project.getCurrentProject().getRegisterIndexUnifier());
+        UXUtilities.applyRegisterCompletion(valueField, element,
+                Project.getCurrentProject().getRegisterIndexUnifier(), true);
         applyColoring(valueField);
 
         contentBox.getChildren().addAll(l, registerField, l2, b, valueField);

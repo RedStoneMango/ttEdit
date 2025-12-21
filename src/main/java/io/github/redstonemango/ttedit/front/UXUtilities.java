@@ -154,7 +154,7 @@ public class UXUtilities {
     }
 
     public static void applyRegisterCompletion(TextField field, ProjectElement element,
-                                               RegisterIndexUnifier registerIndexUnifier) {
+                                               RegisterIndexUnifier registerIndexUnifier, boolean allowNumber) {
         TextFields.bindAutoCompletion(field, s -> registerIndexUnifier.getRegisters().stream()
                 .filter(r ->
                         r.toLowerCase().contains(s.getUserText().toLowerCase())

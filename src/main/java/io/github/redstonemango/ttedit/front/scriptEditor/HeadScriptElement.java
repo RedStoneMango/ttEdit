@@ -220,7 +220,8 @@ public class HeadScriptElement extends AbstractScriptElement {
                 owner.markChanged();
             });
             argA = defArgA;
-            UXUtilities.applyRegisterCompletion(fieldA, owner.element, Project.getCurrentProject().getRegisterIndexUnifier());
+            UXUtilities.applyRegisterCompletion(fieldA, owner.element,
+                    Project.getCurrentProject().getRegisterIndexUnifier(), false);
             owner.applyColoring(fieldA);
 
             TextField fieldB = new TextField(defArgB);
@@ -231,7 +232,8 @@ public class HeadScriptElement extends AbstractScriptElement {
                 owner.markChanged();
             });
             argB = defArgB;
-            UXUtilities.applyRegisterCompletion(fieldB, owner.element, Project.getCurrentProject().getRegisterIndexUnifier());
+            UXUtilities.applyRegisterCompletion(fieldB, owner.element,
+                    Project.getCurrentProject().getRegisterIndexUnifier(), true);
             owner.applyColoring(fieldB);
 
             ComboBox<BranchCondition.Comparison> comparisonBox = new ComboBox<>();
