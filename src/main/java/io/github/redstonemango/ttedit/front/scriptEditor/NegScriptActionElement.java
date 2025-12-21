@@ -35,7 +35,7 @@ public class NegScriptActionElement extends AbstractScriptActionElement {
         applyColoring(l);
         l.setMouseTransparent(preview);
 
-        TextField registerField = new TextField("");
+        TextField registerField = new TextField("reg");
         registerField.setPrefWidth(100);
         registerField.setMouseTransparent(preview);
         registerField.setFocusTraversable(false);

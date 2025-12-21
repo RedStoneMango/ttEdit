@@ -36,7 +36,7 @@ public class RegisterScriptActionElement extends AbstractScriptActionElement {
         applyColoring(l);
         l.setMouseTransparent(preview);
 
-        TextField registerField = new TextField("");
+        TextField registerField = new TextField("reg");
         registerField.setPrefWidth(70);
         registerField.setMouseTransparent(preview);
         registerField.setFocusTraversable(false);
@@ -68,7 +68,7 @@ public class RegisterScriptActionElement extends AbstractScriptActionElement {
         action.addListener((_, _, val) -> b.getSelectionModel().select(val));
         applyColoring(b);
 
-        TextField valueField = new TextField("");
+        TextField valueField = new TextField("0");
         valueField.setPrefWidth(70);
         valueField.setMouseTransparent(preview);
         valueField.setFocusTraversable(false);

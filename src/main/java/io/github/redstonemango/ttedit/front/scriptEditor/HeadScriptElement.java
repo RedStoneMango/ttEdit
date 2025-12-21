@@ -89,7 +89,7 @@ public class HeadScriptElement extends AbstractScriptElement {
         setFocusTraversable(false);
         applyColoring(addConditionBtn, false);
         addConditionBtn.setOnAction(_ -> {
-            addCondition(BranchCondition.Comparison.EQUAL, "", "");
+            addCondition(BranchCondition.Comparison.EQUAL, "reg", "0");
         });
         conditionBox = new VBox(addConditionBtn);
         conditionBox.setSpacing(10);
