@@ -181,7 +181,7 @@ public class UXUtilities {
         }
 
         if (text.isBlank()) {
-            return "0";
+            return "1";
         }
 
         if (!POSITIVE_INT_PATTERN.matcher(text).matches()) {
