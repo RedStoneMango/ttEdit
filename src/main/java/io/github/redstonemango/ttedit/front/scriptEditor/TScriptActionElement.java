@@ -34,7 +34,7 @@ public class TScriptActionElement extends AbstractScriptActionElement {
         applyColoring(l);
         l.setMouseTransparent(preview);
 
-        TextField registerField = new TextField("");
+        TextField registerField = new TextField("reg");
         registerField.setPrefWidth(70);
         registerField.setMouseTransparent(preview);
         registerField.setFocusTraversable(false);
@@ -51,7 +51,7 @@ public class TScriptActionElement extends AbstractScriptActionElement {
         applyColoring(l2);
         l2.setMouseTransparent(preview);
 
-        TextField moduloField = new TextField("");
+        TextField moduloField = new TextField("5");
         moduloField.setPrefWidth(70);
         moduloField.setMouseTransparent(preview);
         moduloField.setFocusTraversable(false);
