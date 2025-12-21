@@ -50,6 +50,7 @@ public class ProjectIO {
 
         objectMapper.writer(prettyPrinter)
                 .writeValue(file, element);
+        element.setChanged(false);
     }
 
     public static void deleteProjectElement(ProjectElement element, Project owner) throws IOException {
