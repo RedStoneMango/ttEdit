@@ -44,7 +44,8 @@ public class NegScriptActionElement extends AbstractScriptActionElement {
             markChanged();
         });
         register.addListener((_, _, val) -> registerField.setText(val));
-        UXUtilities.applyRegisterCompletion(registerField, element, Project.getCurrentProject().getRegisterIndexUnifier());
+        UXUtilities.applyRegisterCompletion(registerField, element,
+                Project.getCurrentProject().getRegisterIndexUnifier(), false);
         applyColoring(registerField);
 
         contentBox.getChildren().addAll(l, registerField);

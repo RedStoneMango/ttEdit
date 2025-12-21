@@ -43,7 +43,8 @@ public class TScriptActionElement extends AbstractScriptActionElement {
             markChanged();
         });
         register.addListener((_, _, val) -> registerField.setText(val));
-        UXUtilities.applyRegisterCompletion(registerField, element, Project.getCurrentProject().getRegisterIndexUnifier());
+        UXUtilities.applyRegisterCompletion(registerField, element,
+                Project.getCurrentProject().getRegisterIndexUnifier(), false);
         applyColoring(registerField);
 
         Label l2 = new Label("with max value");
@@ -59,7 +60,8 @@ public class TScriptActionElement extends AbstractScriptActionElement {
             markChanged();
         });
         modulo.addListener((_, _, val) -> moduloField.setText(val));
-        UXUtilities.applyRegisterCompletion(moduloField, element, Project.getCurrentProject().getRegisterIndexUnifier());
+        UXUtilities.applyRegisterCompletion(moduloField, element,
+                Project.getCurrentProject().getRegisterIndexUnifier(), true);
         applyColoring(moduloField);
 
         contentBox.getChildren().addAll(l, registerField, l2, moduloField);
