@@ -106,6 +106,7 @@ public class ElementTab extends Tab {
     }
 
     public void save(Runnable onError) {
+        getTabPane().requestFocus(); // Unfocus current text field to enure that all changes get indexed
         if (editable instanceof ScriptElementEditor editor) {
             List<ScriptData> elementBranches = element.getBranches();
             assert elementBranches != null: "Elements that have a ScriptElementEditor should always supply branches";
