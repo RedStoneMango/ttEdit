@@ -4,11 +4,20 @@ import io.github.redstonemango.ttedit.back.Project;
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
 import io.github.redstonemango.ttedit.front.UXUtilities;
 import javafx.beans.property.*;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.scene.text.Font;
+import org.controlsfx.control.textfield.CustomTextField;
 import org.jetbrains.annotations.Nullable;
 
 public class RegisterScriptActionElement extends AbstractScriptActionElement {
@@ -53,6 +62,8 @@ public class RegisterScriptActionElement extends AbstractScriptActionElement {
         applyColoring(l2);
         l2.setMouseTransparent(preview);
 
+        CustomTextField valueField = new CustomTextField();
+
         ComboBox<ScriptData.Action> b = new ComboBox<>();
         b.getItems().addAll(ScriptData.Action.values());
         b.setPrefWidth(190);
@@ -65,10 +76,18 @@ public class RegisterScriptActionElement extends AbstractScriptActionElement {
                     action.setValue(val);
                     markChanged();
                 });
-        action.addListener((_, _, val) -> b.getSelectionModel().select(val));
+        action.addListener((_, _, val) -> {
+            b.getSelectionModel().select(val);
+            if (val == ScriptData.Action.DIVISION && value.getValue().equals("0")) {
+                valueField.setRight(new DivisionWarning());
+            }
+            else {
+                valueField.setRight(null);
+            }
+        });
         applyColoring(b);
 
-        TextField valueField = new TextField("0");
+        valueField.setText("0");
         valueField.setPrefWidth(70);
         valueField.setMouseTransparent(preview);
         valueField.setFocusTraversable(false);
@@ -76,7 +95,15 @@ public class RegisterScriptActionElement extends AbstractScriptActionElement {
             value.set(val);
             markChanged();
         });
-        value.addListener((_, _, val) -> valueField.setText(val));
+        value.addListener((_, _, val) -> {
+            valueField.setText(val);
+            if (action.getValue() == ScriptData.Action.DIVISION && val.equals("0")) {
+                valueField.setRight(new DivisionWarning());
+            }
+            else {
+                valueField.setRight(null);
+            }
+        });
         UXUtilities.applyRegisterCompletion(valueField, element,
                 Project.getCurrentProject().getRegisterIndexUnifier(), true);
         applyColoring(valueField);
@@ -121,5 +148,26 @@ public class RegisterScriptActionElement extends AbstractScriptActionElement {
     @Override
     public double height() {
         return 20;
+    }
+
+    public static class DivisionWarning extends StackPane {
+        public DivisionWarning() {
+            Path triangle = new Path(
+                new MoveTo(0, 0),
+                new LineTo(20, 0),
+                new LineTo(10, 20),
+                new LineTo(0, 0)
+            );
+            triangle.setFill(Color.YELLOW);
+
+            Label mark = new Label("!");
+            mark.setFont(new Font(null, 18));
+            mark.getStyleClass().remove("label");
+            mark.setPadding(new Insets(0, 1.4, 3, 0));
+            mark.setTooltip(new Tooltip("Division by 0. This is an algebraic error and might damage your TipToi pen!"));
+
+            setAlignment(Pos.CENTER);
+            getChildren().addAll(triangle, mark);
+        }
     }
 }
