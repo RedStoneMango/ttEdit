@@ -25,7 +25,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.controlsfx.control.GridView;
 
 import java.io.File;
