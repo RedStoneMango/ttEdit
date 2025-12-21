@@ -40,6 +40,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,6 +48,7 @@ public class UXUtilities {
 
     private static final String STYLE_SHEET =
             UXUtilities.class.getResource("/io/github/redstonemango/ttedit/style/application.css").toExternalForm();
+    private static final Pattern POSITIVE_INT_PATTERN = Pattern.compile("^\\d+$");
 
     public static void informationAlert(String heading, String content) {
         runOnApplicationThread(() -> {
@@ -162,11 +164,38 @@ public class UXUtilities {
                         !r.equals(s.getUserText()))
                 .collect(Collectors.toSet()));
 
-        field.textProperty().addListener((_, _, newVal) ->
-                registerIndexUnifier.getLiveIndex().updateEntry(field, element, newVal)
-        );
+        field.focusedProperty().addListener((_, _, focused) -> {
+            if (!focused) {
+                String s = ensureRegisterSyntax(field.getText(), allowNumber);
+                field.setText(s);
+                registerIndexUnifier.getLiveIndex().updateEntry(field, element, s);
+            }
+        });
         // Init entry
         registerIndexUnifier.getLiveIndex().updateEntry(field, element, field.getText());
+    }
+
+    private static String ensureRegisterSyntax(String text, boolean allowNumber) {
+        if (!allowNumber) {
+            return ScriptData.forceRegisterPattern(text);
+        }
+
+        if (text.isBlank()) {
+            return "0";
+        }
+
+        if (!POSITIVE_INT_PATTERN.matcher(text).matches()) {
+            return ScriptData.forceRegisterPattern(text);
+        }
+
+        if (text.length() > 5) {
+            text = text.substring(0, 5);
+        }
+
+        int value = (int) Long.parseLong(text); // "String -> long -> int" to correctly handle strings in "65536..99999"
+        value = Math.clamp(value, 0, 65535);
+
+        return String.valueOf(value);
     }
 
     public static void applyReadonlyRegisterCompletion(TextField field, RegisterIndexUnifier registerIndexUnifier,
