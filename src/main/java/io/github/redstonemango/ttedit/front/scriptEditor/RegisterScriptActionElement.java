@@ -87,7 +87,7 @@ public class RegisterScriptActionElement extends AbstractScriptActionElement {
         });
         applyColoring(b);
 
-        valueField.setText("0");
+        valueField.setText("1");
         valueField.setPrefWidth(70);
         valueField.setMouseTransparent(preview);
         valueField.setFocusTraversable(false);
