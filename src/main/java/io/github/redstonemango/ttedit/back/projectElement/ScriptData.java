@@ -223,7 +223,7 @@ public class ScriptData {
     public static String forceRegisterPattern(String s) {
         if (matchesRegisterPattern(s)) return s;
         s = REGISTER_EXCLUDE_CHARS_PATTERN.matcher(s).replaceAll("");
-        if (!matchesRegisterPattern(s)) s = "a" + s;
+        if (!matchesRegisterPattern(s)) s = s.isBlank() ? "reg" : "reg_" + s;
         return s;
     }
 
