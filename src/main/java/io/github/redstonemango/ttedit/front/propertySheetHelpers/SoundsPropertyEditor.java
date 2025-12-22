@@ -1,37 +1,27 @@
 package io.github.redstonemango.ttedit.front.propertySheetHelpers;
 
 import io.github.redstonemango.ttedit.back.Project;
-import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
 import io.github.redstonemango.ttedit.back.projectElement.Sound;
-import io.github.redstonemango.ttedit.front.UXUtilities;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.ListView;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.property.editor.PropertyEditor;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-
-public class SoundsPropertyEditor implements PropertyEditor<Set<Sound>> {
+public class SoundsPropertyEditor implements PropertyEditor<ObservableList<Sound>> {
 
     private final Button button;
-    private Set<Sound> sounds;
+    private ObservableList<Sound> sounds;
     private final PopOver popOver;
     private final Project project;
 
     @SuppressWarnings("unchecked")
     public SoundsPropertyEditor(SoundsPropertyItem item) {
         project = item.getProject();
-        sounds = (Set<Sound>) item.getValue();
+        sounds = (ObservableList<Sound>) item.getValue();
 
         popOver = new PopOver();
 
@@ -71,10 +61,10 @@ public class SoundsPropertyEditor implements PropertyEditor<Set<Sound>> {
     }
 
     @Override public Node getEditor() { return button; }
-    @Override public Set<Sound> getValue() { return sounds; }
+    @Override public ObservableList<Sound> getValue() { return sounds; }
 
     @Override
-    public void setValue(Set<Sound> value) {
+    public void setValue(ObservableList<Sound> value) {
         sounds = value;
         button.setText(buildSoundsText());
         popOver.setContentNode(createPopOverContent());

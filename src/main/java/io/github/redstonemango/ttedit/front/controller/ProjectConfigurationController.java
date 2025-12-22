@@ -7,10 +7,7 @@ import io.github.redstonemango.ttedit.back.projectElement.Sound;
 import io.github.redstonemango.ttedit.front.propertySheetHelpers.*;
 import io.github.redstonemango.ttedit.front.UXUtilities;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleMapProperty;
-import javafx.beans.property.SimpleSetProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -22,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -35,7 +33,7 @@ public class ProjectConfigurationController {
     private SimpleStringProperty comment;
     private SimpleStringProperty language;
     private SimpleMapProperty<String, Integer> initialRegisters;
-    private SimpleSetProperty<Sound> sounds;
+    private ListProperty<Sound> sounds;
 
     private Project project;
     private boolean createNew;
@@ -120,10 +118,10 @@ public class ProjectConfigurationController {
                 ? FXCollections.observableMap(new HashMap<>(project.getInitialRegisters()))
                 : FXCollections.emptyObservableMap()
         );
-        sounds = new SimpleSetProperty<>(
+        sounds = new SimpleListProperty<>(
                 project != null
-                ? FXCollections.observableSet(new HashSet<>(project.getSounds()))
-                : FXCollections.emptyObservableSet()
+                ? FXCollections.observableList(new ArrayList<>(project.getSounds()))
+                : FXCollections.emptyObservableList()
         );
 
         items.add(new SimplePropertyItem(
