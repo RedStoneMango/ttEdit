@@ -134,6 +134,10 @@ public class UXUtilities {
     }
 
     public static void confirmationAlert(String heading, String content, Runnable onAction) {
+        confirmationAlert(heading, content, onAction, () -> {});
+    }
+
+    public static void confirmationAlert(String heading, String content, Runnable onAction, Runnable onDone) {
         runOnApplicationThread(() -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirmation Required");
@@ -143,6 +147,7 @@ public class UXUtilities {
             alert.showAndWait();
 
             if (alert.getResult() == ButtonType.OK) onAction.run();
+            onDone.run();
         });
     }
 
