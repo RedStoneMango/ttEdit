@@ -50,6 +50,7 @@ public class Project {
 
         // Non-persistent data
         dir = new File(Launcher.PROJECTS_HOME, filename);
+        sounds = FXCollections.observableArrayList();
         registerIndexUnifier = RegisterIndexUnifier.create(this);
         scripts = FXCollections.observableArrayList();
         elements = FXCollections.observableArrayList();
