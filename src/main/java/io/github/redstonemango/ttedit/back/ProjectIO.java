@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import io.github.redstonemango.mangoutils.MangoIO;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectLoadException;
+import io.github.redstonemango.ttedit.back.projectElement.Sound;
 import io.github.redstonemango.ttedit.back.registerDictionary.RegisterFileIndex;
 
 import java.io.File;
@@ -88,6 +89,9 @@ public class ProjectIO {
                 onException.accept(e);
             }
         });
+
+        // No need to save sounds since they cannot have changed during app lifetime
+        // (Pure .mp3 only. Only change is adding / deleting which is handled independently)
     }
 
     private static Project loadProjectFromGeneralConfig(File projectDir) throws IOException {
@@ -116,6 +120,22 @@ public class ProjectIO {
         }
     }
 
+    private static void loadSounds(Project project) {
+        // Ensure sound dir exists
+        if (!project.getSoundDir().exists()) project.getSoundDir().mkdirs();
+
+        String[] soundNames = project.getSoundDir().list((dir, name) ->
+                dir.equals(project.getSoundDir()) && name.endsWith(".mp3"));
+
+        if (soundNames != null) {
+            for (String soundName : soundNames) {
+                File soundFile = new File(project.getSoundDir(), soundName);
+                Sound sound = new Sound(soundFile);
+                project.getSounds().add(sound);
+            }
+        }
+    }
+
     public static ProjectElement loadProjectElement(File elementFile, RegisterFileIndex registerFileIndex)
             throws IOException, ProjectLoadException {
 
@@ -137,6 +157,8 @@ public class ProjectIO {
 
         loadProjectElements(project, onException);
         project.getRegisterIndexUnifier().update(); // Load registers from script elements
+
+        loadSounds(project);
         return project;
     }
 }
