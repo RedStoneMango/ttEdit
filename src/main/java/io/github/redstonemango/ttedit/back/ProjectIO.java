@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import io.github.redstonemango.mangoutils.MangoIO;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectLoadException;
-import io.github.redstonemango.ttedit.back.projectElement.Sound;
 import io.github.redstonemango.ttedit.back.registerDictionary.RegisterFileIndex;
 
 import java.io.File;
@@ -134,6 +133,33 @@ public class ProjectIO {
                 project.getSounds().add(sound);
             }
         }
+    }
+
+    public static void addSound(Project project, File sourceFile, Consumer<Exception> onError) {
+        if (!sourceFile.getName().endsWith(".mp3")) throw new IllegalArgumentException("Mp3 files are supported only");
+
+        File soundFile = new File(project.getSoundDir(), sourceFile.getName());
+        soundFile = MangoIO.getNextAvailableFile(soundFile);
+        try {
+            Files.copy(sourceFile.toPath(), soundFile.toPath());
+        } catch (IOException e) {
+            onError.accept(e);
+            return;
+        }
+
+        Sound sound = new Sound(soundFile);
+        project.getSounds().add(sound);
+    }
+
+    public static void removeSound(Project project, Sound sound, Consumer<Exception> onError) {
+        try {
+            Files.delete(sound.soundFile().toPath());
+        } catch (IOException e) {
+            onError.accept(e);
+            return;
+        }
+
+        project.getSounds().remove(sound);
     }
 
     public static ProjectElement loadProjectElement(File elementFile, RegisterFileIndex registerFileIndex)

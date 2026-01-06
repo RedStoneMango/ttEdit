@@ -1,4 +1,4 @@
-package io.github.redstonemango.ttedit.back.projectElement;
+package io.github.redstonemango.ttedit.back;
 
 import java.io.File;
 

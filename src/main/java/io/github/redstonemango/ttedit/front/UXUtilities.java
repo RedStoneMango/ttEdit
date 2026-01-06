@@ -366,9 +366,6 @@ public class UXUtilities {
             else if (item instanceof RegistersPropertyItem registers) {
                 editor = new RegistersPropertyEditor(registers);
             }
-            else if (item instanceof SoundsPropertyItem sounds) {
-                editor = new SoundsPropertyEditor(sounds);
-            }
             else if (item instanceof SimplePropertyItem) {
                 editor = Editors.createTextEditor(item);
             }
