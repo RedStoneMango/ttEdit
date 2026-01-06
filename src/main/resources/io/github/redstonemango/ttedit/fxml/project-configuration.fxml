@@ -10,7 +10,7 @@
 
 <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="392.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.redstonemango.ttedit.front.controller.ProjectConfigurationController">
    <children>
-      <Label text="Create New Project">
+      <Label fx:id="header" text="Create New Project">
          <VBox.margin>
             <Insets bottom="10.0" top="10.0" />
          </VBox.margin>
