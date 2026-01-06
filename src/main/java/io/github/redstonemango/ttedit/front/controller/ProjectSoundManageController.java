@@ -16,6 +16,7 @@ public class ProjectSoundManageController {
     @FXML private Label header;
     @FXML private ListView<Sound> soundsView;
     @FXML private Button playButton;
+    @FXML private Button renameButton;
     @FXML private Button deleteButton;
 
     public void init(Project project) {
@@ -34,6 +35,10 @@ public class ProjectSoundManageController {
 
     @FXML
     private void onPlay() {
+
+    }
+    @FXML
+    private void onRename() {
 
     }
     @FXML
