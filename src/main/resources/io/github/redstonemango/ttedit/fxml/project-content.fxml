@@ -17,7 +17,7 @@
 <?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.GridView?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="680.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.redstonemango.ttedit.front.controller.ProjectContentController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="833.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.redstonemango.ttedit.front.controller.ProjectContentController">
    <top>
       <HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="44.0" prefWidth="603.0" BorderPane.alignment="CENTER">
          <children>
@@ -195,6 +195,23 @@
                                              </graphic>
                                           </Label>
                                           <Label text="Configure Project" />
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets left="10.0" right="10.0" />
+                                       </VBox.margin>
+                                    </HBox>
+                                    <HBox fx:id="manageSoundsControl" alignment="CENTER_LEFT" layoutX="20.0" layoutY="635.0" onMouseClicked="#onManageSounds" spacing="10.0">
+                                       <children>
+                                          <Label contentDisplay="GRAPHIC_ONLY">
+                                             <graphic>
+                                                <ImageView fitHeight="47.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../image/sounds.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Label>
+                                          <Label text="Manage Sounds" />
                                        </children>
                                        <VBox.margin>
                                           <Insets left="10.0" right="10.0" />

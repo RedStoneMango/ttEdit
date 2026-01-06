@@ -51,6 +51,7 @@ public class ProjectContentController {
     @FXML private HBox cloneItemControl;
     @FXML private HBox deleteItemControl;
     @FXML private HBox configureProjectControl;
+    @FXML private HBox manageSoundsControl;
     @FXML private HBox saveProjectControl;
     @FXML private TextField filterField;
     @FXML private GridView<ProjectElement> contentView;
@@ -77,6 +78,7 @@ public class ProjectContentController {
         UXUtilities.registerHoverAnimation(cloneItemControl);
         UXUtilities.registerHoverAnimation(deleteItemControl);
         UXUtilities.registerHoverAnimation(configureProjectControl);
+        UXUtilities.registerHoverAnimation(manageSoundsControl);
         UXUtilities.registerHoverAnimation(saveProjectControl);
 
         nameLabel.setText(project.name());
@@ -337,6 +339,13 @@ public class ProjectContentController {
             project.getElements().addAll(newElements);
             selectedElements.setAll(newElements);
         });
+    }
+
+    @FXML
+    private void onManageSounds() {
+        mouseExit(manageSoundsControl);
+
+        UXUtilities.warningAlert("Not yet implemented", "This feature is not yet implemented");
     }
 
     @FXML

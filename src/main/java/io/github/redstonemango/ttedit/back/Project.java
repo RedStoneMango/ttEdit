@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.github.redstonemango.ttedit.Launcher;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
-import io.github.redstonemango.ttedit.back.projectElement.Sound;
 import io.github.redstonemango.ttedit.back.registerDictionary.RegisterIndexUnifier;
 import io.github.redstonemango.ttedit.front.scriptEditor.ScriptElementEditor;
 import javafx.collections.*;

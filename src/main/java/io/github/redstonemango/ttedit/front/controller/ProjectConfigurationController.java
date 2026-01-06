@@ -3,7 +3,6 @@ package io.github.redstonemango.ttedit.front.controller;
 import io.github.redstonemango.ttedit.Launcher;
 import io.github.redstonemango.ttedit.back.Project;
 import io.github.redstonemango.ttedit.back.ProjectIO;
-import io.github.redstonemango.ttedit.back.projectElement.Sound;
 import io.github.redstonemango.ttedit.front.propertySheetHelpers.*;
 import io.github.redstonemango.ttedit.front.UXUtilities;
 import javafx.beans.binding.Bindings;
@@ -19,9 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class ProjectConfigurationController {
 
@@ -33,7 +30,6 @@ public class ProjectConfigurationController {
     private SimpleStringProperty comment;
     private SimpleStringProperty language;
     private SimpleMapProperty<String, Integer> initialRegisters;
-    private ListProperty<Sound> sounds;
 
     private Project project;
     private boolean createNew;
@@ -92,7 +88,6 @@ public class ProjectConfigurationController {
         project.getInitialRegisters().clear();
         project.getInitialRegisters().putAll(initialRegisters.get());
         project.getRegisterIndexUnifier().update();
-        project.getSounds().setAll(sounds);
         try {
             ProjectIO.saveProjectGeneralConfig(project);
             onClose();
@@ -117,11 +112,6 @@ public class ProjectConfigurationController {
                 project != null
                 ? FXCollections.observableMap(new HashMap<>(project.getInitialRegisters()))
                 : FXCollections.emptyObservableMap()
-        );
-        sounds = new SimpleListProperty<>(
-                project != null
-                ? FXCollections.observableList(new ArrayList<>(project.getSounds()))
-                : FXCollections.emptyObservableList()
         );
 
         items.add(new SimplePropertyItem(
@@ -157,14 +147,6 @@ public class ProjectConfigurationController {
                 "Scripting",
                 "Initial values for registers (variables) to be initialized when the project starts",
                 initialRegisters,
-                project,
-                createNew));
-
-        items.add(new SoundsPropertyItem(
-                "Sounds",
-                "Scripting",
-                "The sounds available to this project. Only available sounds can be played by pages and scripts",
-                sounds,
                 project,
                 createNew));
 

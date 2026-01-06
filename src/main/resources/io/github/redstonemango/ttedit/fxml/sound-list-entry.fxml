@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<HBox alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="38.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.redstonemango.ttedit.front.listEntries.SoundListEntry">
+   <children>
+      <AnchorPane prefHeight="10.0" prefWidth="485.0" HBox.hgrow="ALWAYS">
+         <children>
+            <Label fx:id="nameLabel" layoutX="12.0" layoutY="26.0" prefHeight="29.0" text="Sound Name" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <StackPane layoutX="566.0" layoutY="10.0" prefHeight="32.0" prefWidth="26.0">
+         <children>
+            <Circle fx:id="playBgCircle" fill="#838383" opacity="0.45" radius="16.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+            <ImageView fx:id="playImage" fitHeight="21.0" fitWidth="21.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../image/play.png" />
+               </image>
+            </ImageView>
+         </children>
+      </StackPane>
+      <StackPane>
+         <children>
+            <Circle fx:id="deleteBgCircle" fill="#838383" opacity="0.45" radius="16.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+            <ImageView fitHeight="29.0" fitWidth="23.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../image/x.png" />
+               </image>
+            </ImageView>
+         </children>
+         <HBox.margin>
+            <Insets left="10.0" right="10.0" />
+         </HBox.margin>
+      </StackPane>
+   </children>
+</HBox>
