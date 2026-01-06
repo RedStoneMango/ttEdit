@@ -345,7 +345,26 @@ public class ProjectContentController {
     private void onManageSounds() {
         mouseExit(manageSoundsControl);
 
-        UXUtilities.warningAlert("Not yet implemented", "This feature is not yet implemented");
+        Stage stage = new Stage();
+        stage.setTitle("Manage Sounds for '" + project.name() + "'");
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(contentView.getScene().getWindow());
+        Scene scene;
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                "/io/github/redstonemango/ttedit/fxml/project-sound-management.fxml"));
+        try {
+            scene = new Scene(loader.load());
+            ProjectSoundManageController controller = loader.getController();
+            controller.init(project);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        UXUtilities.applyStylesheet(scene);
+        UXUtilities.defineMinSize(stage);
+
+        stage.setScene(scene);
+        stage.show();
     }
 
     @FXML
