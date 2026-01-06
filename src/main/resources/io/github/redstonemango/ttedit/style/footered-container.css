@@ -1,0 +1,12 @@
+/*
+    A stylesheet that can be used to add a footer to a container (like a list view) by using the below IDs
+*/
+#footered-container {
+    -fx-background-insets: 0, 1 1 0 1;
+}
+
+#container-footer {
+    -fx-background-color: -fx-box-border, -fx-control-inner-background;
+    -fx-background-insets: 0, 0 1 1 1;
+    -fx-padding: 1;
+}
