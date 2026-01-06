@@ -11,6 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import org.controlsfx.control.PropertySheet;
@@ -24,6 +25,7 @@ public class ProjectConfigurationController {
 
     @FXML private PropertySheet propertySheet;
     @FXML private Button actionButton;
+    @FXML private Label header;
 
     private SimpleStringProperty projectName;
     private SimpleIntegerProperty productID;
@@ -40,6 +42,7 @@ public class ProjectConfigurationController {
     protected void init(@Nullable Project project) {
         this.project = project;
         createNew = project == null;
+        if (!createNew) header.setText("Configure '" + project.name() + "'");
 
         propertySheet.getScene().addEventHandler(KeyEvent.KEY_PRESSED, e -> {
             if (e.getCode() == KeyCode.ESCAPE)
