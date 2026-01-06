@@ -1,6 +1,8 @@
 package io.github.redstonemango.ttedit.front;
 
 import io.github.redstonemango.mangoutils.OperatingSystem;
+import io.github.redstonemango.ttedit.back.Project;
+import io.github.redstonemango.ttedit.back.ProjectIO;
 import io.github.redstonemango.ttedit.back.projectElement.BranchCondition;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
@@ -22,7 +24,9 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import org.controlsfx.control.GridCell;
@@ -33,6 +37,7 @@ import org.controlsfx.property.editor.DefaultPropertyEditorFactory;
 import org.controlsfx.property.editor.Editors;
 import org.controlsfx.property.editor.PropertyEditor;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -508,6 +513,22 @@ public class UXUtilities {
         });
 
         return selectedItems;
+    }
+
+    public static void showAddSoundUI(Project project, Window window) {
+        FileChooser chooser = new FileChooser();
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP3 Audio File", "*.mp3"));
+        chooser.setTitle("Add Sound");
+        var files = chooser.showOpenMultipleDialog(window);
+        if (files != null) {
+            for (File file : files) {
+                if (!file.getName().endsWith(".mp3")) {
+                    errorAlert("Unsupported file", file.getName() + " is not supported. Use .mp3 files only");
+                    continue;
+                }
+                ProjectIO.addSound(project, file, e -> errorAlert("Unable to add sound", e.getMessage()));
+            }
+        }
     }
 
 }
