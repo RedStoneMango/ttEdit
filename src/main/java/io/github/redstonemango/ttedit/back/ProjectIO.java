@@ -140,15 +140,30 @@ public class ProjectIO {
 
         File soundFile = new File(project.getSoundDir(), sourceFile.getName());
         soundFile = MangoIO.getNextAvailableFile(soundFile);
+        addNamedSound(project, sourceFile, soundFile, onError);
+    }
+
+    public static void addNamedSound(Project project, File sourceFile, File targetFile, Consumer<Exception> onError) {
+        if (!sourceFile.getName().endsWith(".mp3")) throw new IllegalArgumentException("Mp3 files are supported only");
+        if (!targetFile.getParentFile().equals(project.getSoundDir()))
+            throw new IllegalArgumentException("Target file must be located in project sound directory");
+
         try {
-            Files.copy(sourceFile.toPath(), soundFile.toPath());
+            Files.copy(sourceFile.toPath(), targetFile.toPath());
         } catch (IOException e) {
             onError.accept(e);
             return;
         }
 
-        Sound sound = new Sound(soundFile);
+        Sound sound = new Sound(targetFile);
         project.getSounds().add(sound);
+    }
+
+    public static void renameSound(Project project, Sound sound, String newFileName, Consumer<Exception> onError) {
+        if (sound.soundFile().getName().equals(newFileName)) return;
+        File newFile = new File(project.getSoundDir(), newFileName);
+        addNamedSound(project, sound.soundFile(), newFile, onError);
+        removeSound(project, sound, onError);
     }
 
     public static void removeSound(Project project, Sound sound, Consumer<Exception> onError) {
