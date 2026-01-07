@@ -1,11 +1,13 @@
 package io.github.redstonemango.ttedit.front.controller;
 
-import io.github.redstonemango.ttedit.TtEdit;
+import io.github.redstonemango.ttedit.back.ISoundPlayable;
 import io.github.redstonemango.ttedit.back.Project;
 import io.github.redstonemango.ttedit.back.ProjectIO;
 import io.github.redstonemango.ttedit.back.Sound;
 import io.github.redstonemango.ttedit.front.UXUtilities;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -15,7 +17,6 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,8 @@ public class ProjectSoundManageController {
     @FXML private Button playButton;
     @FXML private Button renameButton;
     @FXML private Button deleteButton;
+
+    private final ObjectProperty<ISoundPlayable> activeSoundPlayer = new SimpleObjectProperty<>(null);
 
     public void init(Project project) {
         header.setText("Mange Sounds for '" + project.name() + "'");
@@ -40,17 +43,42 @@ public class ProjectSoundManageController {
             return box;
         }, _ -> {}, new Insets(0));
 
-        playButton.disableProperty().bind(renameButton.disableProperty());
         renameButton.disableProperty().bind(deleteButton.disableProperty());
         deleteButton.disableProperty().bind(Bindings.createBooleanBinding(
                 () -> soundsView.getSelectionModel().getSelectedItem() == null,
                 soundsView.getSelectionModel().selectedItemProperty())
         );
+        playButton.disableProperty().bind(deleteButton.disableProperty().and(activeSoundPlayer.isNull()));
+
+        UXUtilities.doOnceAvailable(playButton.getScene().windowProperty(),
+                window -> window.showingProperty().addListener((_, _, isShowing) -> {
+            if (!isShowing && activeSoundPlayer.get() != null) {
+                activeSoundPlayer.get().stopPlaying();
+                activeSoundPlayer.set(null);
+            }
+        }));
     }
 
     @FXML
     private void onPlay() {
+        if (activeSoundPlayer.get() != null) {
+            activeSoundPlayer.get().stopPlaying();
+            activeSoundPlayer.set(null);
+            playButton.setText("Play");
+            return;
+        }
 
+        Sound sound = soundsView.getSelectionModel().getSelectedItem();
+        if (sound == null) return;
+
+        var player = sound.getPlayer();
+        player.setOnPlaybackEnd(() -> {
+            playButton.setText("Play");
+            activeSoundPlayer.set(null);
+        });
+        player.play();
+        activeSoundPlayer.set(player);
+        playButton.setText("Stop");
     }
     @FXML
     private void onRename() {

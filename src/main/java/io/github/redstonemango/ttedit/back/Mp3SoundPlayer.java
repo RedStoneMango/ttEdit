@@ -45,6 +45,11 @@ public class Mp3SoundPlayer implements ISoundPlayable {
         }
     }
 
+    @Override
+    public void setOnPlaybackEnd(Runnable action) {
+        if (player != null) player.setOnEndOfMedia(action);
+    }
+
     private void libraryErrorMessage() {
         ButtonType ignoreBtn = new ButtonType("Ignore");
         ButtonType learnMoreBtn = new ButtonType("Learn More", ButtonBar.ButtonData.YES);
