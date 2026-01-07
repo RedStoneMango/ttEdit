@@ -1,12 +1,16 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.SetProperty;
+import javafx.beans.property.SimpleSetProperty;
+import javafx.collections.FXCollections;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import org.controlsfx.control.PopOver;
 import org.jetbrains.annotations.Nullable;
 
 public class PScriptActionElement extends AbstractScriptActionElement {
@@ -20,32 +24,47 @@ public class PScriptActionElement extends AbstractScriptActionElement {
         return new PScriptActionElement(true, null,meta);
     }
 
-    private StringProperty sound;
+    private SetProperty<String> sounds;
+    private Button selectionButton;
+    private PopOver popOver;
 
     @Override
     public void populate(HBox contentBox, boolean preview) {
-        if (sound == null) sound = new SimpleStringProperty("");
+        if (sounds == null) sounds = new SimpleSetProperty<>(FXCollections.observableSet());
 
-        Label l = new Label("Play sound");
+        Label l = new Label("Play one of");
         applyColoring(l);
         l.setMouseTransparent(preview);
-        TextField f = new TextField("");
-        f.setPrefWidth(140);
-        f.setMouseTransparent(preview);
-        f.setFocusTraversable(false);
-        f.textProperty().addListener((_, _, val) -> {
-            sound.set(val);
-            markChanged();
+        selectionButton = new Button("");
+        selectionButton.setPrefWidth(140);
+        selectionButton.setMouseTransparent(preview);
+        selectionButton.setFocusTraversable(false);
+        selectionButton.setAlignment(Pos.CENTER_LEFT);
+        selectionButton.setOnAction(_ -> {
+            popOver.setContentNode(new Pane()); // TODO: Embed selection view
+            popOver.show(selectionButton);
         });
-        sound.addListener((_, _, val) -> f.setText(val));
-        applyColoring(f);
-        contentBox.getChildren().addAll(l, f);
+        sounds.addListener((_, _, _) ->
+                updateButtonText());
+        applyColoring(selectionButton);
+        contentBox.getChildren().addAll(l, selectionButton);
+
+        popOver = new PopOver();
+        popOver.setDetachable(false);
+        popOver.setAnimated(true);
+        popOver.setTitle("Sound Selection");
+        popOver.setOnHidden(_ -> updateButtonText());
+    }
+
+    private void updateButtonText() {
+        selectionButton.setText(sounds.get().toString());
     }
 
     @Override
     void loadFromData(ScriptData data) {
         if (data.getType() != ScriptData.Type.PLAY) throw new IllegalArgumentException("ScriptData has to be of type PLAY");
-        sound.set(data.getSound());
+        sounds.clear();
+        sounds.addAll(data.getSounds());
         markIsInBranch();
     }
 
@@ -63,7 +82,7 @@ public class PScriptActionElement extends AbstractScriptActionElement {
     public ScriptData build() {
         ScriptData data = new ScriptData();
         data.setType(ScriptData.Type.PLAY);
-        data.setSound(sound.get());
+        data.setSounds(sounds.get());
         return data;
     }
 
