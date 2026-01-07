@@ -3,11 +3,7 @@ package io.github.redstonemango.ttedit.back.projectElement;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -23,7 +19,7 @@ public class ScriptData {
     private @Nullable List<ScriptData> actions;
 
     // PLAY ELEMENT
-    private @Nullable String sound;
+    private @Nullable Set<String> sounds;
 
     // JUMP ELEMENT
     private @Nullable String jumpTarget;
@@ -44,7 +40,7 @@ public class ScriptData {
         if (type == null) {
             // Fallback to detection
             if (conditions != null) type = Type.HEAD;
-            else if (sound != null) type = Type.PLAY;
+            else if (sounds != null) type = Type.PLAY;
             else if (jumpTarget != null) type = Type.JUMP;
             else if (register != null) type = Type.NEGATE;
             else throw new ProjectLoadException("No script type supplied! Automated type detection failed.");
@@ -53,7 +49,7 @@ public class ScriptData {
         // Ugly
         switch (type) {
             case HEAD -> {
-                sound = null;
+                sounds = null;
                 jumpTarget = null;
                 register = null;
                 action = null;
@@ -75,11 +71,11 @@ public class ScriptData {
                 action = null;
                 value = null;
                 modulo = null;
-                if (sound == null) sound = "";
+                if (sounds == null) sounds = new HashSet<>();
             }
             case JUMP -> {
                 conditions = null;
-                sound = null;
+                sounds = null;
                 actions = null;
                 register = null;
                 action = null;
@@ -89,7 +85,7 @@ public class ScriptData {
             }
             case REGISTER -> {
                 conditions = null;
-                sound = null;
+                sounds = null;
                 actions = null;
                 jumpTarget = null;
                 modulo = null;
@@ -99,7 +95,7 @@ public class ScriptData {
             }
             case NEGATE -> {
                 conditions = null;
-                sound = null;
+                sounds = null;
                 actions = null;
                 jumpTarget = null;
                 action = null;
@@ -109,7 +105,7 @@ public class ScriptData {
             }
             case TIME -> {
                 conditions = null;
-                sound = null;
+                sounds = null;
                 actions = null;
                 jumpTarget = null;
                 action = null;
@@ -168,12 +164,12 @@ public class ScriptData {
         this.conditions = conditions;
     }
 
-    public @Nullable String getSound() {
-        return sound;
+    public @Nullable Set<String> getSounds() {
+        return sounds;
     }
 
-    public void setSound(@Nullable String sound) {
-        this.sound = sound;
+    public void setSounds(@Nullable Set<String> sounds) {
+        this.sounds = sounds;
     }
 
     public @Nullable String getJumpTarget() {
