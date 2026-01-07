@@ -14,6 +14,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
@@ -50,13 +52,19 @@ public class ProjectSoundManageController {
         );
         playButton.disableProperty().bind(deleteButton.disableProperty().and(activeSoundPlayer.isNull()));
 
-        UXUtilities.doOnceAvailable(playButton.getScene().windowProperty(),
-                window -> window.showingProperty().addListener((_, _, isShowing) -> {
-            if (!isShowing && activeSoundPlayer.get() != null) {
-                activeSoundPlayer.get().stopPlaying();
-                activeSoundPlayer.set(null);
-            }
-        }));
+        UXUtilities.doOnceAvailable(playButton.getScene().windowProperty(), window -> {
+            window.showingProperty().addListener((_, _, isShowing) -> {
+                if (!isShowing && activeSoundPlayer.get() != null) {
+                    activeSoundPlayer.get().stopPlaying();
+                    activeSoundPlayer.set(null);
+                }
+            });
+            window.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+                if (e.getCode() == KeyCode.ESCAPE) {
+                    window.hide();
+                }
+            });
+        });
     }
 
     @FXML
