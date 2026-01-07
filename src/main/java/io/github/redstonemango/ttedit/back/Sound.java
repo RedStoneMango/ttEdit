@@ -12,6 +12,12 @@ public record Sound(String name, File soundFile) {
                 soundFile.getName(),
             soundFile
         );
+    }
 
+    public ISoundPlayable getPlayer() {
+        if (soundFile.getName().endsWith(".mp3")) {
+            return new Mp3SoundPlayer(this);
+        }
+        throw new IllegalStateException("The sound support MP3 players only");
     }
 }
