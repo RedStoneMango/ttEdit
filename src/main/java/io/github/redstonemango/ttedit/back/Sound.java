@@ -1,6 +1,10 @@
 package io.github.redstonemango.ttedit.back;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
+import java.util.List;
 
 public record Sound(String name, File soundFile) {
     public Sound(File soundFile) {
@@ -19,5 +23,24 @@ public record Sound(String name, File soundFile) {
             return new Mp3SoundPlayer(this);
         }
         throw new IllegalStateException("The sound support MP3 players only");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Sound other)) return false;
+        return soundFile.getAbsoluteFile().equals(other.soundFile.getAbsoluteFile());
+    }
+
+    public static @Nullable Sound fromStringExact(String string, List<Sound> existingSounds) {
+        return existingSounds.stream()
+                .filter(sound -> sound.soundFile.getName().equals(string))
+                .findFirst()
+                .orElse(null);
+    }
+    public static @NotNull Sound fromString(String string, List<Sound> existingSounds) {
+        return existingSounds.stream()
+                .filter(sound -> sound.soundFile.getName().equals(string))
+                .findFirst()
+                .orElseGet(() -> null); // TODO: Add fallback sound
     }
 }
