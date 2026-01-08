@@ -35,15 +35,7 @@ public class ProjectSoundManageController {
     public void init(Project project) {
         header.setText("Mange Sounds for '" + project.name() + "'");
         soundsView.setItems(project.getSounds());
-        UXUtilities.applyCustomCellFactory(soundsView, sound -> {
-            Label name = new Label(sound.name());
-            name.setFont(new Font(19));
-            Label file = new Label(sound.soundFile().getName());
-            file.setFont(new Font(14));
-            VBox box = new VBox(name, file);
-            box.setPadding(new Insets(5));
-            return box;
-        }, _ -> {}, new Insets(0));
+        soundsView.setCellFactory(UXUtilities.createSoundListCellFactory());
 
         renameButton.disableProperty().bind(deleteButton.disableProperty());
         deleteButton.disableProperty().bind(Bindings.createBooleanBinding(
