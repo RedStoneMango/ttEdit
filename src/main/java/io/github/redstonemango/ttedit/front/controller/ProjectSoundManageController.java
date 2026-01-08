@@ -33,7 +33,7 @@ public class ProjectSoundManageController {
     private final ObjectProperty<ISoundPlayable> activeSoundPlayer = new SimpleObjectProperty<>(null);
 
     public void init(Project project) {
-        header.setText("Mange Sounds for '" + project.name() + "'");
+        header.setText("Manage Sounds for '" + project.name() + "'");
         soundsView.setItems(project.getSounds());
         soundsView.setCellFactory(UXUtilities.createSoundListCellFactory());
 
