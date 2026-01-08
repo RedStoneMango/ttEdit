@@ -35,7 +35,7 @@ public class ProjectSoundManageController {
     public void init(Project project) {
         header.setText("Manage Sounds for '" + project.name() + "'");
         soundsView.setItems(project.getSounds());
-        soundsView.setCellFactory(UXUtilities.createSoundListCellFactory());
+        soundsView.setCellFactory(UXUtilities.createSoundListCellFactory(false));
 
         renameButton.disableProperty().bind(deleteButton.disableProperty());
         deleteButton.disableProperty().bind(Bindings.createBooleanBinding(

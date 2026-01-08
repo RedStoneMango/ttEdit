@@ -388,7 +388,7 @@ public class UXUtilities {
         });
     }
 
-    public static Callback<ListView<Sound>, ListCell<Sound>> createSoundListCellFactory() {
+    public static Callback<ListView<Sound>, ListCell<Sound>> createSoundListCellFactory(boolean smallSized) {
         return new Callback<>() {
             @Override
             public ListCell<Sound> call(ListView<Sound> lv) {
@@ -401,9 +401,9 @@ public class UXUtilities {
                             setText(null);
                         } else {
                             Label name = new Label(sound.name());
-                            name.setFont(new Font(19));
+                            name.setFont(new Font(smallSized ? 15 : 19));
                             Label file = new Label(sound.soundFile().getName());
-                            file.setFont(new Font(14));
+                            file.setFont(new Font(smallSized ? 10 : 14));
                             VBox box = new VBox(name, file);
                             setGraphic(box);
                             setPadding(new Insets(5));
