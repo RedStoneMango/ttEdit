@@ -1,8 +1,8 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
+import io.github.redstonemango.ttedit.back.Sound;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
-import javafx.beans.property.BooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
@@ -21,7 +21,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class AbstractScriptElement extends StackPane {
@@ -38,6 +37,7 @@ public abstract class AbstractScriptElement extends StackPane {
     final boolean preview;
     final ObservableList<ScriptElementEditor.Branch> branches;
     final ObservableList<ProjectElement> existingScripts;
+    final ObservableList<Sound> existingSounds;
     final ProjectElement element;
 
     private @Nullable Path highlightShape;
@@ -59,6 +59,7 @@ public abstract class AbstractScriptElement extends StackPane {
         this.element = meta.element();
         this.branches = meta.branches();
         this.existingScripts = meta.existingScripts();
+        this.existingSounds = meta.existingSounds();
         var editorPane = meta.editorPane();
         var editorScroll = meta.editorScroll();
 

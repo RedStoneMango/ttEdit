@@ -1,6 +1,7 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
+import io.github.redstonemango.ttedit.front.SoundSelectionView;
 import javafx.beans.property.SetProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.collections.FXCollections;
@@ -41,7 +42,7 @@ public class PScriptActionElement extends AbstractScriptActionElement {
         selectionButton.setFocusTraversable(false);
         selectionButton.setAlignment(Pos.CENTER_LEFT);
         selectionButton.setOnAction(_ -> {
-            popOver.setContentNode(new Pane()); // TODO: Embed selection view
+            popOver.setContentNode(new SoundSelectionView(existingSounds));
             popOver.show(selectionButton);
         });
         sounds.addListener((_, _, _) ->
