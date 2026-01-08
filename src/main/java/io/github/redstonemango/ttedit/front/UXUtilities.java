@@ -39,9 +39,12 @@ import org.controlsfx.control.textfield.TextFields;
 import org.controlsfx.property.editor.DefaultPropertyEditorFactory;
 import org.controlsfx.property.editor.Editors;
 import org.controlsfx.property.editor.PropertyEditor;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -544,20 +547,26 @@ public class UXUtilities {
         return selectedItems;
     }
 
-    public static void showAddSoundUI(Project project, Window window) {
+    public static @Nullable List<Sound> showAddSoundUI(Project project, Window window) {
         FileChooser chooser = new FileChooser();
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP3 Audio File", "*.mp3"));
         chooser.setTitle("Add Sound");
         var files = chooser.showOpenMultipleDialog(window);
         if (files != null) {
+            List<Sound> addedSounds = new ArrayList<>();
             for (File file : files) {
                 if (!file.getName().endsWith(".mp3")) {
                     errorAlert("Unsupported file", file.getName() + " is not supported. Use .mp3 files only");
                     continue;
                 }
-                ProjectIO.addSound(project, file, e -> errorAlert("Unable to add sound", e.getMessage()));
+                var s = ProjectIO.addSound(project, file, e -> errorAlert("Unable to add sound", e.getMessage()));
+                if (s != null) {
+                    addedSounds.add(s);
+                }
             }
+            return addedSounds;
         }
+        return null;
     }
 
 }
