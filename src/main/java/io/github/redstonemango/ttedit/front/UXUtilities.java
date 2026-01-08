@@ -3,6 +3,7 @@ package io.github.redstonemango.ttedit.front;
 import io.github.redstonemango.mangoutils.OperatingSystem;
 import io.github.redstonemango.ttedit.back.Project;
 import io.github.redstonemango.ttedit.back.ProjectIO;
+import io.github.redstonemango.ttedit.back.Sound;
 import io.github.redstonemango.ttedit.back.projectElement.BranchCondition;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
@@ -22,8 +23,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -383,6 +386,32 @@ public class UXUtilities {
 
             return defaultFactory.call(item);
         });
+    }
+
+    public static Callback<ListView<Sound>, ListCell<Sound>> createSoundListCellFactory() {
+        return new Callback<>() {
+            @Override
+            public ListCell<Sound> call(ListView<Sound> lv) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Sound sound, boolean empty) {
+                        super.updateItem(sound, empty);
+                        if (empty || sound == null) {
+                            setGraphic(null);
+                            setText(null);
+                        } else {
+                            Label name = new Label(sound.name());
+                            name.setFont(new Font(19));
+                            Label file = new Label(sound.soundFile().getName());
+                            file.setFont(new Font(14));
+                            VBox box = new VBox(name, file);
+                            setGraphic(box);
+                            setPadding(new Insets(5));
+                        }
+                    }
+                };
+            }
+        };
     }
 
     public static void registerHoverAnimation(Node node) {
