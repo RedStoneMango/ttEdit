@@ -19,7 +19,7 @@ public class ScriptData {
     private @Nullable List<ScriptData> actions;
 
     // PLAY ELEMENT
-    private @Nullable Set<String> sounds;
+    private @Nullable List<String> sounds;
 
     // JUMP ELEMENT
     private @Nullable String jumpTarget;
@@ -71,7 +71,7 @@ public class ScriptData {
                 action = null;
                 value = null;
                 modulo = null;
-                if (sounds == null) sounds = new HashSet<>();
+                if (sounds == null) sounds = new ArrayList<>();
             }
             case JUMP -> {
                 conditions = null;
@@ -164,11 +164,11 @@ public class ScriptData {
         this.conditions = conditions;
     }
 
-    public @Nullable Set<String> getSounds() {
+    public @Nullable List<String> getSounds() {
         return sounds;
     }
 
-    public void setSounds(@Nullable Set<String> sounds) {
+    public void setSounds(@Nullable List<String> sounds) {
         this.sounds = sounds;
     }
 
