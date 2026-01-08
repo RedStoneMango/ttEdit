@@ -7,19 +7,14 @@ import org.controlsfx.control.ListSelectionView;
 
 public class SoundSelectionView extends VBox {
 
-    private final ListSelectionView<Sound> selectionView;
-
-    public SoundSelectionView(ObservableList<Sound> sounds) {
-        selectionView = new ListSelectionView<>();
+    public SoundSelectionView(ObservableList<Sound> sounds, ObservableList<Sound> selectedSounds) {
+        ListSelectionView<Sound> selectionView = new ListSelectionView<>();
         selectionView.setSourceItems(sounds);
+        selectionView.setTargetItems(selectedSounds);
         selectionView.setSourceHeader(null);
         selectionView.setTargetHeader(null);
         selectionView.setCellFactory(UXUtilities.createSoundListCellFactory(true));
         getChildren().add(selectionView);
-    }
-
-    public ObservableList<Sound> getSelected() {
-        return selectionView.getTargetItems();
     }
 
 }
