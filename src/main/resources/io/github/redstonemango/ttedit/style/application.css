@@ -84,3 +84,7 @@
     -fx-background-insets: 0, 1;
     -fx-padding: 1;
 }
+
+.popover .content {
+    -fx-background-color: -fx-base;
+}
