@@ -387,7 +387,7 @@ public abstract class AbstractScriptElement extends StackPane {
     void applyColoring(Node node, boolean textFill) {
         node.setStyle(
                 "-fx-base: " + toRGBCode(color().darker()) + ";" +
-                "-fx-accent: -fx-base;" +
+                "-fx-accent: " + toRGBCode(color().deriveColor(0.0F, 1.0F, 0.6, 1.0F)) + ";" +
                 (textFill ? "-fx-text-fill: black;" : "")
         );
     }
