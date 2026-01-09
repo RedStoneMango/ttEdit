@@ -1,6 +1,6 @@
 # ttEdit
 
-A third-party graphical frontend for [**TTTool**](https://github.com/entropia/tip-toi-reveng/), designed to allow you to create your own Tiptoi® Books and GME files easier — without having to use the command line.
+A third-party all-in-one desktop frontend for [**TTTool**](https://github.com/entropia/tip-toi-reveng/), designed to allow you to create your own Tiptoi® Books and GME files easier — without having to use the command line.
 
 > [!NOTE]  
 > This is **not an official Ravensburger product** — just a community-made tool that works with the open-source [TTTool](https://github.com/entropia/tip-toi-reveng/) project.  
