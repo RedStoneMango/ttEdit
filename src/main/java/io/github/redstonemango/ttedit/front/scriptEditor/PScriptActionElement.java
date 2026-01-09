@@ -9,6 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import org.controlsfx.control.PopOver;
@@ -53,7 +54,7 @@ public class PScriptActionElement extends AbstractScriptActionElement {
             var sourceSounds = existingSounds.stream()
                     .filter(s -> !sounds.contains(s))
                     .toList();
-            selectionView = new SoundSelectionView(FXCollections.observableArrayList(sourceSounds), sounds, project);
+            selectionView = new SoundSelectionView(true, FXCollections.observableArrayList(sourceSounds), sounds, project);
             popOver.setContentNode(selectionView);
             popOver.show(selectionButton);
         });
