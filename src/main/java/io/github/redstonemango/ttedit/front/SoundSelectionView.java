@@ -3,10 +3,18 @@ package io.github.redstonemango.ttedit.front;
 import io.github.redstonemango.ttedit.back.Project;
 import io.github.redstonemango.ttedit.back.Sound;
 import javafx.application.Platform;
+import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SingleSelectionModel;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.VBox;
 import javafx.stage.PopupWindow;
 import javafx.stage.Window;
@@ -15,14 +23,22 @@ import org.controlsfx.control.PopOver;
 
 public class SoundSelectionView extends VBox {
 
-    public SoundSelectionView(ObservableList<Sound> sounds, ObservableList<Sound> selectedSounds, Project project) {
-        ListSelectionView<Sound> selectionView = new ListSelectionView<>();
-        selectionView.setSourceItems(sounds);
-        selectionView.setTargetItems(selectedSounds);
-        selectionView.setCellFactory(UXUtilities.createSoundListCellFactory(true));
-        selectionView.setSourceHeader(null);
-        selectionView.setTargetHeader(null);
-
+    /**
+     * If {@code allowMultiple} is {@code true}:
+     *
+     * <ul><li>{@code selectedSounds} is a bidirectional representation of the sounds selected
+     *   and {@code sounds} has to contain only those sounds which are NOT selected at the time</li></ul>
+     *
+     * <p>----------</p>
+     *
+     * If {@code allowMultiple} is {@code false}:
+     *
+     * <ul><li>{@code selectedSounds} is a read-only representation of the sound selected (changes have no effect on the UI)
+     * and it will only continue 1 element max.
+     * {@code sounds} has to contain all existing sounds, no matter whether they are selected or not</li></ul>
+     */
+    public SoundSelectionView(boolean allowMultiple, ObservableList<Sound> sounds, ObservableList<Sound> selectedSounds,
+                              Project project) {
         Button addSoundButton = new Button("Add Sound");
         addSoundButton.setOnAction(_ -> {
             PopupWindow popupWindow = getScene().getWindow() instanceof PopupWindow p ? p : null;
@@ -40,7 +56,7 @@ public class SoundSelectionView extends VBox {
             }
 
             var added = UXUtilities.showAddSoundUI(project, window);
-            selectionView.getSourceItems().addAll(added);
+            sounds.addAll(added);
 
             if (popupWindow != null) {
                 if (ownerNode == null) popupWindow.show(window, ancPos.getX(), ancPos.getY());
@@ -49,9 +65,28 @@ public class SoundSelectionView extends VBox {
                 popupWindow.setY(pos.getY());
             }
         });
-        selectionView.setSourceFooter(addSoundButton);
 
-        getChildren().add(selectionView);
+        if (allowMultiple) {
+            ListSelectionView<Sound> selectionView = new ListSelectionView<>();
+            selectionView.setSourceItems(sounds);
+            selectionView.setTargetItems(selectedSounds);
+            selectionView.setCellFactory(UXUtilities.createSoundListCellFactory(true));
+            selectionView.setSourceHeader(null);
+            selectionView.setTargetHeader(null);
+            selectionView.setSourceFooter(addSoundButton);
+            getChildren().add(selectionView);
+        }
+        else {
+            ListView<Sound> view = new ListView<>();
+            view.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+            view.setItems(sounds);
+            view.getSelectionModel().selectedItemProperty().addListener((_, _, i) -> {
+                if (i == null) selectedSounds.clear();
+                else selectedSounds.setAll(i);
+            });
+            view.setCellFactory(UXUtilities.createSoundListCellFactory(true));
+            getChildren().add(view);
+        }
     }
 
 }
