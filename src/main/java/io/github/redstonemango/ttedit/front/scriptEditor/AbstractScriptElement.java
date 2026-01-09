@@ -1,5 +1,6 @@
 package io.github.redstonemango.ttedit.front.scriptEditor;
 
+import io.github.redstonemango.ttedit.back.Project;
 import io.github.redstonemango.ttedit.back.Sound;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
@@ -36,6 +37,7 @@ public abstract class AbstractScriptElement extends StackPane {
     private final boolean isHead;
     final boolean preview;
     final ObservableList<ScriptElementEditor.Branch> branches;
+    final Project project;
     final ObservableList<ProjectElement> existingScripts;
     final ObservableList<Sound> existingSounds;
     final ProjectElement element;
@@ -58,8 +60,9 @@ public abstract class AbstractScriptElement extends StackPane {
         this.preview = preview;
         this.element = meta.element();
         this.branches = meta.branches();
-        this.existingScripts = meta.existingScripts();
-        this.existingSounds = meta.existingSounds();
+        this.project = meta.project();
+        this.existingScripts = meta.project().getScripts();
+        this.existingSounds = meta.project().getSounds();
         var editorPane = meta.editorPane();
         var editorScroll = meta.editorScroll();
 
