@@ -42,10 +42,7 @@ import org.controlsfx.property.editor.PropertyEditor;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -547,7 +544,7 @@ public class UXUtilities {
         return selectedItems;
     }
 
-    public static @Nullable List<Sound> showAddSoundUI(Project project, Window window) {
+    public static List<Sound> showAddSoundUI(Project project, Window window) {
         FileChooser chooser = new FileChooser();
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP3 Audio File", "*.mp3"));
         chooser.setTitle("Add Sound");
@@ -566,7 +563,7 @@ public class UXUtilities {
             }
             return addedSounds;
         }
-        return null;
+        return Collections.emptyList();
     }
 
 }

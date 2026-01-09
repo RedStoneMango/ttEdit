@@ -53,7 +53,7 @@ public class PScriptActionElement extends AbstractScriptActionElement {
             var sourceSounds = existingSounds.stream()
                     .filter(s -> !sounds.contains(s))
                     .toList();
-            selectionView = new SoundSelectionView(FXCollections.observableArrayList(sourceSounds), sounds);
+            selectionView = new SoundSelectionView(FXCollections.observableArrayList(sourceSounds), sounds, project);
             popOver.setContentNode(selectionView);
             popOver.show(selectionButton);
         });

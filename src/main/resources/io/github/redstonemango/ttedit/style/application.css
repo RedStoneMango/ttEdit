@@ -88,3 +88,6 @@
 .popover .content {
     -fx-background-color: -fx-base;
 }
+.popover .button {
+    -fx-text-fill: white;
+}
