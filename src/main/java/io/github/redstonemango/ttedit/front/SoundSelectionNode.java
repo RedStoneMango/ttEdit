@@ -9,7 +9,6 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.stage.PopupWindow;
 import javafx.stage.Window;
 import org.controlsfx.control.ListSelectionView;
 import org.controlsfx.control.PopOver;
@@ -71,37 +70,28 @@ public class SoundSelectionNode extends Button {
     }
 
     private ListSelectionView<Sound> createPopOverContent() {
+        ListSelectionView<Sound> selectionView = new ListSelectionView<>();
+
         Button addSoundButton = new Button("Add Sound");
         addSoundButton.setOnAction(_ -> {
-            PopupWindow popupWindow = getScene().getWindow() instanceof PopupWindow p ? p : null;
-
-            Window window = popupWindow;
-            Node ownerNode = null;
-            Point2D ancPos = new Point2D(0, 0);
-            Point2D pos = new Point2D(0, 0);
-            if (popupWindow != null) {
-                window = popupWindow.getOwnerWindow();
-                ancPos = new Point2D(popupWindow.getAnchorX(), popupWindow.getAnchorY());
-                pos = new Point2D(popupWindow.getX(), popupWindow.getY());
-                ownerNode = popupWindow.getOwnerNode();
-                popupWindow.hide();
-            }
+            Window window = popOver.getOwnerWindow();
+            Node ownerNode = popOver.getOwnerNode();
+            Point2D ancPos = new Point2D(popOver.getAnchorX(), popOver.getAnchorY());
+            Point2D pos = new Point2D(popOver.getX(), popOver.getY());
+            popOver.hide();
 
             var added = UXUtilities.showAddSoundUI(project, window);
-            sounds.addAll(added);
+            selectionView.getSourceItems().addAll(added);
 
-            if (popupWindow != null) {
-                if (ownerNode == null) popupWindow.show(window, ancPos.getX(), ancPos.getY());
-                else popupWindow.show(ownerNode, ancPos.getX(), ancPos.getY());
-                popupWindow.setX(pos.getX());
-                popupWindow.setY(pos.getY());
-            }
+            if (ownerNode == null) popOver.show(window, ancPos.getX(), ancPos.getY());
+            else popOver.show(ownerNode, ancPos.getX(), ancPos.getY());
+            popOver.setX(pos.getX());
+            popOver.setY(pos.getY());
         });
 
         var sourceSounds = sounds.stream()
                 .filter(s -> !selectedSounds.contains(s))
                 .toList();
-        ListSelectionView<Sound> selectionView = new ListSelectionView<>();
         selectionView.setSourceItems(FXCollections.observableArrayList(sourceSounds));
         selectionView.setTargetItems(FXCollections.observableArrayList(selectedSounds));
         selectionView.setCellFactory(UXUtilities.createSoundListCellFactory(true));
