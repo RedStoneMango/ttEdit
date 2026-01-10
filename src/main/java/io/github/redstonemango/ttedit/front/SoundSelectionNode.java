@@ -61,6 +61,7 @@ public class SoundSelectionNode extends Button {
         selectedSounds.addListener((ListChangeListener<? super Sound>) _ ->
             updateButtonText()
         );
+        updateButtonText();
     }
 
     private void updateButtonText() {
