@@ -39,7 +39,6 @@ import org.controlsfx.control.textfield.TextFields;
 import org.controlsfx.property.editor.DefaultPropertyEditorFactory;
 import org.controlsfx.property.editor.Editors;
 import org.controlsfx.property.editor.PropertyEditor;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
@@ -373,6 +372,9 @@ public class UXUtilities {
             }
             else if (item instanceof RegistersPropertyItem registers) {
                 editor = new RegistersPropertyEditor(registers);
+            }
+            else if (item instanceof SoundsPropertyItem sounds) {
+                editor = new SoundsPropertyEditor(sounds, sounds.getExistingSounds(), sounds.getProject());
             }
             else if (item instanceof SimplePropertyItem) {
                 editor = Editors.createTextEditor(item);

@@ -6,11 +6,15 @@ import io.github.redstonemango.ttedit.Launcher;
 import io.github.redstonemango.ttedit.back.projectElement.ProjectElement;
 import io.github.redstonemango.ttedit.back.registerDictionary.RegisterIndexUnifier;
 import io.github.redstonemango.ttedit.front.scriptEditor.ScriptElementEditor;
-import javafx.collections.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -25,6 +29,7 @@ public class Project {
     @JsonIgnore private RegisterIndexUnifier registerIndexUnifier;
 
     private int productID;
+    private List<String> welcomeSounds;
     private @Nullable String comment;
     private @Nullable String language;
     private double scriptBoxLibraryWidth = ScriptElementEditor.MAX_LIBRARY_WIDTH;
@@ -46,6 +51,7 @@ public class Project {
                 ScriptElementEditor.MIN_LIBRARY_WIDTH,
                 ScriptElementEditor.MAX_LIBRARY_WIDTH
         );
+        if (welcomeSounds == null) welcomeSounds = new ArrayList<>();
 
         // Non-persistent data
         dir = new File(Launcher.PROJECTS_HOME, filename);
@@ -83,6 +89,14 @@ public class Project {
 
     public String name() {
         return dir.getName();
+    }
+
+    public List<String> getWelcomeSounds() {
+        return welcomeSounds;
+    }
+
+    public void setWelcomeSounds(List<String> welcomeSounds) {
+        this.welcomeSounds = welcomeSounds;
     }
 
     public int getProductID() {
