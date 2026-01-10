@@ -9,11 +9,12 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.property.editor.PropertyEditor;
 
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -133,7 +134,7 @@ public class RegistersPropertyEditor implements PropertyEditor<Map<String, Integ
     }
 
     private String buildInitialRegistersText() {
-        if (registers.isEmpty()) return "-- None --";
+        if (registers.isEmpty()) return "";
 
         StringBuilder builder = new StringBuilder();
         boolean firstCall = true;
