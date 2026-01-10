@@ -1,5 +1,8 @@
 # ttEdit
 
+> [!WARNING]
+> This project is under active development and not yet completed. Features may change and bugs may occur 
+
 A third-party all-in-one desktop frontend for [**TTTool**](https://github.com/entropia/tip-toi-reveng/), designed to allow you to create your own Tiptoi® Books and GME files easier — without having to use the command line.
 
 > [!NOTE]  
