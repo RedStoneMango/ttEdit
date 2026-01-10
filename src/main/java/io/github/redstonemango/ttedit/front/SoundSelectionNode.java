@@ -50,9 +50,14 @@ public class SoundSelectionNode extends Button {
                 selectedSounds.setAll(popOverContent.getTargetItems());
             }
         });
-        sounds.addListener((ListChangeListener<? super Sound>) _ ->
-            updateButtonText()
-        );
+        sounds.addListener((ListChangeListener<? super Sound>) l -> {
+            while (l.next()) {
+                if (l.wasRemoved()) {
+                    selectedSounds.removeAll(l.getRemoved());
+                }
+            }
+            updateButtonText();
+        });
         selectedSounds.addListener((ListChangeListener<? super Sound>) _ ->
             updateButtonText()
         );
