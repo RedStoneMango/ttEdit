@@ -3,10 +3,14 @@ package io.github.redstonemango.ttedit.front.controller;
 import io.github.redstonemango.ttedit.Launcher;
 import io.github.redstonemango.ttedit.back.Project;
 import io.github.redstonemango.ttedit.back.ProjectIO;
-import io.github.redstonemango.ttedit.front.propertySheetHelpers.*;
+import io.github.redstonemango.ttedit.back.Sound;
 import io.github.redstonemango.ttedit.front.UXUtilities;
+import io.github.redstonemango.ttedit.front.propertySheetHelpers.*;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.*;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleMapProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -20,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class ProjectConfigurationController {
 
@@ -32,6 +37,7 @@ public class ProjectConfigurationController {
     private SimpleStringProperty comment;
     private SimpleStringProperty language;
     private SimpleMapProperty<String, Integer> initialRegisters;
+    private SimpleListProperty<Sound> welcomeSounds;
 
     private Project project;
     private boolean createNew;
@@ -91,6 +97,10 @@ public class ProjectConfigurationController {
         project.getInitialRegisters().clear();
         project.getInitialRegisters().putAll(initialRegisters.get());
         project.getRegisterIndexUnifier().update();
+        project.setWelcomeSounds(welcomeSounds.get().stream()
+                .map(s -> s.soundFile().getName())
+                .toList()
+        );
         try {
             ProjectIO.saveProjectGeneralConfig(project);
             onClose();
@@ -115,6 +125,16 @@ public class ProjectConfigurationController {
                 project != null
                 ? FXCollections.observableMap(new HashMap<>(project.getInitialRegisters()))
                 : FXCollections.emptyObservableMap()
+        );
+        welcomeSounds = new SimpleListProperty<>(
+                project != null
+                ? FXCollections.observableArrayList(
+                        project.getWelcomeSounds().stream()
+                                .map(s -> Sound.fromString(s, project.getSounds()))
+                                .filter(Objects::nonNull)
+                                .toList())
+
+                : FXCollections.emptyObservableList()
         );
 
         items.add(new SimplePropertyItem(
@@ -144,6 +164,17 @@ public class ProjectConfigurationController {
                 "The language your project is targeting. Usually, there is no need to set this for personal projects",
                 language,
                 "ENGLISH", "GERMAN", "DUTCH", "FRENCH", "ITALIA", "RUSSIA"));
+
+        items.add(new SoundsPropertyItem(
+                "Welcome Sounds",
+                "Quality of Life",
+                "The Sounds to be played when the project starts. The sounds will be played in the order " +
+                        "they are specified",
+                welcomeSounds,
+                project != null ? project.getSounds() : FXCollections.emptyObservableList(),
+                project,
+                createNew
+        ));
 
         items.add(new RegistersPropertyItem(
                 "Initial Registers",
