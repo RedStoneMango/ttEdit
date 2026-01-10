@@ -46,7 +46,7 @@ public class PScriptActionElement extends AbstractScriptActionElement {
     void loadFromData(ScriptData data) {
         if (data.getType() != ScriptData.Type.PLAY) throw new IllegalArgumentException("ScriptData has to be of type PLAY");
         sounds.setAll(data.getSounds().stream()
-                .map(s -> Sound.fromStringExact(s, existingSounds))
+                .map(s -> Sound.fromString(s, existingSounds))
                 .filter(Objects::nonNull)
                 .toList()
         );

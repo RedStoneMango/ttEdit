@@ -1,6 +1,5 @@
 package io.github.redstonemango.ttedit.back;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -31,16 +30,10 @@ public record Sound(String name, File soundFile) {
         return soundFile.getAbsoluteFile().equals(other.soundFile.getAbsoluteFile());
     }
 
-    public static @Nullable Sound fromStringExact(String string, List<Sound> existingSounds) {
+    public static @Nullable Sound fromString(String string, List<Sound> existingSounds) {
         return existingSounds.stream()
                 .filter(sound -> sound.soundFile.getName().equals(string))
                 .findFirst()
                 .orElse(null);
-    }
-    public static @NotNull Sound fromString(String string, List<Sound> existingSounds) {
-        return existingSounds.stream()
-                .filter(sound -> sound.soundFile.getName().equals(string))
-                .findFirst()
-                .orElseGet(() -> null); // TODO: Add fallback sound
     }
 }
