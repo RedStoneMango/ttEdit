@@ -2,21 +2,16 @@ package io.github.redstonemango.ttedit.front.scriptEditor;
 
 import io.github.redstonemango.ttedit.back.Sound;
 import io.github.redstonemango.ttedit.back.projectElement.ScriptData;
-import io.github.redstonemango.ttedit.front.SoundSelectionView;
+import io.github.redstonemango.ttedit.front.SoundSelectionNode;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
+import javafx.collections.ListChangeListener;
 import javafx.scene.control.Label;
-import javafx.scene.control.OverrunStyle;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import org.controlsfx.control.PopOver;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class PScriptActionElement extends AbstractScriptActionElement {
@@ -31,10 +26,6 @@ public class PScriptActionElement extends AbstractScriptActionElement {
     }
 
     private ListProperty<Sound> sounds;
-    private final List<Sound> prevSounds = new ArrayList<>();
-    private Button selectionButton;
-    private PopOver popOver;
-    private SoundSelectionView selectionView = null;
 
     @Override
     public void populate(HBox contentBox, boolean preview) {
@@ -43,43 +34,12 @@ public class PScriptActionElement extends AbstractScriptActionElement {
         Label l = new Label("Play one of");
         applyColoring(l);
         l.setMouseTransparent(preview);
-        selectionButton = new Button("");
-        selectionButton.setPrefWidth(140);
-        selectionButton.setMouseTransparent(preview);
-        selectionButton.setFocusTraversable(false);
-        selectionButton.setAlignment(Pos.CENTER_LEFT);
-        selectionButton.setOnAction(_ -> {
-            prevSounds.clear();
-            prevSounds.addAll(sounds);
-            var sourceSounds = existingSounds.stream()
-                    .filter(s -> !sounds.contains(s))
-                    .toList();
-            selectionView = new SoundSelectionView(FXCollections.observableArrayList(sourceSounds), sounds, project);
-            popOver.setContentNode(selectionView);
-            popOver.show(selectionButton);
-        });
-        applyColoring(selectionButton);
-        contentBox.getChildren().addAll(l, selectionButton);
-
-        popOver = new PopOver();
-        popOver.setDetachable(false);
-        popOver.setAnimated(true);
-        popOver.setTitle("Sound Selection");
-        popOver.setOnHidden(_ -> {
-            updateButtonText();
-            if (!prevSounds.equals(sounds)) markChanged();
-        });
-    }
-
-    private void updateButtonText() {
-        StringBuilder builder = new StringBuilder();
-        boolean firstRun = true;
-        for (Sound sound : sounds) {
-            if (!firstRun) builder.append(", ");
-            builder.append(sound.name());
-            firstRun = false;
-        }
-        selectionButton.setText(builder.toString());
+        SoundSelectionNode selectionView = new SoundSelectionNode(existingSounds, sounds, project);
+        selectionView.setMouseTransparent(preview);
+        selectionView.setFocusTraversable(false);
+        applyColoring(selectionView);
+        contentBox.getChildren().addAll(l, selectionView);
+        sounds.addListener((ListChangeListener<? super Sound>) _ -> markChanged());
     }
 
     @Override
@@ -90,7 +50,6 @@ public class PScriptActionElement extends AbstractScriptActionElement {
                 .filter(Objects::nonNull)
                 .toList()
         );
-        updateButtonText();
         markIsInBranch();
     }
 
