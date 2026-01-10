@@ -5,6 +5,8 @@
 
 A third-party all-in-one desktop frontend for [**TTTool**](https://github.com/entropia/tip-toi-reveng/), designed to allow you to create your own Tiptoi® Books and GME files easier — without having to use the command line.
 
+This application allows you to create your own Tiptoi-compatible books entirely offline and locally, without relying on cloud services. Unlike existing solutions, it focuses on Scratch-like, drag-and-drop scripting, includes a built-in image editor, and offers an integrated simulation to test projects without exporting them to the pen.
+
 > [!NOTE]  
 > This is **not an official Ravensburger product** — just a community-made tool that works with the open-source [TTTool](https://github.com/entropia/tip-toi-reveng/) project.  
 > Ravensburger isn’t involved with or responsible for this app.  
