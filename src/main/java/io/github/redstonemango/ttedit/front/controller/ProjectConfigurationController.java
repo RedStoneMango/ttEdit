@@ -98,7 +98,7 @@ public class ProjectConfigurationController {
         project.getInitialRegisters().putAll(initialRegisters.get());
         project.getRegisterIndexUnifier().update();
         project.setWelcomeSounds(welcomeSounds.get().stream()
-                .map(s -> s.soundFile().getName())
+                .map(s -> Sound.toString(s))
                 .toList()
         );
         try {

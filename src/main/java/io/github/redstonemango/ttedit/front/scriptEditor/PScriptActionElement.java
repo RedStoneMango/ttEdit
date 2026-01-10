@@ -68,7 +68,7 @@ public class PScriptActionElement extends AbstractScriptActionElement {
         ScriptData data = new ScriptData();
         data.setType(ScriptData.Type.PLAY);
         data.setSounds(sounds.stream()
-                        .map(sound -> sound.soundFile().getName())
+                        .map(s -> Sound.toString(s))
                         .distinct()
                         .toList());
         return data;

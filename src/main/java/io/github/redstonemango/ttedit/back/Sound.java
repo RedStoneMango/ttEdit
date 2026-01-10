@@ -1,5 +1,6 @@
 package io.github.redstonemango.ttedit.back;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -35,5 +36,9 @@ public record Sound(String name, File soundFile) {
                 .filter(sound -> sound.soundFile.getName().equals(string))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public static @NotNull String toString(Sound sound) {
+        return sound.soundFile.getName();
     }
 }
