@@ -9,15 +9,12 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -96,7 +93,7 @@ public class ProjectSoundManageController {
             int i = 1;
             Set<String> names = soundsView.getItems().stream()
                     .filter(s -> s != sound)
-                    .map(s -> s.soundFile().getName())
+                    .map(s -> Sound.toString(s))
                     .collect(Collectors.toSet());
             while (names.contains(name + ".mp3")) {
                 name = "_" + i;
